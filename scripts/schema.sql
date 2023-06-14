@@ -8,18 +8,6 @@ CREATE TABLE users(
     role INTEGER,   
     isPlaying BOOLEAN
 );
--- CREATE TABLE grids(
-    
-  
--- );
-
-CREATE TABLE prova(
-    name VARCHAR(50)
-);
-
-INSERT INTO prova(name) VALUES
-("prova");
-
 
 
 
