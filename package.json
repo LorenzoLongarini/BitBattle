@@ -1,0 +1,27 @@
+{
+  "name": "bitbattle",
+  "description": "<div>\r <p align=\"center\">\r <img src=\"https://github.com/LorenzoLongarini/BitBattle/blob/main/assets/bitbattle.png\">\r </p>\r <p align=\"center\">\r <a href=\"#Introduzioni\">Introduction</a>&nbsp•\r <a href=\"#Autori\">Authors</a>",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LorenzoLongarini/BitBattle.git"
+  },
+  "keywords": [
+    "bitbattle"
+  ],
+  "author": "LorLor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LorenzoLongarini/BitBattle/issues"
+  },
+  "homepage": "https://github.com/LorenzoLongarini/BitBattle#readme",
+  "dependencies": {
+    "sequelize": "^6.32.0",
+    "sqlite3": "^5.1.6"
+  }
+}
