@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "sequelize": "^6.32.0",
+    "sqlite3": "^5.1.6"
+  }
+}
