@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  bitbattle_db:
+    image: sqlite3
+    restart: always
+    environment:
+      - POSTGRES_USER=lorlordb
+      - POSTGRES_PASSWORD=bitbattledb
+    ports:
+      - 5432:5432
+    volumes:
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  bitbattle_node:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - bitbattle_db
