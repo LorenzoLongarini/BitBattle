@@ -10,6 +10,12 @@ sequelize.authenticate().then(() => {
 });
 
 export const User = sequelize.define("user", {
+    id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false
@@ -19,8 +25,9 @@ export const User = sequelize.define("user", {
         allowNull: false
     },
     token: {
-        type: DataTypes.DATEONLY,
-        allowNull: false
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 10,
     },
     role: {
         type: DataTypes.INTEGER,
@@ -30,6 +37,13 @@ export const User = sequelize.define("user", {
         type: DataTypes.BOOLEAN,
         allowNull: false
     }
+
+}, {
+    modelName: 'user',
+    timestamps: false,
+    freezeTableName: true,
+    createdAt: true,
+    updatedAt: true,
 });
 
 sequelize.sync().then(() => {
