@@ -15,7 +15,7 @@ app.get("/", function (req, res) {
 });
 app.post("/login", jsonParser, function (req, res) {
     // res.send("TS App is Running");
-    res.send((0, controller_1.login)(req, res));
+    (0, controller_1.login)(req, res);
 });
 var PORT = process.env.PORT;
 app.listen(PORT, function () {

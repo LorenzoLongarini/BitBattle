@@ -17,7 +17,7 @@ app.get("/", (req: any, res: any) => {
 
 app.post("/login", jsonParser, (req: any, res: any) => {
     // res.send("TS App is Running");
-    res.send(login(req, res));
+    login(req, res);
 });
 
 const PORT = process.env.PORT;

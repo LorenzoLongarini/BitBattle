@@ -48,34 +48,42 @@ var user_query_1 = require("./user_query");
 var PRIVATE_KEY = 'bitbattle'; //fs.readFileSync('./demos/private.key');
 function generateJwt(req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var user, payload, jwtBearerToken;
+        var user, payload, jwtBearerToken, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(req.body != null)) return [3 /*break*/, 2];
+                    _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, (0, user_query_1.default)(req.body.email, req.body.password)];
                 case 1:
                     user = _a.sent();
-                    _a.label = 2;
-                case 2:
                     if (user) {
+                        console.log(user);
                         payload = {
                             email: user.email,
                             password: user.password,
                             user: user.id
                         };
+                        jwtBearerToken = jwt.sign({
+                            email: user.email,
+                            password: user.password,
+                            user: user.id
+                        }, PRIVATE_KEY, {
+                            algorithm: 'RS256',
+                            // expiresIn: 120,
+                            subject: user.id
+                        });
+                        res.json({ jwt: jwtBearerToken });
                     }
-                    jwtBearerToken = jwt.sign({
-                        email: user.email,
-                        password: user.password,
-                        user: user.id
-                    }, PRIVATE_KEY, {
-                        algorithm: 'RS256',
-                        // expiresIn: 120,
-                        subject: user.id
-                    });
-                    res.json({ jwt: jwtBearerToken });
-                    return [2 /*return*/];
+                    else {
+                        // send status 401 Unauthorized
+                        res.sendStatus(401);
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_1 = _a.sent();
+                    console.log(e_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
         });
     });
