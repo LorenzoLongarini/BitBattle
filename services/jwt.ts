@@ -1,14 +1,7 @@
 var jwt = require('jsonwebtoken');
-import findUser from './user_query';
-// var express = require('express');
-// import { Request, Response } from 'express';
-// const { user } = require('./model/user.ts');
-// const { isNewExpression } = require('typescript');
-// var app = express();
-// import * as fs from "fs";
+import { findUser } from './user_query';
 
-
-const PRIVATE_KEY = 'bitbattle'; //fs.readFileSync('./demos/private.key');
+const PRIVATE_KEY = 'bitbattle';
 
 export async function generateJwt(req: any, res: any) {
     try {
