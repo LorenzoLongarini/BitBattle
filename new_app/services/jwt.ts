@@ -1,4 +1,4 @@
-import jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken');
 import findUser from './user_query';
 // var express = require('express');
 // import { Request, Response } from 'express';

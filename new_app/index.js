@@ -11,11 +11,11 @@ require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", function (req, res) {
-    // res.send("TS App is Running");
+    res.send("TS App is Running");
 });
 app.post("/login", jsonParser, function (req, res) {
-    (0, controller_1.login)(req, res);
     // res.send("TS App is Running");
+    (0, controller_1.login)(req, res);
 });
 var PORT = process.env.PORT;
 app.listen(PORT, function () {

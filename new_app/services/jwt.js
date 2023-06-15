@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateJwt = void 0;
-var jwt = require("jsonwebtoken");
+var jwt = require('jsonwebtoken');
 var user_query_1 = require("./user_query");
 // var express = require('express');
 // import { Request, Response } from 'express';

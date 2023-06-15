@@ -11,13 +11,13 @@ require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req: Request, res: Response) => {
-    // res.send("TS App is Running");
+app.get("/", (req: any, res: any) => {
+    res.send("TS App is Running");
 });
 
-app.post("/login", jsonParser, (req: Request, res: Response) => {
-    login(req, res);
+app.post("/login", jsonParser, (req: any, res: any) => {
     // res.send("TS App is Running");
+    login(req, res);
 });
 
 const PORT = process.env.PORT;
