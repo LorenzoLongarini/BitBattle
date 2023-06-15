@@ -11,7 +11,7 @@ require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", function (req, res) {
-    res.send("TS App is Running");
+    res.send("L\'applicazione typescript è stata avviata con successo");
 });
 app.post("/login", jsonParser, function (req, res) {
     // res.send("TS App is Running");
