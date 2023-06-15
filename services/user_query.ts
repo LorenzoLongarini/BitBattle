@@ -1,10 +1,15 @@
 import { User } from '../model/user';
 
-export default async function findUser(email: String, password: String): Promise<Object> {
-    return await User.findAll({
-        where: {
-            email: email,
-            password: password
-        }
-    });
+export async function findUser(email: String, password: String): Promise<any> {
+    try {
+        return await User.findAll({
+            where: {
+                email: email,
+                password: password
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
