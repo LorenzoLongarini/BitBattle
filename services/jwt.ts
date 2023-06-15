@@ -37,7 +37,7 @@ export async function generateJwt(req: any, res: any) {
             // send status 401 Unauthorized
             res.sendStatus(401);
         }
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        res.json({ error: error });
     }
 }
