@@ -12,12 +12,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req: any, res: any) => {
-    res.send("TS App is Running");
+    res.send("L\'applicazione typescript è stata avviata con successo");
 });
 
 app.post("/login", jsonParser, (req: any, res: any) => {
     // res.send("TS App is Running");
-    login(req, res);
+    res.send(login(req, res));
 });
 
 const PORT = process.env.PORT;
