@@ -1,28 +1,24 @@
-CREATE DATABASE bitbattledb;
-\c bitbattledb
-CREATE TABLE users(
-    id SERIAL PRIMARY KEY,  
-    email VARCHAR(25),
-    password VARCHAR(25),
-    token NUMERIC,
-    role INTEGER,   
-    isPlaying BOOLEAN
-);
--- CREATE TABLE grids(
-    
-  
--- );
+ CREATE DATABASE bitbattledb;
+ \c bitbattledb
+ CREATE TABLE users(
+      id SERIAL PRIMARY KEY,  
+      email VARCHAR(25),
+      password VARCHAR(25),
+      token NUMERIC,
+      role INTEGER,   
+      isPlaying BOOLEAN
+ );
+ CREATE TABLE games(
+      mod ENUM,
+      grid_size INTEGER,
+      n_ship INTEGER,
+      type_ship ENUM,
+      id SERIAL PRIMARY KEY,
+      move TEXT,
+      status ENUM,
+      result TEXT,
+      score INTEGER
+  ); 
 
-CREATE TABLE prova(
-    name VARCHAR(50)
-);
-
-INSERT INTO prova(name) VALUES
-("prova");
-
-
-
-
-INSERT INTO users(email, password, token,role,isPlaying ) VALUES
-('lorenzo@bitbattle.it','bitbattle',10,0,false),
-('loris@bitbattle.it','bitbattle',10,1,false);
+ INSERT INTO users (email, password, token, role, isPlaying) VALUES
+ ('loris@bitbattle.it','bitbattle',10,1,false);

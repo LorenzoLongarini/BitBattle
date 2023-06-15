@@ -34,14 +34,14 @@ export const game = sequelize.define('game', {
         primaryKey: true
     },
     move: {
-        type: DataTypes.INTEGER
+        type: DataTypes.TEXT
     },
     status: {
         type: DataTypes.ENUM,
         allowNull: false
     },
     result: {
-        type: DataTypes.ARRAY
+        type: DataTypes.TEXT
     },
     score: {
         type: DataTypes.INTEGER,
