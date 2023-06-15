@@ -1,10 +1,10 @@
 <div>
 <p align="center">
-<img src="https://github.com/LorenzoLongarini/BitBattle/blob/main/assets/bitbattle.png">
+<img src="https://github.com/LorenzoLongarini/BitBattle/blob/main/assets/logo/bitbattle.png">
 </p>
 <p align="center">
-<a href="#Introduzioni">Introduction</a>&nbsp•
-<a href="#Autori">Authors</a>
+<a href="#Introduzione">Introduzione</a>&nbsp•
+<a href="#Autori">Autori</a>
 
 </p>
 <br>
