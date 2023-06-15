@@ -1,25 +1,27 @@
-'use strict';
-import express, { Application } from 'express';
-import * as path from 'path';
-const bodyParser = require('body-parser');
+var express = require('express');
+// import express, { Application, Request, Response, NextFunction } from "express";
+var bodyParser = require("body-parser");
 
-const applicazione: Application = express();
-applicazione.use(express.json());
-//controlla se il payload risulta essere non formato in maniera corretta
-applicazione.use((err: Error, req: any, res: any, next: any) => {
+var jsonParser = bodyParser.json();
+const { controller } = require('../controller/controller.ts');
+const app = express();
+var path = require('path');
+require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 
-    next();
-});
-const PORT = 8080;
-const HOST = '0.0.0.0';
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-
-/**
- * rotta utilizzata per verificare se l'applicazione è stata avviata in modo corretto
- */
-applicazione.get('/', function (req: any, res: any) {
-    res.send('L\'applicazione è stata avviata correttamente')
+app.get("/", (req: Request, res: Response) => {
+    // res.send("TS App is Running");
 });
 
-applicazione.listen(PORT, HOST)
-// console.log('Il server è in ascolto sulla porta '+PORT.toString())
+app.post("/login", jsonParser, (req: Request, res: Response) => {
+    controller.login(req, res);
+    // res.send("TS App is Running");
+});
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+    console.log(`server is running on PORT ${PORT}`);
+});
