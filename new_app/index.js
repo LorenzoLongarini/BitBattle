@@ -1,27 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 // import express, { Application, Request, Response, NextFunction } from "express";
 var bodyParser = require("body-parser");
-
 var jsonParser = bodyParser.json();
-const { controller } = require('../controller/controller.ts');
-const app = express();
+var controller_1 = require("./controller/controller");
+var app = express();
 var path = require('path');
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get("/", (req: Request, res: Response) => {
+app.get("/", function (req, res) {
     // res.send("TS App is Running");
 });
-
-app.post("/login", jsonParser, (req: Request, res: Response) => {
-    controller.login(req, res);
+app.post("/login", jsonParser, function (req, res) {
+    (0, controller_1.login)(req, res);
     // res.send("TS App is Running");
 });
-
-const PORT = process.env.PORT;
-
-app.listen(PORT, () => {
-    console.log(`server is running on PORT ${PORT}`);
+var PORT = process.env.PORT;
+app.listen(PORT, function () {
+    console.log("server is running on PORT ".concat(PORT));
 });

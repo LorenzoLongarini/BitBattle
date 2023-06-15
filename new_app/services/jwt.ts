@@ -1,20 +1,20 @@
+import jwt = require('jsonwebtoken');
+import findUser from './user_query';
 // var express = require('express');
-import { Request, Response } from 'express';
-const jwt = require('jsonwebtoken');
-// const { user } = require('../model/user.ts');
-const { queries } = require('../user_query.ts');
-const { isNewExpression } = require('typescript');
+// import { Request, Response } from 'express';
+// const { user } = require('./model/user.ts');
+// const { isNewExpression } = require('typescript');
 // var app = express();
-import * as fs from "fs";
+// import * as fs from "fs";
 
 
 const PRIVATE_KEY = 'bitbattle'; //fs.readFileSync('./demos/private.key');
 
-export async function generateJwt(req: Request, res: Response) {
+export async function generateJwt(req: any, res: any) {
 
-    var user;
+    var user: any;
     if (req.body != null) {
-        user = await queries.findUser(req.body.email, req.body.password);
+        user = await findUser(req.body.email, req.body.password);
     }
     if (user) {
         const payload = {
