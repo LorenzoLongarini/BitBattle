@@ -1,3 +1,5 @@
+
+
 import { Sequelize } from 'sequelize';
 
 
@@ -8,7 +10,7 @@ export class DbConnector {
     private constructor() {
         this.sequelizer = new Sequelize('database', 'username', 'password', {
             host: 'localhost',
-            dialect: 'sqlite',
+            dialect: 'postgres',
         });
 
     }
