@@ -38,6 +38,6 @@ export async function generateJwt(req: any, res: any) {
             res.sendStatus(401);
         }
     } catch (e) {
-        console.log(e);
+        res.json({ error: e });
     }
 }
