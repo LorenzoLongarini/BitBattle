@@ -5,6 +5,7 @@ var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 import { getUserTokens, login, createUser } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
+import { isAdmin } from './middleware/admin_middleware'
 const app = express();
 var path = require('path');
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
@@ -12,7 +13,7 @@ require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req: any, res: any) => {
+app.get("/", (res: any) => {
     res.send("L\'applicazione typescript è stata avviata con successo");
 });
 
@@ -24,7 +25,7 @@ app.get("/user/tokens", jsonParser, (req: any, res: any) => {
     getUserTokens(req, res);
 });
 
-app.put('/admin', jsonParser, (req: any, res: any) => {
+app.put('/admin', jsonParser, isAdmin, (req: any, res: any) => {
     updateTokens(req, res)
 })
 

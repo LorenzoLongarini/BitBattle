@@ -1,7 +1,7 @@
 var jwt = require('jsonwebtoken');
 import { findUser } from '../db/queries/user_queries';
 
-const PRIVATE_KEY = 'bitbattle';
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 export async function generateJwt(req: any, res: any) {
     const email = req.body.email;
@@ -27,4 +27,9 @@ export async function generateJwt(req: any, res: any) {
         //TODO:gestire errore
         res.json({ email: email, password: password })
     }
+}
+
+export function decodeJwt(auth: any) {
+    const token = auth.split(" ")[1]
+    return jwt.verify(token, process.env.PRIVATE_KEY);
 }

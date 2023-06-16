@@ -22,3 +22,6 @@
 
  INSERT INTO users (email, password, tokens, role, isplaying) VALUES
  ('loris@bitbattle.it','bitbattle',10.00,1,false);
+
+ INSERT INTO users (email, password, tokens, role, isplaying) VALUES
+ ('lorenzo@bitbattle.it','bitbattle1',10.00,1,true);
