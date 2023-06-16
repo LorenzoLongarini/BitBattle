@@ -1,5 +1,5 @@
 var express = require('express');
-// import express, { Application, Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 
 var jsonParser = bodyParser.json();
@@ -13,11 +13,11 @@ require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (res: any) => {
+app.get("/", (req: Request, res: Response) => {
     res.send("L\'applicazione typescript è stata avviata con successo");
 });
 
-app.post("/login", jsonParser, (req: any, res: any) => {
+app.post("/login", jsonParser, (req: Request, res: Response) => {
     login(req, res);
 });
 
