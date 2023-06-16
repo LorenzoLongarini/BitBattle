@@ -27,7 +27,6 @@ export const User = sequelize.define("users", {
     tokens: {
         type: DataTypes.FLOAT,
         allowNull: false,
-        defaultValue: 10,
     },
     role: {
         type: DataTypes.INTEGER,

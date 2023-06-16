@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-import { findUser } from './basic_query';
+import { findUser } from '../db/queries/user_queries';
 
 const PRIVATE_KEY = 'bitbattle';
 

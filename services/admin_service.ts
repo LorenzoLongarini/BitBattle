@@ -1,5 +1,5 @@
-import { findUser, updateUserTokensDb } from './basic_query';
-
+import { updateUserTokensDb } from '../db/queries/admin_queries';
+import { findUser } from '../db/queries/user_queries';
 export async function updateUserTokensService(req: any, res: any) {
     try {
         const user: any = await findUser(req);
