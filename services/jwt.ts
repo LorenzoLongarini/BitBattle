@@ -7,7 +7,7 @@ export async function generateJwt(req: any, res: any) {
     const email = req.body.email;
     const password = req.body.password;
     try {
-        const user: any = await findUser(email);
+        const user: any = await findUser(req);
 
         if (user) {
             console.log(user);
@@ -21,10 +21,12 @@ export async function generateJwt(req: any, res: any) {
             res.json({ jwt: jwtBearerToken });
         }
         else {
+            //TODO:gestire errore
             res.json({ user: user });
             res.sendStatus(404);
         }
     } catch (e) {
+        //TODO:gestire errore
         res.json({ email: email, password: password })
     }
 }
