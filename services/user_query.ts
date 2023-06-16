@@ -1,14 +1,21 @@
 import { User } from '../model/user';
 
-export async function findUser(email: any): Promise<any> {
-    try {
-        return await User.findAll({
-            where: {
-                email: email,
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
+export async function findUser(req: any): Promise<any> {
+
+    return await User.findAll({
+        where: {
+            email: req.body.email,
+        }
+    });
+
+}
+
+export async function createUser(req: any): Promise<any> {
+
+    return await User.create({
+        email: req.body.email,
+        password: req.body.password,
+
+    });
+
 }
