@@ -20,8 +20,8 @@
 --       score INTEGER
 --   ); 
 
- INSERT INTO users (email, password, tokens, role, isplaying) VALUES
+ INSERT INTO users (email, password, tokens, isadmin, isplaying) VALUES
  ('loris@bitbattle.it','bitbattle',10.00,true,false);
 
- INSERT INTO users (email, password, tokens, role, isplaying) VALUES
+ INSERT INTO users (email, password, tokens, isadmin, isplaying) VALUES
  ('lorenzo@bitbattle.it','bitbattle1',10.00,false,false);

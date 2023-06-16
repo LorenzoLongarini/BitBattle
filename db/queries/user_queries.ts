@@ -17,7 +17,7 @@ export async function createUserDb(req: any): Promise<any> {
         email: req.body.email,
         password: req.body.password,
         tokens: req.body.token,
-        role: req.body.role,
+        isadmin: req.body.isadmin,
         isplaying: req.body.isplaying
     });
 

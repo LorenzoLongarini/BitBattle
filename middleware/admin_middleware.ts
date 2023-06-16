@@ -11,7 +11,6 @@ export const isAdmin = async (req: any, res: any, next: any) => {
         if (jwtDecode != null) {
             const user = await findUser(jwtDecode.email);
             if (user.length != 0 && user[0].dataValues.isadmin) {
-                res.json({ user: user });
                 next();
             } else {
                 res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
