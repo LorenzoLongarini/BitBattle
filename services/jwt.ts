@@ -4,33 +4,27 @@ import { findUser } from './user_query';
 const PRIVATE_KEY = 'bitbattle';
 
 export async function generateJwt(req: any, res: any) {
+    const email = req.body.email;
+    const password = req.body.password;
     try {
-        const user: any = await findUser(req.body.email, req.body.password);
+        const user: any = await findUser(email);
 
         if (user) {
             console.log(user);
             const payload = {
-                email: user.email,
-                password: user.password,
+                email: email,
+                password: password,
                 user: user.id
             };
 
-            const jwtBearerToken = jwt.sign({
-                email: user.email,
-                password: user.password,
-                user: user.id
-            }, PRIVATE_KEY, {
-                algorithm: 'RS256',
-                // expiresIn: 120,
-                subject: user.id
-            });
+            const jwtBearerToken = jwt.sign(payload, PRIVATE_KEY);
             res.json({ jwt: jwtBearerToken });
         }
         else {
-            // send status 401 Unauthorized
-            res.sendStatus(401);
+            res.json({ user: user });
+            res.sendStatus(404);
         }
-    } catch (error) {
-        res.json({ error: error });
+    } catch (e) {
+        res.json({ email: email, password: password })
     }
 }
