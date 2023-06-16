@@ -1,9 +1,7 @@
-var express = require('express');
-// import { Request, Response } from 'express';
-// import { getErrorMessage } from '../utils/errors.util';
-import * as service from '../services/jwt';
-// import { CustomRequest } from '../middleware/auth';
+// import { generateJwt } from '../services/jwt';
+import { generateJwt } from '../services/jwt';
+// const express = require('express');
 
-export const login = (req: Request, res: Response) => {
-    return service.generateJwt(express.req, express.res);
-}
+export const login = (req: any, res: any) => {
+    return generateJwt(req, res);
+};

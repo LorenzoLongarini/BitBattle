@@ -1,10 +1,15 @@
-const { user } = require('../model/user.ts');
+import { User } from '../model/user';
 
-export const findUser = async (email: String, password: String) => {
-    return await user.findAll({
-        where: {
-            email: email,
-            password: password
-        }
-    });
+export async function findUser(email: String, password: String): Promise<any> {
+    try {
+        return await User.findAll({
+            where: {
+                email: email,
+                password: password
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
