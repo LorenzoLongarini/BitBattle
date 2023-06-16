@@ -9,16 +9,19 @@
       isplaying BOOLEAN
  );
 --  CREATE TABLE games(
---       mod ENUM,
+--       id SERIAL PRIMARY KEY,
+--       mod ENUM ('1vs1','1vs2','1vsIA'),
 --       grid_size INTEGER,
 --       n_ship INTEGER,
---       type_ship ENUM,
---       id SERIAL PRIMARY KEY,
+--       type_ship ENUM ('size 2','size 3', 'size 4'),
 --       move TEXT,
---       status ENUM,
+--       status ENUM (),
 --       result TEXT,
 --       score INTEGER
 --   ); 
 
  INSERT INTO users (email, password, token, role, isplaying) VALUES
  ('loris@bitbattle.it','bitbattle',10,1,false);
+
+--  INSERT INTO games (mod, grid_size, n_ship, type_ship, move, status, result, score) VALUES
+--  ()
