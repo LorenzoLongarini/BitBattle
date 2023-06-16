@@ -24,7 +24,7 @@ export const User = sequelize.define("users", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    token: {
+    tokens: {
         type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 10,

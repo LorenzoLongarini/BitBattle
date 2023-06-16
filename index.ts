@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require("body-parser");
 
 var jsonParser = bodyParser.json();
-import { login } from './controller/controller';
+import { getUserTokens, login } from './controller/controller';
 const app = express();
 var path = require('path');
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
@@ -16,9 +16,16 @@ app.get("/", (req: any, res: any) => {
 });
 
 app.post("/login", jsonParser, (req: any, res: any) => {
-    // res.send("TS App is Running");
     login(req, res);
 });
+
+app.get("/user/tokens", jsonParser, (req: any, res: any) => {
+    getUserTokens(req, res);
+});
+
+app.put('/admin', jsonParser, (req: any, res: any) => {
+    getUserTokens(req, res)
+})
 
 const PORT = process.env.PORT;
 
