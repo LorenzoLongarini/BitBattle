@@ -9,7 +9,7 @@ sequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
-export const User = sequelize.define("user", {
+export const User = sequelize.define("users", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -33,7 +33,7 @@ export const User = sequelize.define("user", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    isPlaying: {
+    isplaying: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     }

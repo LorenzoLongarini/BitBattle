@@ -6,7 +6,7 @@
       password VARCHAR(25),
       token NUMERIC,
       role INTEGER,   
-      isPlaying BOOLEAN
+      isplaying BOOLEAN
  );
 --  CREATE TABLE games(
 --       mod ENUM,
@@ -20,5 +20,5 @@
 --       score INTEGER
 --   ); 
 
- INSERT INTO users (email, password, token, role, isPlaying) VALUES
+ INSERT INTO users (email, password, token, role, isplaying) VALUES
  ('loris@bitbattle.it','bitbattle',10,1,false);
