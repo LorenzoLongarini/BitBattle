@@ -23,7 +23,7 @@ export async function getTokens(req: any, res: any) {
 
 
         if (user.length != 0) {
-            const tokens = user[0].dataValues.tokens;
+            const tokens = parseFloat(user[0].dataValues.tokens);
 
             res.json({ tokens: tokens });
         } else {
