@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 
 var jsonParser = bodyParser.json();
 import { getUserTokens, login, createUser } from './controller/controller';
+import { updateTokens } from './controller/admin_controller';
 const app = express();
 var path = require('path');
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
@@ -24,7 +25,7 @@ app.get("/user/tokens", jsonParser, (req: any, res: any) => {
 });
 
 app.put('/admin', jsonParser, (req: any, res: any) => {
-    getUserTokens(req, res)
+    updateTokens(req, res)
 })
 
 app.post("/register", (req: any, res: any) => {
