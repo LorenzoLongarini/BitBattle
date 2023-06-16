@@ -2,7 +2,7 @@ import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findUser } from '../db/queries/user_queries';
 export async function updateUserTokensService(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
 
         const tokens_ad = req.body.tokens;
 

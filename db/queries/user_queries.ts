@@ -1,11 +1,11 @@
 import { resolve } from 'path';
 import { User } from '../../model/user';
 
-export async function findUser(req: any): Promise<any> {
+export async function findUser(email: any): Promise<any> {
 
     return await User.findAll({
         where: {
-            email: req.body.email,
+            email: email,
         }
     });
 

@@ -28,8 +28,8 @@ export const User = sequelize.define("users", {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
-    role: {
-        type: DataTypes.INTEGER,
+    isadmin: {
+        type: DataTypes.BOOLEAN,
         allowNull: false
     },
     isplaying: {

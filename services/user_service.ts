@@ -2,7 +2,7 @@ import { findUser, createUserDb } from '../db/queries/user_queries';
 
 export async function createUserService(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
         if (user.length == 0) {
             await createUserDb(req);
             res.json({ esito: "Utente aggiunto con successo" })
@@ -19,7 +19,7 @@ export async function createUserService(req: any, res: any) {
 
 export async function getTokens(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
 
 
         if (user.length != 0) {

@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken');
 import { findUser } from '../db/queries/user_queries';
+import { StatusCodes } from "http-status-codes";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
@@ -7,7 +8,7 @@ export async function generateJwt(req: any, res: any) {
     const email = req.body.email;
     const password = req.body.password;
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
 
         if (user) {
             const payload = {
@@ -25,7 +26,7 @@ export async function generateJwt(req: any, res: any) {
         }
     } catch (e) {
         //TODO:gestire errore
-        res.json({ email: email, password: password })
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
     }
 }
 
