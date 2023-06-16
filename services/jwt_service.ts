@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-import { findUser } from './user_query';
+import { findUser } from '../db/queries/user_queries';
 
 const PRIVATE_KEY = 'bitbattle';
 
@@ -7,24 +7,24 @@ export async function generateJwt(req: any, res: any) {
     const email = req.body.email;
     const password = req.body.password;
     try {
-        const user: any = await findUser(email);
+        const user: any = await findUser(req);
 
         if (user) {
-            console.log(user);
             const payload = {
                 email: email,
                 password: password,
-                user: user.id
+                user: user[0].dataValues.id
             };
 
             const jwtBearerToken = jwt.sign(payload, PRIVATE_KEY);
             res.json({ jwt: jwtBearerToken });
         }
         else {
-            res.json({ user: user });
+            //TODO:gestire errore
             res.sendStatus(404);
         }
     } catch (e) {
+        //TODO:gestire errore
         res.json({ email: email, password: password })
     }
 }

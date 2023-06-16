@@ -4,7 +4,7 @@
       id SERIAL PRIMARY KEY,  
       email VARCHAR(25),
       password VARCHAR(25),
-      token NUMERIC,
+      tokens NUMERIC(10,2),
       role INTEGER,   
       isplaying BOOLEAN
  );
@@ -20,5 +20,5 @@
 --       score INTEGER
 --   ); 
 
- INSERT INTO users (email, password, token, role, isplaying) VALUES
- ('loris@bitbattle.it','bitbattle',10,1,false);
+ INSERT INTO users (email, password, tokens, role, isplaying) VALUES
+ ('loris@bitbattle.it','bitbattle',10.00,1,false);
