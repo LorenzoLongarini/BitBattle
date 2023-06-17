@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-export async function generateJwt(req: any, res: any) {
+export async function generateJwtService(req: any, res: any) {
     const email = req.body.email;
     const password = req.body.password;
     try {
@@ -22,7 +22,7 @@ export async function generateJwt(req: any, res: any) {
         }
         else {
             //TODO:gestire errore
-            res.sendStatus(404);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Utente non trovato" });
         }
     } catch (e) {
         //TODO:gestire errore

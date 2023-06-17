@@ -3,7 +3,7 @@ import { decodeJwt } from "../services/jwt_service";
 import { StatusCodes } from "http-status-codes";
 
 
-export const isAdmin = async (req: any, res: any, next: any) => {
+export const checkIsAdmin = async (req: any, res: any, next: any) => {
     try {
         const jwtBearerToken = req.headers.authorization;
         const jwtDecode = jwtBearerToken != null ? decodeJwt(jwtBearerToken) : null;

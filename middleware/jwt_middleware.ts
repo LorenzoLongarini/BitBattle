@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { findUser } from "../db/queries/user_queries"
 import { decodeJwt } from "../services/jwt_service"
 
-export const checkEmailJwt = (req: any, res: any, next: any) => {
+export const checkJwt = (req: any, res: any, next: any) => {
     const jwtBearerToken = req.headers.authorization;
     const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
 
