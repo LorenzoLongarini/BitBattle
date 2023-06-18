@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser } from './controller/controller';
+import { getUserTokens, login, createUser, getTotalGames } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 const app = express();
@@ -32,6 +32,11 @@ app.put('/admin', jsonParser, checkIsAdmin, (req: any, res: any) => {
 app.post("/register", (req: any, res: any) => {
     createUser(req, res);
 });
+
+app.get("/games", (req: any, res: any) => {
+    getTotalGames(req,res);
+});
+
 
 const PORT = process.env.PORT;
 

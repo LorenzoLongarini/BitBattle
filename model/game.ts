@@ -12,7 +12,7 @@ sequelize.authenticate().then(() => {
 
 export const game = sequelize.define('game', {
     mod: {
-        type: DataTypes.ENUM,
+        type: DataTypes.STRING,
         allowNull: false
     },
     grid_size: {
@@ -24,7 +24,7 @@ export const game = sequelize.define('game', {
         allowNull: false
     },
     type_ship: {
-        type: DataTypes.ENUM,
+        type: DataTypes.STRING,
         allowNull: false
     },
     id: {
@@ -37,19 +37,19 @@ export const game = sequelize.define('game', {
         type: DataTypes.TEXT
     },
     status: {
-        type: DataTypes.ENUM,
+        type: DataTypes.STRING,
         allowNull: false
     },
     result: {
         type: DataTypes.TEXT
     },
     score: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
     }
 },
     {
         modelName: 'game',
-        timestamps: true,
+        timestamps: false,
         freezeTableName: true,
         createdAt: true,
         updatedAt: true,

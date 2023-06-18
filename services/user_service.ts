@@ -1,4 +1,4 @@
-import { findUser, createUserDb } from '../db/queries/user_queries';
+import { findUser, createUserDb, findGames } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
@@ -38,6 +38,18 @@ export async function getTokensService(req: any, res: any) {
 
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
+        throw error;
+    }
+}
+
+export async function getGames(req: any, res: any) {
+    try {
+        const game1: any = await findGames(req);
+        console.log(game1);
+        res.json({ risultato: game1 });
+
+    } catch (error) {
+        console.error('Error :', error);
         throw error;
     }
 }
