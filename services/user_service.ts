@@ -1,7 +1,10 @@
 import { findUser, createUserDb } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
+import { MessageFactory } from '../status/messages_factory'
+import { CustomStatusCodes, Messages400 } from '../status/status_codes'
 
-export async function createUserService(req: any, res: any) {
+export async function createUserService(req: Request, res: Response) {
     try {
         const user: any = await findUser(req.body.email);
         if (user.length == 0) {
@@ -9,9 +12,10 @@ export async function createUserService(req: any, res: any) {
             res.status(StatusCodes.OK).send({ esito: "Utente aggiunto con successo" })
 
         }
-        else (
-            res.status(StatusCodes.BAD_REQUEST).send({ esito: "Non è possibile creare l'utente perchè è già esistente" })
-        );
+        else {
+            let badRequest: MessageFactory = new MessageFactory();
+            badRequest.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.UnauthorizedUser);
+        };
 
     } catch (e) {
         //TODO:gestire errore
