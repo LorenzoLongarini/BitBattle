@@ -5,7 +5,7 @@
       email VARCHAR(25),
       password VARCHAR(25),
       tokens NUMERIC(10,2),
-      role INTEGER,   
+      isadmin BOOLEAN,   
       isplaying BOOLEAN
  );
 --  CREATE TABLE games(
@@ -20,5 +20,8 @@
 --       score INTEGER
 --   ); 
 
- INSERT INTO users (email, password, tokens, role, isplaying) VALUES
- ('loris@bitbattle.it','bitbattle',10.00,1,false);
+ INSERT INTO users (email, password, tokens, isadmin, isplaying) VALUES
+ ('loris@bitbattle.it','bitbattle',10.00,true,false);
+
+ INSERT INTO users (email, password, tokens, isadmin, isplaying) VALUES
+ ('lorenzo@bitbattle.it','bitbattle1',10.00,false,false);

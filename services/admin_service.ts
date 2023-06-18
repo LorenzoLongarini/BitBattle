@@ -1,23 +1,25 @@
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findUser } from '../db/queries/user_queries';
+import { StatusCodes } from "http-status-codes";
+
+
 export async function updateUserTokensService(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
 
-        const tokens_ad = req.body.tokens;
+        const tokens = req.body.tokens;
 
         if (user.length != 0) {
-            // const id = user[0].dataValues.id;
-            res.json({ tokens: tokens_ad });
+            res.json({ tokens: tokens });
 
             await updateUserTokensDb(req.body.tokens, req.body.email);
 
         } else {
-            res.json({ err: "Impossibile aggiungere token" });
+            res.status(StatusCodes.BAD_REQUEST).send({ esito: "Impossibile aggiungere token, l\'utente non esiste" })
         }
 
-    } catch (error) {
-        console.error('Error retrieving user token:', error);
-        throw error;
+    } catch (e) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
+
     }
 }

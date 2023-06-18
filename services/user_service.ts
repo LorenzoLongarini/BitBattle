@@ -1,37 +1,39 @@
 import { findUser, createUserDb } from '../db/queries/user_queries';
+import { StatusCodes } from "http-status-codes";
 
 export async function createUserService(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
         if (user.length == 0) {
             await createUserDb(req);
-            res.json({ esito: "Utente aggiunto con successo" })
+            res.status(StatusCodes.OK).send({ esito: "Utente aggiunto con successo" })
+
         }
         else (
-            res.json({ esito: "Utente non aggiunto con successo" })
+            res.status(StatusCodes.BAD_REQUEST).send({ esito: "Non è possibile creare l'utente perchè è già esistente" })
         );
 
     } catch (e) {
         //TODO:gestire errore
-        res.json({ esito: "ERRORE" })
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
     }
 }
 
-export async function getTokens(req: any, res: any) {
+export async function getTokensService(req: any, res: any) {
     try {
-        const user: any = await findUser(req);
+        const user: any = await findUser(req.body.email);
 
 
         if (user.length != 0) {
             const tokens = parseFloat(user[0].dataValues.tokens);
 
-            res.json({ tokens: tokens });
+            res.status(StatusCodes.OK).json({ tokens: tokens });
         } else {
-            res.json({ tokens: "Token non disponibili" });
+            res.status(StatusCodes.BAD_REQUEST).json({ error: "Impossibile visualizzare token, l\'utente non esiste" });
         }
 
     } catch (error) {
-        console.error('Error retrieving user token:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
         throw error;
     }
 }
