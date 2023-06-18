@@ -1,4 +1,4 @@
-import { findUser, createUserDb } from '../db/queries/user_queries';
+import { findUser, createUserDb, findGames} from '../db/queries/user_queries';
 
 export async function createUserService(req: any, res: any) {
     try {
@@ -32,6 +32,18 @@ export async function getTokens(req: any, res: any) {
 
     } catch (error) {
         console.error('Error retrieving user token:', error);
+        throw error;
+    }
+}
+
+export async function getGames(req: any, res: any) {
+    try {
+        const game1: any = await findGames(req);
+        console.log(game1);
+        res.json({ risultato: game1 });
+
+    } catch (error) {
+        console.error('Error :', error);
         throw error;
     }
 }

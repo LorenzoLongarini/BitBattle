@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require("body-parser");
 
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser } from './controller/controller';
+import { getUserTokens, login, createUser, getTotalGames } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 const app = express();
 var path = require('path');
@@ -31,6 +31,11 @@ app.put('/admin', jsonParser, (req: any, res: any) => {
 app.post("/register", (req: any, res: any) => {
     createUser(req, res);
 });
+
+app.get("/games", (req: any, res: any) => {
+    getTotalGames(req,res);
+});
+
 
 const PORT = process.env.PORT;
 
