@@ -11,6 +11,9 @@ sequelize.authenticate().then(() => {
 });
 
 export const game = sequelize.define('game', {
+    name: {
+        type: DataTypes.STRING
+    },
     mod: {
         type: DataTypes.STRING,
         allowNull: false
@@ -19,32 +22,31 @@ export const game = sequelize.define('game', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    n_ship: {
-        type: DataTypes.INTEGER,
+    ships: {
+        type: DataTypes.JSON,
         allowNull: false
     },
-    type_ship: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    id: {
+    game_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
+    possible_moves: {
+        type: DataTypes.JSON
+    },
     moves: {
-        type: DataTypes.TEXT
+        type: DataTypes.JSON
     },
     status: {
         type: DataTypes.STRING,
         allowNull: false
     },
     result: {
-        type: DataTypes.TEXT
+        type: DataTypes.JSON
     },
     score: {
-        type: DataTypes.STRING,
+        type: DataTypes.JSON,
     }
 },
     {

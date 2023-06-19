@@ -1,7 +1,7 @@
-import { User } from '../../model/user';
+import { user } from '../../model/user';
 
 export async function updateUserTokensDb(tokens: any, email: any): Promise<any> {
-    return await User.update({ tokens: tokens }, {
+    return await user.update({ tokens: tokens }, {
         where: {
             email: email
         }
