@@ -1,8 +1,9 @@
-import { findUser, createUserDb, findGames } from '../db/queries/user_queries';
+import { findUser, createUserDb, createGameDb } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400 } from '../status/status_codes'
+import { getAllMoves } from '../utils/game_utils';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -42,11 +43,12 @@ export async function getTokensService(req: any, res: any) {
     }
 }
 
-export async function getGames(req: any, res: any) {
+
+export async function createGameService(req: Request, res: Response) {
     try {
-        const game1: any = await findGames(req);
-        console.log(game1);
-        res.json({ risultato: game1 });
+        let possibleMoves = getAllMoves(req.body.grid_size);
+        const newGame: any = await createGameDb(req, possibleMoves);
+        res.json({ game: newGame });
 
     } catch (error) {
         console.error('Error :', error);
