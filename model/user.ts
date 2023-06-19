@@ -9,12 +9,12 @@ sequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
-export const User = sequelize.define("users", {
-    id: {
+export const user = sequelize.define("users", {
+    user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
     },
     email: {
         type: DataTypes.STRING,

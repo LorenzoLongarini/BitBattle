@@ -1,13 +1,14 @@
 var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
-
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getTotalGames } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 const app = express();
+const PORT = process.env.PORT;
 var path = require('path');
+
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
 
 app.use(bodyParser.json());
@@ -34,11 +35,12 @@ app.post("/register", (req: any, res: any) => {
 });
 
 app.get("/games", (req: any, res: any) => {
-    getTotalGames(req,res);
+    getAllGames(req, res);
 });
 
-
-const PORT = process.env.PORT;
+app.post("/newgame", (req: any, res: any) => {
+    createGame(req, res);
+});
 
 app.listen(PORT, () => {
     console.log(`server is running on PORT ${PORT}`);
