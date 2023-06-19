@@ -33,7 +33,7 @@ export const game = sequelize.define('game', {
         allowNull: false,
         primaryKey: true
     },
-    move: {
+    moves: {
         type: DataTypes.TEXT
     },
     status: {
