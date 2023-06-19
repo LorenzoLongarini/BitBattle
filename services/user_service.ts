@@ -47,6 +47,8 @@ export async function getTokensService(req: any, res: any) {
 export async function createGameService(req: Request, res: Response) {
     try {
         let possibleMoves = getAllMoves(req.body.grid_size);
+        console.log(req.body.grid_size);
+        console.log(JSON.stringify(possibleMoves));
         const newGame: any = await createGameDb(req, possibleMoves);
         res.json({ game: newGame });
 
