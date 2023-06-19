@@ -2,11 +2,11 @@ import { resolve } from 'path';
 import { User } from '../../model/user';
 import { game } from '../../model/game';
 
-export async function findUser(req: any): Promise<any> {
+export async function findUser(email: any): Promise<any> {
 
     return await User.findAll({
         where: {
-            email: req.body.email,
+            email: email,
         }
     });
 
@@ -18,7 +18,7 @@ export async function createUserDb(req: any): Promise<any> {
         email: req.body.email,
         password: req.body.password,
         tokens: req.body.token,
-        role: req.body.role,
+        isadmin: req.body.isadmin,
         isplaying: req.body.isplaying
     });
 
