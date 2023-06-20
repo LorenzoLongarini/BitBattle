@@ -29,7 +29,11 @@ INSERT INTO users (email, password, tokens, isadmin, isplaying) VALUES
  ('lorenzo@bitbattle.it','bitbattle1',10.00,false,false);
 
 INSERT INTO game (name, mod, grid_size, ships, possible_moves,  moves, status, result, score) VALUES
- ('my_game', '1vs2', 2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
+ ('game_1', '1vs1', 2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
  '[{"move": [1, 1], "ship": false}, {"move": [1, 2], "ship": true}, {"move": [2, 1], "ship": false}, {"move": [2, 2], "ship": true}]',   
- '[{"A": [1, 1], "hit": false}, {"B": [1, 4], "hit": false}, {"C": [2, 1], "hit": true}]', 
- 'started', '[{"B":"Winner", "A":"Loser"}]', '[{"A": 1, "B": 15, "C": 8}]' );
+ '[{"move": [1, 1], "hit": false, "player": "A"}, {"move": [1, 2], "hit": false, "player": "B"}, {"move": [2, 1], "hit": true, "player": "B"}]', 
+ 'started', '[{"Winner":"B", "Loser":"A"}]', '[{"A": 1, "B": 15}]' ),
+ ('game_2', '1vs1', 2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
+ '[{"move": [1, 1], "ship": false}, {"move": [1, 2], "ship": true}, {"move": [2, 1], "ship": false}, {"move": [2, 2], "ship": true}]',   
+ '[{"move": [1, 1], "hit": false, "player": "B"}, {"move": [1, 2], "hit": false, "player": "A"}, {"move": [2, 1], "hit": true, "player": "A"}]', 
+ 'started', '[{"Winner":"A", "Loser":"B"}]', '[{"A": 12, "B": 11}]' );

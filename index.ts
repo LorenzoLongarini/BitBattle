@@ -2,7 +2,7 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMove} from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 const app = express();
@@ -41,6 +41,13 @@ app.get("/games", (req: any, res: any) => {
 app.post("/newgame", (req: any, res: any) => {
     createGame(req, res);
 });
+
+app.post("/domove", (req: any, res: any) => {
+    insertMove(req, res);
+});
+
+
+
 
 app.listen(PORT, () => {
     console.log(`server is running on PORT ${PORT}`);
