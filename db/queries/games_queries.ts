@@ -15,3 +15,12 @@ export async function findGame(name: string): Promise<any> {
     });
 
 }
+
+export async function addMoveDb(name: string, moves: any): Promise<any> {
+
+    return await game.update({ moves: moves}, {
+        where: {
+            name: name
+        }
+    });
+}
