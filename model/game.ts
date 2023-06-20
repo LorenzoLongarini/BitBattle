@@ -11,12 +11,17 @@ sequelize.authenticate().then(() => {
 });
 
 export const game = sequelize.define('game', {
+    game_id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+    },
     name: {
         type: DataTypes.STRING
     },
-    mod: {
-        type: DataTypes.STRING,
-        allowNull: false
+    players: {
+        type: DataTypes.JSON
     },
     grid_size: {
         type: DataTypes.INTEGER,
@@ -25,12 +30,6 @@ export const game = sequelize.define('game', {
     ships: {
         type: DataTypes.JSON,
         allowNull: false
-    },
-    game_id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
     },
     possible_moves: {
         type: DataTypes.JSON
@@ -42,8 +41,8 @@ export const game = sequelize.define('game', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    result: {
-        type: DataTypes.JSON
+    winner: {
+        type: DataTypes.STRING
     },
     score: {
         type: DataTypes.JSON,
