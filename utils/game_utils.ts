@@ -62,3 +62,19 @@ export function setShips(gridSize: number, req: Request): any {
         return grid;
     }
 }
+
+export function moveIsPresent(move: any, move_now: any): any {
+    let isMovePresent = false;
+    let moves = [];
+    for (let i = 0; i < move.length; i++) {
+        moves.push(move[i].move);
+    };
+    for (let i = 0; i < moves.length; i++) {
+        if (moves[i][0] === move_now[0] && moves[i][1] === move_now[1]) {
+            isMovePresent = true;
+            break;
+        }
+    };
+    return isMovePresent;
+
+}

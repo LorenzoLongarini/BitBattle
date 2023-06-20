@@ -48,10 +48,10 @@ export async function createGameDb(req: Request, possibleMoves: any[]): Promise<
         grid_size: req.body.grid_size,
         ships: req.body.ships,
         possible_moves: possibleMoves,
-        moves: '[]',
+        moves: [],
         status: "started",
-        result: '[]',
-        score: '[]'
+        result: [],
+        score: []
     });
 }
 
