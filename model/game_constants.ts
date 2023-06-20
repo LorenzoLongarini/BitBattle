@@ -3,3 +3,7 @@ enum GameMode {
     mode2 = "1vs2",
     mode3 = "1vsAI"
 }
+
+export const minGridSize = 3;
+
+export const minGridDimension = minGridSize * minGridSize;
