@@ -63,18 +63,24 @@ export function setShips(gridSize: number, req: Request): any {
     }
 }
 
-export function moveIsPresent(move: any, move_now: any): any {
+
+
+export function findShip(move: any, move_now: any, choose: any): any {
+    let shipHit;
     let isMovePresent = false;
-    let moves = [];
     for (let i = 0; i < move.length; i++) {
-        moves.push(move[i].move);
-    };
-    for (let i = 0; i < moves.length; i++) {
-        if (moves[i][0] === move_now[0] && moves[i][1] === move_now[1]) {
+        if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
+            shipHit = move[i].ship;
             isMovePresent = true;
             break;
         }
-    };
-    return isMovePresent;
+    }
+    if (choose)
+        return isMovePresent;
+    else return shipHit;
+}
 
+export function turn(move: any): any {
+    let last = move[move.length - 1].player;
+    return last;
 }
