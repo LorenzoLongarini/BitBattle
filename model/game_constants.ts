@@ -4,6 +4,8 @@ enum GameMode {
     mode3 = "1vsAI"
 }
 
-export const minGridSize = 3;
 
-export const minGridDimension = minGridSize * minGridSize;
+
+export const piecesOneMin = 9;
+export const piecesTwoMin = 16;
+export const piecesThreeMin = 25;
