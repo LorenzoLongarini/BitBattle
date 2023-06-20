@@ -1,10 +1,11 @@
 var jwt = require('jsonwebtoken');
 import { findUser } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-export async function generateJwtService(req: any, res: any) {
+export async function generateJwtService(req: Request, res: Response) {
     const email = req.body.email;
     const password = req.body.password;
     try {

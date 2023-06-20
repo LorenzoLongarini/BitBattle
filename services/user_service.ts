@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400 } from '../status/status_codes'
-import { getAllMoves } from '../utils/game_utils';
+import { setShips } from '../utils/game_utils';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -46,9 +46,9 @@ export async function getTokensService(req: any, res: any) {
 
 export async function createGameService(req: Request, res: Response) {
     try {
-        let possibleMoves = getAllMoves(req.body.grid_size);
+        let possibleMoves = setShips(req.body.grid_size, req);
         console.log(req.body.grid_size);
-        console.log(JSON.stringify(possibleMoves));
+        console.log(req.body.ships["size1"], req.body.ships[1], req.body.ships[1].size2);
         const newGame: any = await createGameDb(req, possibleMoves);
         res.json({ game: newGame });
 
