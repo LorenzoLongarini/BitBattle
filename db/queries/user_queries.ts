@@ -18,9 +18,10 @@ export async function createUserDb(req: any): Promise<any> {
     return await user.create({
         email: req.body.email,
         password: req.body.password,
-        tokens: req.body.token,
-        isadmin: req.body.isadmin,
-        isplaying: req.body.isplaying
+        tokens: 10,
+        isadmin: false,
+        isplaying: false,
+        points: 0,
     });
 
 }
@@ -51,6 +52,7 @@ export async function createGameDb(req: Request, possibleMoves: any[]): Promise<
         moves: [],
         status: "started",
         result: [],
+        players: [req.body.players, { "player2": req.body.email }],
         score: []
     });
 }
