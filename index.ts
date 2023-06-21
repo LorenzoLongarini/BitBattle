@@ -2,9 +2,10 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMove} from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMove } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
+import { checkJwt } from "./middleware/jwt_middleware";
 const app = express();
 const PORT = process.env.PORT;
 var path = require('path');
@@ -38,16 +39,13 @@ app.get("/games", (req: any, res: any) => {
     getAllGames(req, res);
 });
 
-app.post("/newgame", (req: any, res: any) => {
+app.post("/newgame", checkJwt, (req: any, res: any) => {
     createGame(req, res);
 });
 
 app.post("/domove", (req: any, res: any) => {
     insertMove(req, res);
 });
-
-
-
 
 app.listen(PORT, () => {
     console.log(`server is running on PORT ${PORT}`);

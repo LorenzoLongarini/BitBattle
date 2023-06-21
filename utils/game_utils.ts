@@ -1,5 +1,4 @@
 import { Request } from "express";
-// import { minGridSize, minGridDimension } from "../model/game_constants";
 
 export function getAllMoves(gridSize: number): any {
     let possibleMoves: any = [];
@@ -115,10 +114,6 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
                 grid[startIndex - 2].ship = true;
             }
         }
-
-
-
-
     }
     return grid;
 }
@@ -136,5 +131,4 @@ export function moveIsPresent(move: any, move_now: any): any {
         }
     };
     return isMovePresent;
-
 }
