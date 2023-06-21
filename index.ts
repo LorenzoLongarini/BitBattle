@@ -2,11 +2,13 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMove} from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMove } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
+import { checkJwt } from "./middleware/jwt_middleware";
 const app = express();
 const PORT = process.env.PORT;
+const HOST = process.env.HOST;
 var path = require('path');
 
 require("dotenv").config({ path: path.resolve(__dirname, '..', '.env') });
@@ -30,7 +32,7 @@ app.put('/admin', jsonParser, checkIsAdmin, (req: any, res: any) => {
     updateTokens(req, res)
 })
 
-app.post("/register", (req: any, res: any) => {
+app.post("/register", jsonParser, (req: any, res: any) => {
     createUser(req, res);
 });
 
@@ -38,17 +40,14 @@ app.get("/games", (req: any, res: any) => {
     getAllGames(req, res);
 });
 
-app.post("/newgame", (req: any, res: any) => {
+app.post("/newgame", jsonParser, checkJwt, (req: any, res: any) => {
     createGame(req, res);
 });
 
-app.post("/domove", (req: any, res: any) => {
+app.post("/domove", jsonParser, checkJwt, (req: any, res: any) => {
     insertMove(req, res);
 });
 
-
-
-
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
     console.log(`server is running on PORT ${PORT}`);
 });
