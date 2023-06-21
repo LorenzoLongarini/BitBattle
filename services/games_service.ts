@@ -1,6 +1,8 @@
 import { findAllGames, findGame, addMoveDb, gameOver } from '../db/queries/games_queries';
 import { findShip, turn } from '../utils/game_utils';
 import { Request, Response } from "express";
+import { MessageFactory } from '../status/messages_factory'
+import { CustomStatusCodes, Messages400 } from '../status/status_codes'
 
 export async function getGamesService(req: Request, res: Response) {
     try {
@@ -20,9 +22,6 @@ export async function doMoveService(req: Request, res: Response) {
         let searchGame = await findGame(req.body.name);
         let movesPossible = searchGame[0].dataValues.possible_moves;
         let movesExecute = searchGame[0].dataValues.moves;
-
-
-
 
         let lastPlayer = "";
         if (movesExecute != 0) lastPlayer = turn(movesExecute);
@@ -60,5 +59,27 @@ export async function doMoveService(req: Request, res: Response) {
         console.error('Error :', error);
         throw error;
 
+    }
+}
+
+
+export async function statusService(req: Request, res: Response) {
+    let errorMessage: MessageFactory = new MessageFactory();
+    try {
+        const game: any = await findGame(req.body.game_name);
+        if (game.length === 0) {
+            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotExistingGame);
+        } else {
+            if (game[0].dataValues.status == "finished")
+                res.json({ statusGame: game[0].dataValues.status, winnerGame: game[0].dataValues.winner });
+            else {
+                res.json({ statusGame: game[0].dataValues.status });
+
+            }
+        }
+
+    } catch (error) {
+        console.error('Error :', error);
+        throw error;
     }
 }

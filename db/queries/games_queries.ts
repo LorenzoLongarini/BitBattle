@@ -17,7 +17,7 @@ export async function findGame(name: string): Promise<any> {
 }
 
 export async function gameOver(name: string): Promise<any> {
-    return await game.update({ status: "Finished" }, {
+    return await game.update({ status: "finished" }, {
         where: {
             name: name,
         }
