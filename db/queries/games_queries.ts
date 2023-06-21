@@ -6,17 +6,26 @@ export async function findAllGames(): Promise<any> {
 
 }
 
-export async function findGame(player: string): Promise<any> {
+export async function findPlayer1(player1: string): Promise<any> {
 
     return await game.findAll({
         where: {
-            players: player,
+            player1: player1,
+        }
+    });
+
+}
+export async function findPlayer2(player2: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            player1: player2,
         }
     });
 
 }
 
-export async function findPlayer(name: string): Promise<any> {
+export async function findGame(name: string): Promise<any> {
 
     return await game.findAll({
         where: {

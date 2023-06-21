@@ -1,4 +1,4 @@
-import { findAllGames, findGame, addMoveDb, gameOver, findPlayer } from '../db/queries/games_queries';
+import { findAllGames, findGame, addMoveDb, gameOver, findPlayer1, findPlayer2 } from '../db/queries/games_queries';
 import { findShip, turn } from '../utils/game_utils';
 import { Request, Response } from "express";
 import { findUser, userIsNotPlayingDb } from '../db/queries/user_queries';
@@ -39,9 +39,13 @@ export async function doMoveService(req: Request, res: Response) {
 
         if (isAvailable && !isExecute && lastPlayer != player) {
 
-            let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => move.ship);
-            let reducedMovesExecute = searchGame[0].dataValues.moves.filter((move: any) => move.hit);
-
+            let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3));
+            // let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => {
+            //     let shipSize: any = Object.values(move)[0];
+            //     return shipSize >= 1 && shipSize <= 3;
+            // });
+            let reducedMovesExecute;
+            // console.log(reducedMovesPossible.length, reducedMovesPossible, reducedMovesExecute.length, reducedMovesExecute)
             let newMove = {
                 move: targetMove,
                 hit: hitShip,
@@ -50,17 +54,18 @@ export async function doMoveService(req: Request, res: Response) {
             if (searchGame[0].dataValues.status !== "finished") {
                 movesExecute.push(newMove);
                 await addMoveDb(req.body.name, movesExecute);
-
+                reducedMovesExecute = searchGame[0].dataValues.moves.filter((move: any) => move.hit);
                 let updatedTokens = currentTokens - 0.015;
                 await updateUserTokensDb(updatedTokens, req.body.player);
 
             }
+
             if (reducedMovesPossible.length == reducedMovesExecute.length) {
 
                 try {
                     await gameOver(req.body.name);
                     // let allPlayers =
-                    //     await findPlayer(req.body.players)
+                    //     await findPlayer(req.body.player)
                     // await userIsNotPlayingDb()
                     res.json({ esito: "Game Over" });
 
