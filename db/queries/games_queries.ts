@@ -16,9 +16,17 @@ export async function findGame(name: string): Promise<any> {
 
 }
 
+export async function gameOver(name: string): Promise<any> {
+    return await game.update({ status: "Finished" }, {
+        where: {
+            name: name,
+        }
+    });
+}
+
 export async function addMoveDb(name: string, moves: any): Promise<any> {
 
-    return await game.update({ moves: moves}, {
+    return await game.update({ moves: moves }, {
         where: {
             name: name
         }

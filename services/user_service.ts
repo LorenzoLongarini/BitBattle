@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400 } from '../status/status_codes'
 import { setShips } from '../utils/game_utils';
+import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_constants";
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -46,11 +47,28 @@ export async function getTokensService(req: any, res: any) {
 
 export async function createGameService(req: Request, res: Response) {
     try {
-        let possibleMoves = setShips(req.body.grid_size, req);
-        console.log(req.body.grid_size);
-        console.log(req.body.ships["size1"], req.body.ships[1], req.body.ships[1].size2);
-        const newGame: any = await createGameDb(req, possibleMoves);
-        res.json({ game: newGame });
+        let gridSize = req.body.grid_size;
+        let gridDimension = gridSize * gridSize;
+        let size1ShipsReq = req.body.ships[0].size1;
+        let size2ShipsReq = req.body.ships[1].size2
+        let size3ShipsReq = req.body.ships[2].size3
+        let maxShipPiecesOne: number = Math.floor(gridDimension / piecesOneMin);
+        let maxShipPiecesTwo: number = gridDimension >= piecesTwoMin ? Math.floor(gridDimension / piecesTwoMin) : 0;
+        let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
+
+        if (req.body.grid_size < 3 || req.body.grid_size > 10) {
+            let badRequest: MessageFactory = new MessageFactory();
+            badRequest.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundGrid);
+        } else if (size1ShipsReq > maxShipPiecesOne || size2ShipsReq > maxShipPiecesTwo || size3ShipsReq > maxShipPiecesThree) {
+            let badRequest: MessageFactory = new MessageFactory();
+            badRequest.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundShips);
+        } else {
+            let possibleMoves = setShips(req.body.grid_size, req);
+            console.log(req.body.grid_size);
+            console.log(req.body.ships["size1"], req.body.ships[1], req.body.ships[1].size2);
+            const newGame: any = await createGameDb(req, possibleMoves);
+            res.json({ game: newGame });
+        }
 
     } catch (error) {
         console.error('Error :', error);

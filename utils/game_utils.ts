@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { minGridSize, minGridDimension } from "../model/game_constants";
+// import { minGridSize, minGridDimension } from "../model/game_constants";
 
 export function getAllMoves(gridSize: number): any {
     let possibleMoves: any = [];
@@ -13,54 +13,114 @@ export function getAllMoves(gridSize: number): any {
 
 export function setShips(gridSize: number, req: Request): any {
 
-    const grid = getAllMoves(gridSize);
+    let grid = getAllMoves(gridSize);
+
+    let size1Ships = req.body.ships[0].size1;
+    let size2Ships = req.body.ships[1].size2
+    let size3Ships = req.body.ships[2].size3
+
+
+    grid = populateGrid(grid, size1Ships, gridSize, 1);
+    grid = populateGrid(grid, size2Ships, gridSize, 2);
+    grid = populateGrid(grid, size3Ships, gridSize, 3);
+    return grid;
+}
+
+
+function populateGrid(grid: any, size: number, gridSize: number, shipType: number) {
     let gridDimension = gridSize * gridSize;
 
-    let size1ShipsReq = req.body.ships[0].size1;
-    let size2ShipsReq = req.body.ships[1].size2
-    let size3ShipsReq = req.body.ships[2].size3
+    for (let i = 0; i < size; i++) {
+        let startIndex: number = Math.floor(Math.random() * gridDimension);
 
-    let maxShipPieces: number = Math.floor(gridDimension / minGridDimension);
 
-    let size1Ships = size1ShipsReq < maxShipPieces ? size1ShipsReq : maxShipPieces;
-    let size2Ships = size2ShipsReq < maxShipPieces ? size2ShipsReq : maxShipPieces;
-    let size3Ships = size3ShipsReq < maxShipPieces ? size3ShipsReq : maxShipPieces;
+        let currentPosEmpty = !grid[startIndex].ship;
 
-    for (let i = 0; i < size3Ships; i++) {
-        let xStart: number = Math.floor(Math.random() * gridSize + 1);
-        let yStart: number = Math.floor(Math.random() * gridSize + 1);
+        let xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? !grid[startIndex + gridSize].ship : false;
+        let xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? !grid[startIndex + gridSize + gridSize].ship : false;
 
-        for (let j = 0; j < gridDimension; j++) {
-            console.log(j - gridSize);
-            let currentPosEmpty = grid[j].move[0] == xStart && grid[j].move[1] == yStart && !grid[j].ship;
+        let xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? !grid[startIndex - gridSize].ship : false;
+        let xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? !grid[startIndex - gridSize - gridSize].ship : false;
 
-            let xPosEmptySucc = (j + gridSize < gridDimension) ? grid[j + gridSize].move[0] == xStart + 1 && grid[j + gridSize].move[1] == yStart && !grid[j + gridSize].ship : false;
-            let xPosEmptyPrev = (j - gridSize > 0) ? grid[j - gridSize].move[0] == xStart - 1 && grid[j - gridSize].move[1] == yStart && !grid[j - gridSize].ship : false;
+        let yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? !grid[startIndex + 1].ship : false;
+        let yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? !grid[startIndex + 2].ship : false;
 
-            let yPosEmptySucc = (j + 1 < gridDimension) ? grid[j + 1].move[0] == xStart && grid[j + 1].move[1] == yStart + 1 && !grid[j + 1].ship : false;
-            let yPosEmptyPrev = (j - 1 > 0) ? grid[j - 1].move[0] == xStart && grid[j - 1].move[1] == yStart - 1 && !grid[j - 1].ship : false;
+        let yPosEmptyPrev1 = (startIndex - 1 >= 0) ? !grid[startIndex - 1].ship : false;
+        let yPosEmptyPrev2 = (startIndex - 2 >= 0) ? !grid[startIndex - 2].ship : false;
 
-            if (currentPosEmpty && xPosEmptySucc && xPosEmptyPrev) {
-                grid[j].ship = true;
-                grid[j + gridSize].ship = true;
-                grid[j - gridSize].ship = true;
-            } else if (currentPosEmpty && yPosEmptySucc && yPosEmptyPrev) {
-                grid[j].ship = true;
-                grid[j + 1].ship = true;
-                grid[j - 1].ship = true;
-            } else if (xPosEmptySucc) {
-                xStart++;
-            } else if (xPosEmptyPrev) {
-                xStart--;
-            } else if (yPosEmptySucc) {
-                yStart++;
-            } else if (yPosEmptyPrev) {
-                yStart--;
+
+        while (!currentPosEmpty) {
+            if (xPosEmptySucc1) {
+                startIndex += 1;
+            } else if (xPosEmptyPrev1) {
+                startIndex += 1;
+            } else if (yPosEmptySucc1) {
+                startIndex += 1;
+            } else if (yPosEmptyPrev2) {
+                startIndex -= 1;
+            } else {
+                break;
             }
+            currentPosEmpty = !grid[startIndex].ship;
+            xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? !grid[startIndex + gridSize].ship : false;
+            xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? !grid[startIndex + gridSize + gridSize].ship : false;
+            xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? !grid[startIndex - gridSize].ship : false;
+            xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? !grid[startIndex - gridSize - gridSize].ship : false;
+            yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? !grid[startIndex + 1].ship : false;
+            yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? !grid[startIndex + 2].ship : false;
+            yPosEmptyPrev1 = (startIndex - 1 >= 0) ? !grid[startIndex - 1].ship : false;
+            yPosEmptyPrev2 = (startIndex - 2 >= 0) ? !grid[startIndex - 2].ship : false;
 
         }
-        return grid;
+        let shiptype2 = shipType == 2;
+        if (!(shipType == 3)) {
+            if (currentPosEmpty && xPosEmptySucc1) {
+                grid[startIndex].ship = true;
+                (shiptype2) ? grid[startIndex + gridSize].ship = true : null;
+            } else if (currentPosEmpty && yPosEmptySucc1) {
+                grid[startIndex].ship = true;
+                (shiptype2) ? grid[startIndex + 1].ship = true : null;
+            } else if (currentPosEmpty && xPosEmptyPrev1) {
+                grid[startIndex].ship = true;
+                (shiptype2) ? grid[startIndex - 1].ship = true : null;
+            } else if (currentPosEmpty && yPosEmptyPrev1) {
+                grid[startIndex].ship = true;
+                (shiptype2) ? grid[startIndex - 1].ship = true : null;
+            }
+
+        } else {
+            if (currentPosEmpty && xPosEmptySucc1 && xPosEmptyPrev1) {
+                grid[startIndex].ship = true;
+                grid[startIndex + gridSize].ship = true;
+                grid[startIndex - gridSize].ship = true;
+            } else if (currentPosEmpty && yPosEmptySucc1 && yPosEmptyPrev1) {
+                grid[startIndex].ship = true;
+                grid[startIndex + 1].ship = true;
+                grid[startIndex - 1].ship = true;
+            } else if (currentPosEmpty && xPosEmptySucc1 && xPosEmptySucc2) {
+                grid[startIndex].ship = true;
+                grid[startIndex + 1].ship = true;
+                grid[startIndex + 2].ship = true;
+            } else if (currentPosEmpty && xPosEmptyPrev1 && xPosEmptyPrev2) {
+                grid[startIndex].ship = true;
+                grid[startIndex - 1].ship = true;
+                grid[startIndex - 2].ship = true;
+            } else if (currentPosEmpty && yPosEmptySucc1 && yPosEmptySucc2) {
+                grid[startIndex].ship = true;
+                grid[startIndex + 1].ship = true;
+                grid[startIndex + 2].ship = true;
+            } else if (currentPosEmpty && yPosEmptyPrev1 && yPosEmptyPrev2) {
+                grid[startIndex].ship = true;
+                grid[startIndex - 1].ship = true;
+                grid[startIndex - 2].ship = true;
+            }
+        }
+
+
+
+
     }
+    return grid;
 }
 
 
