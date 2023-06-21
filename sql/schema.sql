@@ -38,4 +38,4 @@ INSERT INTO game (players, name, grid_size, ships, possible_moves,  moves, statu
  ('[{"player1": "loris@bitbattle.it"}, {"player2": "lorenzo@bitbattle.it"}]','game_2',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
  '[{"move": [1, 1], "ship": false}, {"move": [1, 2], "ship": true}, {"move": [2, 1], "ship": false}, {"move": [2, 2], "ship": true}]',   
  '[{"move": [2, 1], "hit": false, "player": "lorenzo@bitbattle.it"}, {"move": [1, 2], "hit": true, "player": "loris@bitbattle.it"}]', 
- 'started', 'loris@bitbattle.it', '[{"loris@bitbattle.it": 12, "lorenzo@bitbattle.it": 11}]' );
+ 'finished', 'loris@bitbattle.it', '[{"loris@bitbattle.it": 12, "lorenzo@bitbattle.it": 11}]' );
