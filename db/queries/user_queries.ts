@@ -52,7 +52,8 @@ export async function createGameDb(req: Request, possibleMoves: any[]): Promise<
         moves: [],
         status: "started",
         result: [],
-        players: [req.body.players, { "player2": req.body.email }],
+        player1: req.body.player1,
+        player2: req.body.player2,
         score: []
     });
 }

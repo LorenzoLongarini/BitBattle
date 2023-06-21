@@ -20,8 +20,11 @@ export const game = sequelize.define('game', {
     name: {
         type: DataTypes.STRING
     },
-    players: {
-        type: DataTypes.JSON
+    player1: {
+        type: DataTypes.STRING
+    },
+    player2: {
+        type: DataTypes.STRING
     },
     grid_size: {
         type: DataTypes.INTEGER,
