@@ -181,11 +181,14 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
 
 
 export function findShip(move: any, move_now: any, choose: any): any {
-    let shipHit;
+    let shipHit = false;
     let isMovePresent = false;
     for (let i = 0; i < move.length; i++) {
         if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
-            shipHit = move[i].ship;
+            let shipValue = move[i].ship;
+            if(Number.isInteger(shipValue) && shipValue >= 1 && shipValue <=3){
+                shipHit = true;
+            }
             isMovePresent = true;
             break;
         }

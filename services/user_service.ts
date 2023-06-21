@@ -82,7 +82,20 @@ export async function createGameService(req: Request, res: Response) {
             let updatedTokens = currentTokens - 0.45;
             await updateUserTokensDb(updatedTokens, req.body.email);
             let possibleMoves = setShips(req.body.grid_size, req);
-            const newGame: any = await createGameDb(req, possibleMoves);
+
+            let player1 = req.body.player1;
+            let player2 = req.body.player2;
+
+            let mod: string;
+
+            if (player1 !== "" && player2 !== "") {
+                mod = "1v2";
+            } else if (player1 !== "" || player2 !== "") {
+                mod = "1v1";
+            } else {
+                mod = "1vAI";
+            }
+            const newGame: any = await createGameDb(req, possibleMoves, mod);
             res.json({ game: newGame });
         }
 
