@@ -29,6 +29,7 @@ export async function doMoveService(req: Request, res: Response) {
         let choose = true;
         let isAvailable = await findShip(movesPossible, targetMove, choose);
         let isExecute = await findShip(movesExecute, targetMove, choose);
+
         let hitShip = await findShip(movesPossible, targetMove, !choose);
         if (isAvailable && !isExecute && lastPlayer != player) {
             let newMove = {

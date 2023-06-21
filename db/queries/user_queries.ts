@@ -41,11 +41,11 @@ export async function userIsNotPlayingDb(email: string): Promise<any> {
     });
 }
 
-export async function createGameDb(req: Request, possibleMoves: any[]): Promise<any> {
+export async function createGameDb(req: Request, possibleMoves: any[], mod: string): Promise<any> {
 
     return await game.create({
         name: req.body.name,
-        mod: req.body.mod,
+        mod: mod,
         grid_size: req.body.grid_size,
         ships: req.body.ships,
         possible_moves: possibleMoves,

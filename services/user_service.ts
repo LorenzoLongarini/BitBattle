@@ -64,9 +64,20 @@ export async function createGameService(req: Request, res: Response) {
             badRequest.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundShips);
         } else {
             let possibleMoves = setShips(req.body.grid_size, req);
-            console.log(req.body.grid_size);
-            console.log(req.body.ships["size1"], req.body.ships[1], req.body.ships[1].size2);
-            const newGame: any = await createGameDb(req, possibleMoves);
+
+            let player1 = req.body.player1;
+            let player2 = req.body.player2;
+
+            let mod: string;
+
+            if (player1 !== "" && player2 !== "") {
+                mod = "1v2";
+            } else if (player1 !== "" || player2 !== "") {
+                mod = "1v1";
+            } else {
+                mod = "1vAI";
+            }
+            const newGame: any = await createGameDb(req, possibleMoves, mod);
             res.json({ game: newGame });
         }
 
