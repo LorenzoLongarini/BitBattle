@@ -35,6 +35,9 @@ export const user = sequelize.define("users", {
     isplaying: {
         type: DataTypes.BOOLEAN,
         allowNull: false
+    },
+    points: {
+        type: DataTypes.INTEGER
     }
 
 }, {
