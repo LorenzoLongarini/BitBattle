@@ -15,8 +15,8 @@ export enum Messages400 {
     GameAlreadyExists = "Esiste già un game con questo nome",
     OutOfBoundGrid = "La dimensione della griglia deve essere compreso tra 3 e 10",
     OutOfBoundShips = "Il numero di navi inserite è troppo alto",
-    NoTokens = "Tokens insufficienti per creare il game, contattare l\'amministratore"
-
+    NoTokens = "Tokens insufficienti per creare il game, contattare l\'amministratore",
+    NotExistingGame = "Il game non è presente nel database"
 }
 
 export enum Messages500 {
