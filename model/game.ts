@@ -46,6 +46,9 @@ export const game = sequelize.define('game', {
     },
     score: {
         type: DataTypes.JSON,
+    },
+    mod: {
+        type: DataTypes.STRING,
     }
 },
     {

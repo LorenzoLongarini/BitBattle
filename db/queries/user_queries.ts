@@ -49,6 +49,7 @@ export async function createGameDb(req: Request, possibleMoves: any[]): Promise<
         ships: req.body.ships,
         possible_moves: possibleMoves,
         moves: [],
+        players: [],
         status: "started",
         result: [],
         score: []
