@@ -6,6 +6,7 @@ import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSi
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
+import { checkGameCreator } from "./middleware/game_middleware";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -45,13 +46,14 @@ app.post("/newgame", jsonParser, checkJwt, (req: any, res: any) => {
 });
 
 app.post("/move/multiplayer", jsonParser, checkJwt, (req: any, res: any) => {
-    insertMoveMultiplayer(req, res);});
-    
+    insertMoveMultiplayer(req, res);
+});
+
 app.post("/move/single", jsonParser, checkJwt, (req: any, res: any) => {
     insertMoveSingle(req, res);
 });
 
-app.post("/move/ai", jsonParser, checkJwt, (req: any, res: any) => {
+app.post("/move/ai", jsonParser, checkJwt, checkGameCreator, (req: any, res: any) => {
     insertMoveAi(req, res);
 });
 

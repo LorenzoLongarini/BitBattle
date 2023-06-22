@@ -6,6 +6,16 @@ export async function findAllGames(): Promise<any> {
 
 }
 
+export async function findPlayer0(player0: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            player0: player0,
+        }
+    });
+
+}
+
 export async function findPlayer1(player1: string): Promise<any> {
 
     return await game.findAll({
@@ -53,7 +63,7 @@ export async function addMoveDb(name: string, moves: any): Promise<any> {
     });
 }
 
-export async function updateWinner(name: string, email:string): Promise<any> {
+export async function updateWinner(name: string, email: string): Promise<any> {
     return await game.update({ winner: email }, {
         where: {
             name: name

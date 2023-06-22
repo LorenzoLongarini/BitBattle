@@ -5,7 +5,7 @@
       user_id SERIAL PRIMARY KEY,  
       email VARCHAR(25),
       password VARCHAR(25),
-      tokens NUMERIC(10,3),
+      tokens NUMERIC(10,4),
       isadmin BOOLEAN,   
       isplaying BOOLEAN,
       points INTEGER

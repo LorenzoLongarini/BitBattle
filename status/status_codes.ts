@@ -16,6 +16,7 @@ export enum Messages300 {
 }
 export enum Messages400 {
     UnauthorizedUser = "Non è possibile creare l\'utente perchè è già esistente",
+    Unauthorized = "Questo utente non ha le autorizzazioni necessarie a svolgere l\'operazione",
     GameAlreadyExists = "Esiste già un game con questo nome",
     OutOfBoundGrid = "La dimensione della griglia deve essere compreso tra 3 e 10",
     OutOfBoundShips = "Il numero di navi inserite è troppo alto",
