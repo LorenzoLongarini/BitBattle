@@ -1,4 +1,4 @@
-import { findUser, createUserDb, createGameDb, } from '../db/queries/user_queries';
+import { findUser, createUserDb, createGameDb, updateUserStatus, } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
@@ -71,9 +71,7 @@ export async function createGameService(req: Request, res: Response) {
     let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
 
     let errorMessage: MessageFactory = new MessageFactory();
-    // try {
-    //     // let player
-    // } catch (e) { }
+
     try {
         let game = await findGame(req.body.name);
         if (game.length !== 0) {
@@ -82,7 +80,9 @@ export async function createGameService(req: Request, res: Response) {
     } catch (err) { };
 
     try {
+
         let userCreator = await findUser(player);
+
         let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
 
         if (req.body.grid_size < 3 || req.body.grid_size > 10) {
@@ -94,6 +94,7 @@ export async function createGameService(req: Request, res: Response) {
         } else {
             let updatedTokens = currentTokens - 0.45;
             await updateUserTokensDb(updatedTokens, player);
+            await updateUserStatus(true, player);
             let possibleMoves = setShips(req.body.grid_size, req,player);
 
             let player1 = req.body.player1;

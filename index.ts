@@ -2,7 +2,7 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, getStatus, insertMoveMultiplayer } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
@@ -45,7 +45,14 @@ app.post("/newgame", jsonParser, checkJwt, (req: any, res: any) => {
 });
 
 app.post("/move/multiplayer", jsonParser, checkJwt, (req: any, res: any) => {
-    insertMoveMultiplayer(req, res);
+    insertMoveMultiplayer(req, res);});
+    
+app.post("/move/single", jsonParser, checkJwt, (req: any, res: any) => {
+    insertMoveSingle(req, res);
+});
+
+app.post("/move/ai", jsonParser, checkJwt, (req: any, res: any) => {
+    insertMoveAi(req, res);
 });
 
 app.post("/game/status", jsonParser, checkJwt, (req: any, res: any) => {

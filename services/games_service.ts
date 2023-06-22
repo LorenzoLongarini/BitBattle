@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { findUser, setIsNotPlayingDb } from '../db/queries/user_queries';
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { MessageFactory } from '../status/messages_factory'
-import { CustomStatusCodes, Messages400 } from '../status/status_codes'
+import { CustomStatusCodes, Messages200, Messages400, Messages500 } from '../status/status_codes'
 import { decodeJwt } from './jwt_service';
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes';
 
@@ -168,7 +168,7 @@ export async function statusService(req: Request, res: Response) {
     try {
         const game: any = await findGame(req.body.game_name);
         if (game.length === 0) {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotExistingGame);
+            errorMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
         } else {
             if (game[0].dataValues.status == "finished")
                 res.json({ statusGame: game[0].dataValues.status, winnerGame: game[0].dataValues.winner });
