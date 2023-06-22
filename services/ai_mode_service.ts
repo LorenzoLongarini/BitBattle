@@ -43,7 +43,6 @@ export async function doMoveAIService(req: Request, res: Response) {
 
         let currentPlayer = await findUser(player);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
-        let updatedTokens: number;
         let currentPoints = parseFloat(currentPlayer[0].dataValues.points)
 
         if (searchGame[0].dataValues.status !== "finished") {
@@ -60,6 +59,12 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 movesExecute.push(newMoveUser);
                 await addMoveDb(req.body.name, movesExecute);
+
+                currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+
+                let firstFee: number = currentTokens - 0.015;
+                let secondFee: number = 0;
+                let totalFee: number = Number(firstFee.toFixed(3));
 
                 let reducedMovesPossibleUser = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == "AI"));
                 let reducedMovesPossibleAi = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == player));
@@ -86,16 +91,13 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                     movesExecute.push(newMoveAi);
                     await addMoveDb(req.body.name, movesExecute);
-                    // currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
-                    updatedTokens = currentTokens - 0.015;
-                    await updateUserTokensDb(updatedTokens, player);
+                    let secondFee = firstFee - 0.015;
+                    totalFee = Number(secondFee.toFixed(3));
+
                 }
+                await updateUserTokensDb(totalFee, player);
 
                 reducedMovesExecuteAi = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == "AI"));
-
-                currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
-                updatedTokens = currentTokens - 0.015;
-                await updateUserTokensDb(updatedTokens, player);
 
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
                     try {
@@ -113,8 +115,9 @@ export async function doMoveAIService(req: Request, res: Response) {
                     } catch (err) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
+                } else {
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.MoveOk);
                 }
-                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.MoveOk);
             } else if (!isHittableUser) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveUnauthorized);
             } else if (isAvailableUser && isExecuteUser) {
