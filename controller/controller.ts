@@ -26,7 +26,7 @@ export const createGame = (req: Request, res: Response) => {
     return createGameService(req, res);
 };
 
-export const insertMove = (req: any, res: any) => {
+export const insertMoveSingle = (req: any, res: any) => {
     return doMoveService(req, res);
 };
 
