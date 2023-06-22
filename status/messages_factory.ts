@@ -1,6 +1,6 @@
 import { CustomStatusCodes, Messages400, Messages500 } from './status_codes';
 import { Response } from "express";
-import { BadRequestMessage, InternalServerErrorMessage, NotFoundErrorMessage } from './messages_class';
+import { BadRequestMessage, InternalServerErrorMessage, NotFoundErrorMessage, OkMessage } from './messages_class';
 
 export class MessageFactory {
     constructor() { };
@@ -18,7 +18,7 @@ export class MessageFactory {
                 messageClass = new NotFoundErrorMessage();
                 return messageClass.setStatus(res, message);
             case (200):
-                messageClass = new NotFoundErrorMessage();
+                messageClass = new OkMessage();
                 return messageClass.setStatus(res, message);
             default:
                 return res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({ error: Messages500.InternalServerError });

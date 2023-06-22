@@ -52,3 +52,11 @@ export async function addMoveDb(name: string, moves: any): Promise<any> {
         }
     });
 }
+
+export async function updateWinner(name: string, email:string): Promise<any> {
+    return await game.update({ winner: email }, {
+        where: {
+            name: name
+        }
+    });
+}

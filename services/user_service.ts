@@ -49,6 +49,16 @@ export async function getTokensService(req: any, res: any) {
 
 
 export async function createGameService(req: Request, res: Response) {
+    let player;
+    let jwtBearerToken = req.headers.authorization;
+    let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
+    if (jwtDecode && jwtDecode.email) {
+        player = jwtDecode.email;
+
+    } else {
+        res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+    }
+
 
     let gridSize = req.body.grid_size;
     let gridDimension = gridSize * gridSize;
@@ -71,16 +81,6 @@ export async function createGameService(req: Request, res: Response) {
 
     try {
 
-        let jwtBearerToken = req.headers.authorization;
-        let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-        let player;
-        if (jwtDecode && jwtDecode.email) {
-            player = jwtDecode.email;
-
-        } else {
-            res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
-        }
-
         let userCreator = await findUser(player);
 
         let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
@@ -95,7 +95,7 @@ export async function createGameService(req: Request, res: Response) {
             let updatedTokens = currentTokens - 0.45;
             await updateUserTokensDb(updatedTokens, player);
             await updateUserStatus(true, player);
-            let possibleMoves = setShips(req.body.grid_size, req);
+            let possibleMoves = setShips(req.body.grid_size, req,player);
 
             let player1 = req.body.player1;
             let player2 = req.body.player2;
@@ -109,7 +109,7 @@ export async function createGameService(req: Request, res: Response) {
             } else {
                 mod = "1vAI";
             }
-            const newGame: any = await createGameDb(req, possibleMoves, mod);
+            const newGame: any = await createGameDb(req, possibleMoves, mod,player);
             res.json({ game: newGame });
         }
 
