@@ -10,7 +10,7 @@ export function getAllMoves(gridSize: number): any {
     return possibleMoves;
 }
 
-export function setShips(gridSize: number, req: Request): any {
+export function setShips(gridSize: number, req: Request, player0:string): any {
 
     let grid = getAllMoves(gridSize);
 
@@ -19,7 +19,7 @@ export function setShips(gridSize: number, req: Request): any {
 
     let totalLength;
 
-    let allPlayers = [req.body.email];
+    let allPlayers = [player0];
 
     if (player1 !== "" && player2 !== "") {
         totalLength = 3;
@@ -196,6 +196,33 @@ export function findShip(move: any, move_now: any, choose: any): any {
     if (choose)
         return isMovePresent;
     else return shipHit;
+}
+
+export function findShipHittable(move: any, move_now: any, player: string): any {
+    let isHittable = true;
+    console.log(player)
+    for (let i = 0; i < move.length; i++) {
+        if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
+            let shipValue = move[i].ship;
+            console.log(shipValue)
+            let owner = move[i].owner;
+            console.log(owner)
+            if (Number.isInteger(shipValue) && shipValue >= 1 && shipValue <= 3 && owner == player) {
+                isHittable = false;
+            }
+        }
+    }
+    return isHittable;
+}
+
+export function findOwner(move: any, move_now: any): any {
+    let owner;
+    for (let i = 0; i < move.length; i++) {
+        if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
+            owner = move[i].owner;
+        }
+    }
+    return owner;
 }
 
 export function turn(move: any): any {

@@ -7,6 +7,7 @@ import { setShips } from '../utils/game_utils';
 import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_constants";
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
+import { decodeJwt } from './jwt_service';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -48,6 +49,16 @@ export async function getTokensService(req: any, res: any) {
 
 
 export async function createGameService(req: Request, res: Response) {
+    let player;
+    let jwtBearerToken = req.headers.authorization;
+    let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
+    if (jwtDecode && jwtDecode.email) {
+        player = jwtDecode.email;
+
+    } else {
+        res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+    }
+
 
     let gridSize = req.body.grid_size;
     let gridDimension = gridSize * gridSize;
@@ -71,7 +82,7 @@ export async function createGameService(req: Request, res: Response) {
     } catch (err) { };
 
     try {
-        let userCreator = await findUser(req.body.email);
+        let userCreator = await findUser(player);
         let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
 
         if (req.body.grid_size < 3 || req.body.grid_size > 10) {
@@ -82,8 +93,8 @@ export async function createGameService(req: Request, res: Response) {
             errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
         } else {
             let updatedTokens = currentTokens - 0.45;
-            await updateUserTokensDb(updatedTokens, req.body.email);
-            let possibleMoves = setShips(req.body.grid_size, req);
+            await updateUserTokensDb(updatedTokens, player);
+            let possibleMoves = setShips(req.body.grid_size, req,player);
 
             let player1 = req.body.player1;
             let player2 = req.body.player2;
@@ -97,7 +108,7 @@ export async function createGameService(req: Request, res: Response) {
             } else {
                 mod = "1vAI";
             }
-            const newGame: any = await createGameDb(req, possibleMoves, mod);
+            const newGame: any = await createGameDb(req, possibleMoves, mod,player);
             res.json({ game: newGame });
         }
 
