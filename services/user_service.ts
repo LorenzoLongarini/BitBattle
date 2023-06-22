@@ -60,7 +60,9 @@ export async function createGameService(req: Request, res: Response) {
     let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
 
     let errorMessage: MessageFactory = new MessageFactory();
-
+    // try {
+    //     // let player
+    // } catch (e) { }
     try {
         let game = await findGame(req.body.name);
         if (game.length !== 0) {
