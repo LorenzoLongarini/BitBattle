@@ -4,9 +4,18 @@ import { Response } from "express";
 
 export class BadRequestMessage implements MessageInterface {
     public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
-        const errorTypeString = errorType.toString;
+        const errorTypeString = errorType.toString();
         return res.status(CustomStatusCodes.BAD_REQUEST).json({
-            errorType: messageType
+            errorTypeString: messageType
+        });
+    };
+}
+
+export class InternaleServerErrorMessage implements MessageInterface {
+    public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
+        const errorTypeString = errorType.toString();
+        return res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({
+            errorTypeString: messageType
         });
     };
 }

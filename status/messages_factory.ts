@@ -1,7 +1,7 @@
 import { CustomStatusCodes } from './status_codes';
 import { Response } from "express";
 import { MessageInterface } from './messages_interface';
-import { BadRequestMessage } from './messages_class';
+import { BadRequestMessage, InternaleServerErrorMessage } from './messages_class';
 
 export class MessageFactory {
     constructor() { };
@@ -10,6 +10,9 @@ export class MessageFactory {
         switch (cases) {
             case CustomStatusCodes.BAD_REQUEST:
                 messageClass = new BadRequestMessage();
+                return messageClass.setStatus(res, message, cases);
+            case CustomStatusCodes.INTERNAL_SERVER_ERROR:
+                messageClass = new InternaleServerErrorMessage();
                 return messageClass.setStatus(res, message, cases);
         }
 
