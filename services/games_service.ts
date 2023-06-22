@@ -5,6 +5,8 @@ import { findUser, userIsNotPlayingDb } from '../db/queries/user_queries';
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400 } from '../status/status_codes'
+import { decodeJwt } from './jwt_service';
+import { StatusCodes } from 'http-status-codes/build/cjs/status-codes';
 
 export async function getGamesService(req: Request, res: Response) {
     try {
@@ -17,9 +19,93 @@ export async function getGamesService(req: Request, res: Response) {
     }
 }
 
+
+// export async function doMoveAI(req: Request, res: Response) {
+//     let targetMove = req.body.move;
+//     let player;
+
+//     try {
+//         let searchGame = await findGame(req.body.name);
+//         let movesPossible = searchGame[0].dataValues.possible_moves;
+//         let movesExecute = searchGame[0].dataValues.moves;
+
+//         let gridSizeCurr = searchGame[0].dataValues.grid_size;
+//         let xRand: number = Math.floor(Math.random() * gridSizeCurr + 1);
+//         let yRand: number = Math.floor(Math.random() * gridSizeCurr + 1);
+//         let targetRand = [xRand, yRand];
+
+//         let choose = true;
+//         let isAvailableUser = await findShip(movesPossible, targetMove, choose);
+//         let isExecuteUser = await findShip(movesExecute, targetMove, choose);
+//         let hitShipUser = await findShip(movesPossible, targetMove, !choose);
+
+//         let isAvailableAi = await findShip(movesPossible, targetRand, choose);
+//         let isExecuteAi = await findShip(movesExecute, targetRand, choose);
+//         let hitShipAi = await findShip(movesPossible, targetRand, !choose);
+
+//         let currentPlayer = await findUser(player);
+//         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+
+//         if (searchGame[0].dataValues.status !== "finished") {
+//             if (isAvailableUser && !isExecuteUser) {
+
+//                 let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3));
+
+//                 let reducedMovesExecute;
+
+//                 let newMove = {
+//                     move: targetMove,
+//                     hit: hitShipUser,
+//                     player: player
+//                 };
+//                 while (isAvailableAi || isExecuteAi) {
+//                     xRand = Math.floor(Math.random() * gridSizeCurr + 1);
+//                     yRand = Math.floor(Math.random() * gridSizeCurr + 1);
+//                     targetRand = [xRand, yRand];
+//                     isAvailableAi = await findShip(movesPossible, targetRand, choose);
+//                     isExecuteAi = await findShip(movesExecute, targetRand, choose);
+//                 }
+
+//                 movesExecute.push(newMove);
+//                 await addMoveDb(req.body.name, movesExecute);
+//                 reducedMovesExecute = searchGame[0].dataValues.moves.filter((move: any) => move.hit);
+//                 let updatedTokens = currentTokens - 0.015;
+//                 await updateUserTokensDb(updatedTokens, player);
+
+//                 if (reducedMovesPossible.length == reducedMovesExecute.length) {
+
+//                     try {
+//                         await gameOver(req.body.name);
+//                         res.json({ esito: "Game Over" });
+
+//                     } catch (err) { res.json({ errore: err }); };
+
+//                 }
+//                 res.json({ mossa: "Mossa eseguita" });
+//             } else if (lastPlayer == player) {
+//                 res.json({ mossa: "Non è il tuo turno" });
+//             } else if (isAvailable && isExecute) {
+//                 res.json({ mossa: "Mossa già eseguita" });
+//             }
+//         } else {
+//             res.json({ esito: "Partita finita" });
+//         }
+//     } catch (error) {
+//         res.status(StatusCodes.BAD_REQUEST).json({ error: "La partita non esiste" });
+//     }
+// }
+
 export async function doMoveService(req: Request, res: Response) {
     let targetMove = req.body.move;
-    let player = req.body.player;
+    let jwtBearerToken = req.headers.authorization;
+    let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
+    let player;
+    if (jwtDecode && jwtDecode.email) {
+        player = jwtDecode.email;
+
+    } else {
+        res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+    }
 
     try {
         let searchGame = await findGame(req.body.name);
@@ -34,18 +120,15 @@ export async function doMoveService(req: Request, res: Response) {
         let isExecute = await findShip(movesExecute, targetMove, choose);
 
         let hitShip = await findShip(movesPossible, targetMove, !choose);
-        let currentPlayer = await findUser(req.body.player);
+        let currentPlayer = await findUser(player);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
         if (searchGame[0].dataValues.status !== "finished") {
             if (isAvailable && !isExecute && lastPlayer != player) {
 
                 let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3));
-                // let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => {
-                //     let shipSize: any = Object.values(move)[0];
-                //     return shipSize >= 1 && shipSize <= 3;
-                // });
+
                 let reducedMovesExecute;
-                // console.log(reducedMovesPossible.length, reducedMovesPossible, reducedMovesExecute.length, reducedMovesExecute)
+
                 let newMove = {
                     move: targetMove,
                     hit: hitShip,
@@ -56,7 +139,7 @@ export async function doMoveService(req: Request, res: Response) {
                 await addMoveDb(req.body.name, movesExecute);
                 reducedMovesExecute = searchGame[0].dataValues.moves.filter((move: any) => move.hit);
                 let updatedTokens = currentTokens - 0.015;
-                await updateUserTokensDb(updatedTokens, req.body.player);
+                await updateUserTokensDb(updatedTokens, player);
 
 
 
@@ -64,28 +147,22 @@ export async function doMoveService(req: Request, res: Response) {
 
                     try {
                         await gameOver(req.body.name);
-                        // await 
-                        // let allPlayers =
-                        //     await findPlayer(req.body.player)
-                        // await userIsNotPlayingDb()
                         res.json({ esito: "Game Over" });
 
                     } catch (err) { res.json({ errore: err }); };
 
                 }
                 res.json({ mossa: "Mossa eseguita" });
+            } else if (lastPlayer == player) {
+                res.json({ mossa: "Non è il tuo turno" });
             } else if (isAvailable && isExecute) {
                 res.json({ mossa: "Mossa già eseguita" });
-            } else { res.json({ mossa: "Mossa non ammissibile" }); }
+            }
         } else {
             res.json({ esito: "Partita finita" });
         }
-
-
     } catch (error) {
-        console.error('Error :', error);
-        throw error;
-
+        res.status(StatusCodes.BAD_REQUEST).json({ error: "La partita non esiste" });
     }
 }
 
