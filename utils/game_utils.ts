@@ -186,7 +186,7 @@ export function findShip(move: any, move_now: any, choose: any): any {
     for (let i = 0; i < move.length; i++) {
         if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
             let shipValue = move[i].ship;
-            if(Number.isInteger(shipValue) && shipValue >= 1 && shipValue <=3){
+            if (Number.isInteger(shipValue) && shipValue >= 1 && shipValue <= 3) {
                 shipHit = true;
             }
             isMovePresent = true;
@@ -196,6 +196,20 @@ export function findShip(move: any, move_now: any, choose: any): any {
     if (choose)
         return isMovePresent;
     else return shipHit;
+}
+
+export function findShipHittable(move: any, move_now: any, player: string): any {
+    let isHittable = true;
+    for (let i = 0; i < move.length; i++) {
+        if (move[i].move[0] === move_now[0] && move[i].move[1] == move_now[1]) {
+            let shipValue = move[i].ship;
+            let ownerValue = move[i].owner;
+            if (Number.isInteger(shipValue) && shipValue >= 1 && shipValue <= 3 && ownerValue == player) {
+                isHittable = false;
+            }
+        }
+    }
+    return isHittable;
 }
 
 export function turn(move: any): any {

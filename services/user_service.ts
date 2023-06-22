@@ -1,4 +1,4 @@
-import { findUser, createUserDb, createGameDb, } from '../db/queries/user_queries';
+import { findUser, createUserDb, createGameDb, updateUserStatus, } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
@@ -7,6 +7,7 @@ import { setShips } from '../utils/game_utils';
 import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_constants";
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
+import { decodeJwt } from './jwt_service';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -60,9 +61,7 @@ export async function createGameService(req: Request, res: Response) {
     let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
 
     let errorMessage: MessageFactory = new MessageFactory();
-    // try {
-    //     // let player
-    // } catch (e) { }
+
     try {
         let game = await findGame(req.body.name);
         if (game.length !== 0) {
@@ -71,7 +70,19 @@ export async function createGameService(req: Request, res: Response) {
     } catch (err) { };
 
     try {
-        let userCreator = await findUser(req.body.email);
+
+        let jwtBearerToken = req.headers.authorization;
+        let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
+        let player;
+        if (jwtDecode && jwtDecode.email) {
+            player = jwtDecode.email;
+
+        } else {
+            res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        }
+
+        let userCreator = await findUser(player);
+
         let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
 
         if (req.body.grid_size < 3 || req.body.grid_size > 10) {
@@ -82,7 +93,8 @@ export async function createGameService(req: Request, res: Response) {
             errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
         } else {
             let updatedTokens = currentTokens - 0.45;
-            await updateUserTokensDb(updatedTokens, req.body.email);
+            await updateUserTokensDb(updatedTokens, player);
+            await updateUserStatus(true, player);
             let possibleMoves = setShips(req.body.grid_size, req);
 
             let player1 = req.body.player1;

@@ -11,10 +11,19 @@ export class BadRequestMessage implements MessageInterface {
     };
 }
 
-export class InternaleServerErrorMessage implements MessageInterface {
+export class InternalServerErrorMessage implements MessageInterface {
     public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
         const errorTypeString = errorType.toString();
         return res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({
+            errorTypeString: messageType
+        });
+    };
+}
+
+export class NotFoundErrorMessage implements MessageInterface {
+    public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
+        const errorTypeString = errorType.toString();
+        return res.status(CustomStatusCodes.NOT_FOUND).json({
             errorTypeString: messageType
         });
     };
