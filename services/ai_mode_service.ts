@@ -9,7 +9,7 @@ import { findUser, updateUserPoints } from "../db/queries/user_queries";
 
 
 export async function doMoveAIService(req: Request, res: Response) {
-    let errorMessage: MessageFactory = new MessageFactory();
+    let statusMessage: MessageFactory = new MessageFactory();
     let targetMove = req.body.move;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
@@ -18,7 +18,7 @@ export async function doMoveAIService(req: Request, res: Response) {
         player = jwtDecode.email;
 
     } else {
-        errorMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
     }
     try {
         let searchGame = await findGame(req.body.name);
@@ -43,6 +43,7 @@ export async function doMoveAIService(req: Request, res: Response) {
 
         let currentPlayer = await findUser(player);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+        let currentPoints = parseFloat(currentPlayer[0].dataValues.points)
 
         if (searchGame[0].dataValues.status !== "finished") {
             if (isAvailableUser && !isExecuteUser && isHittableUser) {
@@ -98,29 +99,30 @@ export async function doMoveAIService(req: Request, res: Response) {
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
                     try {
                         await gameOver(req.body.name);
-                        await updateUserPoints(10, player)
-                        errorMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
+                        let newPoints = currentPoints + 10;
+                        await updateUserPoints(newPoints, player)
+                        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
                     } catch (error) {
-                        errorMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
+                        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
                 } else if (reducedMovesPossibleAi.length == reducedMovesExecuteAi.length) {
                     try {
                         await gameOver(req.body.name);
-                        errorMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
+                        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
                     } catch (err) {
-                        errorMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
+                        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
                 }
-                errorMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.MoveOk);
+                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.MoveOk);
             } else if (!isHittableUser) {
-                errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveUnauthorized);
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveUnauthorized);
             } else if (isAvailableUser && isExecuteUser) {
-                errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveAlreadyDone);
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveAlreadyDone);
             }
         } else {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameIsEnded);
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameIsEnded);
         }
     } catch (error) {
-        errorMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
     }
 }

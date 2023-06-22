@@ -24,10 +24,11 @@ export enum Messages400 {
     GameNotFound = "Non è possibile trovare il game specificato",
     MoveUnauthorized = "Non puoi eseguire questa mossa",
     MoveAlreadyDone = "Mossa già eseguita",
-    GameIsEnded = "La partita finita è già terminata"
+    GameIsEnded = "La partita è già terminata"
 }
 
 export enum Messages500 {
-    ImpossibileCreation = "Non è possibile creare il game"
+    ImpossibileCreation = "Non è possibile creare il game",
+    InternalServerError = "Errore interno al server"
 
 }

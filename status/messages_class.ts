@@ -3,28 +3,33 @@ import { MessageInterface } from './messages_interface';
 import { Response } from "express";
 
 export class BadRequestMessage implements MessageInterface {
-    public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
-        const errorTypeString = errorType.toString();
-        return res.status(CustomStatusCodes.BAD_REQUEST).json({
-            errorTypeString: messageType
+    public setStatus(res: Response, messageType: string): any {
+        res.status(CustomStatusCodes.BAD_REQUEST).json({
+            BAD_REQUEST: messageType
         });
     };
 }
 
 export class InternalServerErrorMessage implements MessageInterface {
-    public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
-        const errorTypeString = errorType.toString();
-        return res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({
-            errorTypeString: messageType
+    public setStatus(res: Response, messageType: string): any {
+        res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({
+            INTERNAL_SERVER_ERROR: messageType
         });
     };
 }
 
 export class NotFoundErrorMessage implements MessageInterface {
-    public setStatus(res: Response, messageType: string, errorType: CustomStatusCodes): Response {
-        const errorTypeString = errorType.toString();
-        return res.status(CustomStatusCodes.NOT_FOUND).json({
-            errorTypeString: messageType
+    public setStatus(res: Response, messageType: string): any {
+        res.status(CustomStatusCodes.NOT_FOUND).json({
+            NOT_FOUND: messageType
+        });
+    };
+}
+
+export class OkMessage implements MessageInterface {
+    public setStatus(res: Response, messageType: string): any {
+        res.status(CustomStatusCodes.OK).json({
+            OK: messageType
         });
     };
 }

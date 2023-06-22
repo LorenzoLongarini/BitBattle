@@ -1,9 +1,10 @@
 // import { generateJwt } from '../services/jwt';
 import { generateJwtService } from '../services/jwt_service';
 import { createUserService, getTokensService, createGameService } from '../services/user_service';
-import { getGamesService, doMoveService, statusService } from '../services/games_service';
-import { doMoveAIService } from '../services/ai_service';
+import { getGamesService, statusService } from '../services/games_service';
+import { doMoveAIService } from '../services/ai_mode_service';
 import { Request, Response } from "express";
+import { doMoveService } from '../services/single_mode_service';
 
 export const login = (req: Request, res: Response) => {
     return generateJwtService(req, res);
