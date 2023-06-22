@@ -43,6 +43,7 @@ export async function doMoveAIService(req: Request, res: Response) {
 
         let currentPlayer = await findUser(player);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+        let updatedTokens: number;
         let currentPoints = parseFloat(currentPlayer[0].dataValues.points)
 
         if (searchGame[0].dataValues.status !== "finished") {
@@ -85,15 +86,15 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                     movesExecute.push(newMoveAi);
                     await addMoveDb(req.body.name, movesExecute);
-
-                    let updatedTokens = currentTokens - 0.015;
+                    // currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+                    updatedTokens = currentTokens - 0.015;
                     await updateUserTokensDb(updatedTokens, player);
                 }
 
                 reducedMovesExecuteAi = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == "AI"));
 
                 currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
-                let updatedTokens = currentTokens - 0.015;
+                updatedTokens = currentTokens - 0.015;
                 await updateUserTokensDb(updatedTokens, player);
 
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
