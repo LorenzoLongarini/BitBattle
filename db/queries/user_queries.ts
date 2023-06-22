@@ -59,4 +59,18 @@ export async function createGameDb(req: Request, possibleMoves: any[], mod: stri
 }
 
 
+export async function updateUserStatus(status: boolean, email: string): Promise<any> {
+    return await user.update({ isplaying: status }, {
+        where: {
+            email: email
+        }
+    });
+}
 
+export async function updateUserPoints(points: number, email: string): Promise<any> {
+    return await user.update({ points: points }, {
+        where: {
+            email: email
+        }
+    });
+}

@@ -2,7 +2,7 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMove, getStatus } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMove, getStatus, insertMoveAi } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
@@ -46,6 +46,10 @@ app.post("/newgame", jsonParser, checkJwt, (req: any, res: any) => {
 
 app.post("/domove", jsonParser, checkJwt, (req: any, res: any) => {
     insertMove(req, res);
+});
+
+app.post("/domove/ai", jsonParser, checkJwt, (req: any, res: any) => {
+    insertMoveAi(req, res);
 });
 
 app.post("/game/status", jsonParser, checkJwt, (req: any, res: any) => {
