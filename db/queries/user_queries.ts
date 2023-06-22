@@ -26,14 +26,14 @@ export async function createUserDb(req: any): Promise<any> {
 
 }
 
-export async function userIsPlayingDb(email: string): Promise<any> {
+export async function setIsPlayingDb(email: string): Promise<any> {
     return await user.update({ isplaying: true }, {
         where: {
             email: email
         }
     });
 }
-export async function userIsNotPlayingDb(email: string): Promise<any> {
+export async function setIsNotPlayingDb(email: string): Promise<any> {
     return await user.update({ isplaying: false }, {
         where: {
             email: email
@@ -41,7 +41,8 @@ export async function userIsNotPlayingDb(email: string): Promise<any> {
     });
 }
 
-export async function createGameDb(req: Request, possibleMoves: any[], mod: string): Promise<any> {
+
+export async function createGameDb(req: Request, possibleMoves: any[], mod: string, player:string): Promise<any> {
 
     return await game.create({
         name: req.body.name,
@@ -52,6 +53,7 @@ export async function createGameDb(req: Request, possibleMoves: any[], mod: stri
         moves: [],
         status: "started",
         result: [],
+        player0: player,
         player1: req.body.player1,
         player2: req.body.player2,
         score: []

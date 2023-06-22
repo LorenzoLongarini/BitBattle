@@ -1,7 +1,7 @@
 // import { generateJwt } from '../services/jwt';
 import { generateJwtService } from '../services/jwt_service';
 import { createUserService, getTokensService, createGameService } from '../services/user_service';
-import { getGamesService, statusService } from '../services/games_service';
+import { getGamesService, statusService , doMoveMultiplayerService} from '../services/games_service';
 import { doMoveAIService } from '../services/ai_mode_service';
 import { Request, Response } from "express";
 import { doMoveService } from '../services/single_mode_service';
@@ -25,6 +25,9 @@ export const getAllGames = (req: Request, res: Response) => {
 export const createGame = (req: Request, res: Response) => {
     return createGameService(req, res);
 };
+
+export const insertMoveMultiplayer = (req: any, res: any) => {
+    return doMoveMultiplayerService(req, res);}
 
 export const insertMoveSingle = (req: any, res: any) => {
     return doMoveService(req, res);

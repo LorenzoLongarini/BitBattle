@@ -20,6 +20,9 @@ export const game = sequelize.define('game', {
     name: {
         type: DataTypes.STRING
     },
+    player0: {
+        type: DataTypes.STRING
+    },
     player1: {
         type: DataTypes.STRING
     },
