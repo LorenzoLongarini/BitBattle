@@ -9,7 +9,10 @@ export enum CustomStatusCodes {
 export enum Messages200 {
     UserWin = "Game Over, hai vinto",
     AiWin = "Game Over, AI ha vinto",
-    MoveOk = "Mossa eseguita",
+    Win = "Hai vinto!",
+    Hit = "Colpito!",
+    Flop = "Acqua!"
+
 }
 export enum Messages300 {
 
@@ -25,7 +28,9 @@ export enum Messages400 {
     GameNotFound = "Non è possibile trovare il game specificato",
     MoveUnauthorized = "Non puoi eseguire questa mossa",
     MoveAlreadyDone = "Mossa già eseguita",
-    GameIsEnded = "La partita è già terminata"
+    NotYourTurn = "Non puoi eseguire questa mossa, non è il tuo turno",
+    GameIsEnded = "La partita è già terminata",
+    EmailCheck = "Il formato dell'email inserita non è corretto",
 }
 
 export enum Messages500 {
