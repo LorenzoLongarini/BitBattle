@@ -1,4 +1,4 @@
-import { findAllGames, findGame, addMoveDb, gameOver, updateWinner, findPlayer0 } from '../db/queries/games_queries';
+import { findAllGames, findGame, addMoveDb, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2 } from '../db/queries/games_queries';
 import { findShip, turn, findShipHittable, findOwner } from '../utils/game_utils';
 import { Request, Response } from "express";
 import { findUser, setIsNotPlayingDb } from '../db/queries/user_queries';
@@ -24,6 +24,30 @@ export async function findUserCreatorService(player0: string, res: Response): Pr
     let exist = false;
     try {
         let creator = await findPlayer0(player0);
+        if (creator.length != 0) return true;
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
+    }
+    return exist;
+}
+
+export async function findPlayer1Service(player1: string, res: Response): Promise<boolean> {
+    let statusMessage: MessageFactory = new MessageFactory();
+    let exist = false;
+    try {
+        let creator = await findPlayer1(player1);
+        if (creator.length != 0) return true;
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
+    }
+    return exist;
+}
+
+export async function findPlayer2Service(player2: string, res: Response): Promise<boolean> {
+    let statusMessage: MessageFactory = new MessageFactory();
+    let exist = false;
+    try {
+        let creator = await findPlayer2(player2);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);

@@ -63,7 +63,6 @@ export async function doMoveAIService(req: Request, res: Response) {
                 currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
 
                 let firstFee: number = currentTokens - 0.015;
-                let secondFee: number = 0;
                 let totalFee: number = Number(firstFee.toFixed(3));
 
                 let reducedMovesPossibleUser = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == "AI"));
@@ -72,6 +71,7 @@ export async function doMoveAIService(req: Request, res: Response) {
                 movesPossible = searchGame[0].dataValues.possible_moves;
                 movesExecute = searchGame[0].dataValues.moves;
                 reducedMovesExecuteUser = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == player));
+
                 if (reducedMovesPossibleUser.length != reducedMovesExecuteUser.length) {
                     while (!isAvailableAi && isExecuteAi && !isHittableAi) {
                         xRand = Math.floor(Math.random() * gridSizeCurr + 1);
@@ -91,7 +91,7 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                     movesExecute.push(newMoveAi);
                     await addMoveDb(req.body.name, movesExecute);
-                    let secondFee = firstFee - 0.015;
+                    let secondFee: number = firstFee - 0.015;
                     totalFee = Number(secondFee.toFixed(3));
 
                 }
@@ -115,8 +115,10 @@ export async function doMoveAIService(req: Request, res: Response) {
                     } catch (err) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
+                } else if (hitShipUser) {
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
                 } else {
-                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.MoveOk);
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Flop);
                 }
             } else if (!isHittableUser) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MoveUnauthorized);

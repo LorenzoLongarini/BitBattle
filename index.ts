@@ -6,7 +6,8 @@ import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSi
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
-import { checkGameCreator } from "./middleware/game_middleware";
+import { checkGameCreatorAi } from "./middleware/game_middleware";
+import { checkEmail } from "./middleware/email_middlware";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -33,7 +34,7 @@ app.put('/admin', jsonParser, checkIsAdmin, (req: any, res: any) => {
     updateTokens(req, res)
 })
 
-app.post("/register", jsonParser, (req: any, res: any) => {
+app.post("/register", jsonParser, checkEmail, (req: any, res: any) => {
     createUser(req, res);
 });
 
@@ -53,7 +54,7 @@ app.post("/move/single", jsonParser, checkJwt, (req: any, res: any) => {
     insertMoveSingle(req, res);
 });
 
-app.post("/move/ai", jsonParser, checkJwt, checkGameCreator, (req: any, res: any) => {
+app.post("/move/ai", jsonParser, checkJwt, checkGameCreatorAi, (req: any, res: any) => {
     insertMoveAi(req, res);
 });
 
