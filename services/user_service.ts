@@ -8,6 +8,7 @@ import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_consta
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
 import { decodeJwt } from './jwt_service';
+import { verifyIsUser, verifyDifferentUser } from '../utils/user_utils';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -58,7 +59,7 @@ export async function createGameService(req: Request, res: Response) {
         player = jwtDecode.email;
 
     } else {
-        res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
     }
 
 
@@ -98,19 +99,36 @@ export async function createGameService(req: Request, res: Response) {
                 let player1 = req.body.player1;
                 let player2 = req.body.player2;
 
+
                 let mod: string;
+                let isPresent: Boolean = true;
+                let isDifferent: Boolean = true;
 
                 if (player1 !== "" && player2 !== "") {
+                    isDifferent = await verifyDifferentUser(player, player1, res, isDifferent) && await verifyDifferentUser(player, player2, res, isDifferent)
+                        && await verifyDifferentUser(player1, player2, res, isDifferent);
+                    isPresent = await verifyIsUser(player1, res, isPresent) && await verifyIsUser(player2, res, isPresent);
                     mod = "1v2";
-                } else if (player1 !== "" || player2 !== "") {
+                } else if (player1 !== "" && player2 == "") {
+                    isDifferent = await verifyDifferentUser(player, player1, res, isDifferent);
+                    isPresent = await verifyIsUser(player1, res, isPresent);
+                    mod = "1v1";
+                } else if (player1 == "" && player2 !== "") {
+                    isDifferent = await verifyDifferentUser(player, player2, res, isDifferent)
+                    isPresent = await verifyIsUser(player2, res, isPresent)
                     mod = "1v1";
                 } else {
                     mod = "1vAI";
                 }
-                const newGame: any = await createGameDb(req, possibleMoves, mod, player);
-                res.json({ game: newGame });
+
+                if (isPresent && isDifferent) {
+                    const newGame: any = await createGameDb(req, possibleMoves, mod, player);
+                    res.json({ game: newGame });
+                }
             }
+
         }
+
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.ImpossibileCreation);
     }

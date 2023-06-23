@@ -31,6 +31,7 @@ export enum Messages400 {
     NotYourTurn = "Non puoi eseguire questa mossa, non è il tuo turno",
     GameIsEnded = "La partita è già terminata",
     EmailCheck = "Il formato dell'email inserita non è corretto",
+    SameUser = "Non puoi inserire lo stesso utente più volte nello stesso game",
 }
 
 export enum Messages500 {
