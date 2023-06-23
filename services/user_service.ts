@@ -49,6 +49,8 @@ export async function getTokensService(req: any, res: any) {
 
 
 export async function createGameService(req: Request, res: Response) {
+
+    let statusMessage: MessageFactory = new MessageFactory();
     let player;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
@@ -70,50 +72,46 @@ export async function createGameService(req: Request, res: Response) {
     let maxShipPiecesTwo: number = gridDimension >= piecesTwoMin ? Math.floor(gridDimension / piecesTwoMin) : 0;
     let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
 
-    let errorMessage: MessageFactory = new MessageFactory();
+
 
     try {
         let game = await findGame(req.body.name);
         if (game.length !== 0) {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameAlreadyExists);
-        }
-    } catch (err) { };
-
-    try {
-
-        let userCreator = await findUser(player);
-
-        let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
-
-        if (req.body.grid_size < 3 || req.body.grid_size > 10) {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundGrid);
-        } else if (size1ShipsReq > maxShipPiecesOne || size2ShipsReq > maxShipPiecesTwo || size3ShipsReq > maxShipPiecesThree) {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundShips);
-        } else if (userCreator && currentTokens < 0.45) {
-            errorMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameAlreadyExists);
         } else {
-            let updatedTokens = currentTokens - 0.45;
-            await updateUserTokensDb(updatedTokens, player);
-            await updateUserStatus(true, player);
-            let possibleMoves = setShips(req.body.grid_size, req,player);
+            let userCreator = await findUser(player);
 
-            let player1 = req.body.player1;
-            let player2 = req.body.player2;
+            let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
 
-            let mod: string;
-
-            if (player1 !== "" && player2 !== "") {
-                mod = "1v2";
-            } else if (player1 !== "" || player2 !== "") {
-                mod = "1v1";
+            if (req.body.grid_size < 3 || req.body.grid_size > 10) {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundGrid);
+            } else if (size1ShipsReq > maxShipPiecesOne || size2ShipsReq > maxShipPiecesTwo || size3ShipsReq > maxShipPiecesThree) {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundShips);
+            } else if (userCreator && currentTokens < 0.45) {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
             } else {
-                mod = "1vAI";
-            }
-            const newGame: any = await createGameDb(req, possibleMoves, mod,player);
-            res.json({ game: newGame });
-        }
+                let updatedTokens = currentTokens - 0.45;
+                await updateUserTokensDb(updatedTokens, player);
+                await updateUserStatus(true, player);
+                let possibleMoves = setShips(req.body.grid_size, req, player);
 
+                let player1 = req.body.player1;
+                let player2 = req.body.player2;
+
+                let mod: string;
+
+                if (player1 !== "" && player2 !== "") {
+                    mod = "1v2";
+                } else if (player1 !== "" || player2 !== "") {
+                    mod = "1v1";
+                } else {
+                    mod = "1vAI";
+                }
+                const newGame: any = await createGameDb(req, possibleMoves, mod, player);
+                res.json({ game: newGame });
+            }
+        }
     } catch (error) {
-        errorMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.ImpossibileCreation);
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.ImpossibileCreation);
     }
 }

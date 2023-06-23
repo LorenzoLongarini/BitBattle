@@ -1,6 +1,6 @@
 import { CustomStatusCodes, Messages400, Messages500 } from './status_codes';
 import { Response } from "express";
-import { BadRequestMessage, InternalServerErrorMessage, NotFoundErrorMessage, OkMessage } from './messages_class';
+import { BadRequestMessage, InternalServerErrorMessage, NotFoundErrorMessage, OkMessage, UnauthorizedMessage } from './messages_class';
 
 export class MessageFactory {
     constructor() { };
@@ -10,6 +10,9 @@ export class MessageFactory {
         switch (oneCase) {
             case (400):
                 messageClass = new BadRequestMessage();
+                return messageClass.setStatus(res, message);
+            case (401):
+                messageClass = new UnauthorizedMessage();
                 return messageClass.setStatus(res, message);
             case (500):
                 messageClass = new InternalServerErrorMessage();

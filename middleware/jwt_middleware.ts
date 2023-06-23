@@ -1,14 +1,16 @@
-import { StatusCodes } from "http-status-codes";
 import { decodeJwt } from "../services/jwt_service"
 import { Request, Response, NextFunction } from "express";
+import { CustomStatusCodes, Messages400 } from "../status/status_codes";
+import { MessageFactory } from "../status/messages_factory";
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
+    let statusMessage: MessageFactory = new MessageFactory();
     const jwtBearerToken = req.headers.authorization;
     const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
 
     if (jwtDecode && jwtDecode.email) {
         next();
     } else {
-        res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
     }
 };

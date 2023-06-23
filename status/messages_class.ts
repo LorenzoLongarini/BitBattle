@@ -10,6 +10,14 @@ export class BadRequestMessage implements MessageInterface {
     };
 }
 
+export class UnauthorizedMessage implements MessageInterface {
+    public setStatus(res: Response, messageType: string): any {
+        res.status(CustomStatusCodes.UNAUTHORIZED).json({
+            UNAUTHORIZED: messageType
+        });
+    };
+}
+
 export class InternalServerErrorMessage implements MessageInterface {
     public setStatus(res: Response, messageType: string): any {
         res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({
