@@ -8,7 +8,7 @@ import { CustomStatusCodes, Messages200, Messages400, Messages500 } from '../sta
 import { decodeJwt } from './jwt_service';
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes';
 
-let statusMessage: MessageFactory = new MessageFactory();
+var statusMessage: MessageFactory = new MessageFactory();
 
 export async function getGamesService(req: Request, res: Response) {
     try {
@@ -21,11 +21,10 @@ export async function getGamesService(req: Request, res: Response) {
     }
 }
 
-export async function findUserCreatorService(player0: string, res: Response): Promise<boolean> {
-    let statusMessage: MessageFactory = new MessageFactory();
+export async function findUserCreatorService(player0: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
-        let creator = await findPlayer0(player0);
+        let creator = await findPlayer0(req.body.name, player0);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
@@ -33,11 +32,10 @@ export async function findUserCreatorService(player0: string, res: Response): Pr
     return exist;
 }
 
-export async function findPlayer1Service(player1: string, res: Response): Promise<boolean> {
-    let statusMessage: MessageFactory = new MessageFactory();
+export async function findPlayer1Service(player1: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
-        let creator = await findPlayer1(player1);
+        let creator = await findPlayer1(req.body.name, player1);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
@@ -45,11 +43,11 @@ export async function findPlayer1Service(player1: string, res: Response): Promis
     return exist;
 }
 
-export async function findPlayer2Service(player2: string, res: Response): Promise<boolean> {
+export async function findPlayer2Service(player2: string, res: Response, req: Request): Promise<boolean> {
 
     let exist = false;
     try {
-        let creator = await findPlayer2(player2);
+        let creator = await findPlayer2(req.body.name, player2);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
