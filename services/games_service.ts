@@ -1,7 +1,7 @@
 import { findAllGames, findGame, addMoveDb, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2 } from '../db/queries/games_queries';
 import { findShip, turn, findShipHittable, findOwner } from '../utils/game_utils';
 import { Request, Response } from "express";
-import { findUser, setIsNotPlayingDb } from '../db/queries/user_queries';
+import { findUser, setIsNotPlayingDb, updateUserPoints } from '../db/queries/user_queries';
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages200, Messages400, Messages500 } from '../status/status_codes'
@@ -137,21 +137,31 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
                     let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
 
+                    // let firtLooser: string = "";
+
+                    // if (reducedMovesP0.length == reducedMoves0.length || reducedMovesP1.length == reducedMoves1.length || reducedMovesP2.length == reducedMoves2.length && firtLooser = "") {
+                    //     switch (true) {
+                    //         case (reducedMovesP0.length == reducedMoves0.length): firtLooser = emailplayer0;
+                    //         case (reducedMovesP1.length == reducedMoves1.length): firtLooser = emailplayer1;
+                    //         case (reducedMovesP2.length == reducedMoves2.length): firtLooser = emailplayer2;
+                    //     }
+                    // }
+
                     if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
                         try {
-                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, emailplayer2);
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer2);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
                         try {
-                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, emailplayer0);
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer0);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
                         try {
-                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, emailplayer1);
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer1);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
@@ -176,13 +186,22 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 }
 
 
-async function setFinalGameStatus(emailplayer0: string, emailplayer1: string, emailplayer2: string, res: Response, req: Request, winner: string) {
+async function setFinalGameStatus(emailplayer0: string, emailplayer1: string, emailplayer2: string, res: Response, req: Request, winner: any) {
     try {
         await gameOver(req.body.name);
         await setIsNotPlayingDb(emailplayer0);
         await setIsNotPlayingDb(emailplayer1);
         await setIsNotPlayingDb(emailplayer2);
-        await updateWinner(req.body.name, winner);
+
+        let winnerEmail = winner[0].dataValues.email;
+        await updateWinner(req.body.name, winnerEmail);
+
+        let currentPoints = parseFloat(winner[0].dataValues.points)
+        let winnerPoints = currentPoints + 10;
+
+        await updateUserPoints(winnerPoints, winnerEmail);
+
+
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
     }
@@ -212,7 +231,7 @@ export async function statusService(req: Request, res: Response) {
 }
 
 
-
+//TODO verificare se possibile ridurre numero di parametri
 export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
     isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
     if (move.length === 0 && mod) {
