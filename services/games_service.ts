@@ -90,9 +90,9 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                 movesEmail.push(searchGame[0].dataValues.moves[i].player);
             }
 
-        const turnOrder = ["loris@bitbattle.it", "prova@bitbattle.it",
-            "lorenzo@bitbattle.it", "prova@bitbattle.it",
-            "loris@bitbattle.it", "lorenzo@bitbattle.it"];
+        // const turnOrder = ["loris@bitbattle.it", "prova@bitbattle.it",
+        //     "lorenzo@bitbattle.it", "prova@bitbattle.it",
+        //     "loris@bitbattle.it", "lorenzo@bitbattle.it"];
         const nextMove = [["loris@bitbattle.it", "prova@bitbattle.it"],
         ["prova@bitbattle.it", "lorenzo@bitbattle.it"],
         ["lorenzo@bitbattle.it", "prova@bitbattle.it"],
@@ -105,7 +105,6 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
         let isExecute = await findShip(movesExecute, targetMove, choose);
 
         let hitShip = await findShip(movesPossible, targetMove, !choose);
-        let currentPlayer = await findUser(player);
 
         let owner = await findOwner(movesPossible, targetMove);
 
@@ -123,7 +122,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
         let emailchigioca = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, isPlaying0, isPlaying1, isPlaying2, nextMove);
 
-        let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+        let currentTokens = parseFloat(currentPlayer0[0].dataValues.tokens)
         if (searchGame[0].dataValues.status !== "finished") {
             if (isAvailable && !isExecute && emailchigioca == player && is) {
 
