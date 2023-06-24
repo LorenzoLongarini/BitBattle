@@ -1,4 +1,4 @@
-import { findUser, createUserDb, createGameDb, updateUserStatus, setIsPlayingDb } from '../db/queries/user_queries';
+import { findUser, createUserDb, createGameDb, updateUserStatus, setIsPlayingDb, findAllUsers } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
@@ -8,7 +8,37 @@ import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_consta
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
 import { decodeJwt } from './jwt_service';
-import { verifyIsUser, verifyDifferentUser, verifyIsPlaying } from '../utils/user_utils';
+import { verifyIsUser, verifyDifferentUser, verifyIsPlaying, sortUsers } from '../utils/user_utils';
+
+
+export async function getAllUsersService(req: Request, res: Response) {
+    try {
+        const users: any = await findAllUsers();
+        res.json({ utenti: users });
+
+    } catch (error) {
+        console.error('Error :', error);
+        throw error;
+    }
+}
+
+
+export async function getClassificationService(req: Request, res: Response) {
+    try {
+        const users: any = await findAllUsers();
+        console.log(req.body.type)
+        let type = (req.body.type == "ascendente") ? true : false;
+        console.log(type)
+        let classification = sortUsers(users, type)
+        res.json({ utente: classification });
+
+    } catch (error) {
+        console.error('Error :', error);
+        throw error;
+    }
+}
+
+
 
 export async function createUserService(req: Request, res: Response) {
     try {
