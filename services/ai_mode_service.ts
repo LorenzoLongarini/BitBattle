@@ -102,14 +102,14 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
                     try {
-                        setGameOverStatus(req, res, jwtPlayerEmail, currentPlayer)
+                        setGameOverStatus(req, currentPlayer, jwtPlayerEmail)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
                     } catch (error) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
                 } else if (reducedMovesPossibleAi.length == reducedMovesExecuteAi.length) {
                     try {
-                        setGameOverStatus(req, res, jwtPlayerEmail, "AI")
+                        setGameOverStatus(req, "AI", jwtPlayerEmail)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
                     } catch (err) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);

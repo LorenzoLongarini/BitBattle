@@ -147,19 +147,19 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
                     if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
                         try {
-                            setGameOverStatus(req, res, emailplayer0, currentPlayer2, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer2, emailplayer0, emailplayer1, emailplayer2);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
                         try {
-                            setGameOverStatus(req, res, emailplayer0, currentPlayer0, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer0, emailplayer0, emailplayer1, emailplayer2);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
                         try {
-                            setGameOverStatus(req, res, emailplayer0, currentPlayer1, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer1, emailplayer0, emailplayer1, emailplayer2);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
@@ -184,7 +184,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 }
 
 //TODO accorpare la funzione con quella presente in AI e 1v1
-export async function setGameOverStatus(req: Request, res: Response, emailplayer0: string, winner?: any, emailplayer1?: string, emailplayer2?: string) {
+export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, emailplayer1?: string, emailplayer2?: string) {
 
     await gameOver(req.body.name);
     let searchGame = await findGame(req.body.name);
@@ -205,7 +205,6 @@ export async function setGameOverStatus(req: Request, res: Response, emailplayer
         await updateUserPoints(winnerPoints, winnerEmail);
 
         scores.push(scoreWinner);
-        console.log(scores);
     } else {
         winnerEmail = winner;
         scoreWinner = {
@@ -218,7 +217,6 @@ export async function setGameOverStatus(req: Request, res: Response, emailplayer
 
     await updateWinner(req.body.name, winnerEmail);
 
-    console.log(scores);
     await setIsNotPlayingDb(emailplayer0);
     if (emailplayer1 != null) {
         await updateUserStatus(false, emailplayer1);
@@ -236,7 +234,6 @@ export async function setGameOverStatus(req: Request, res: Response, emailplayer
         };
         scores.push(scorePlayer2);
     }
-    console.log(scores);
     await updateScore(req.body.name, scores)
 }
 
