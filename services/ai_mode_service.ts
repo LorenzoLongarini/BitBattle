@@ -1,15 +1,16 @@
 import { MessageFactory } from "../status/messages_factory";
 import { Request, Response } from "express";
 import { decodeJwt } from "./jwt_service";
-import { CustomStatusCodes, Messages200, Messages400 } from "../status/status_codes";
+import { CustomStatusCodes, Messages200, Messages400, Messages500 } from "../status/status_codes";
 import { addMoveDb, findGame, gameOver, updateScore, updateWinner } from "../db/queries/games_queries";
 import { findShip, findShipHittable } from "../utils/game_utils";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
-import { findUser, updateUserPoints, updateUserStatus } from "../db/queries/user_queries";
+import { findUser, setIsNotPlayingDb, updateUserPoints, updateUserStatus } from "../db/queries/user_queries";
+import { setGameOverStatus } from "./games_service";
 
+var statusMessage: MessageFactory = new MessageFactory();
 
 export async function doMoveAIService(req: Request, res: Response) {
-    let statusMessage: MessageFactory = new MessageFactory();
     let targetMove = req.body.move;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
@@ -101,31 +102,14 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
                     try {
-                        await gameOver(req.body.name);
-                        let newPoints = currentPoints + 10;
-                        await updateUserPoints(newPoints, jwtPlayerEmail)
-                        await updateUserStatus(false, jwtPlayerEmail)
-                        await updateWinner(req.body.name, jwtPlayerEmail)
-                        let score = {
-                            player: jwtPlayerEmail,
-                            score: 10,
-                        };
-                        await updateScore(req.body.name, score)
-                        await updateWinner(req.body.name, jwtPlayerEmail)
+                        setGameOverStatus(req, currentPlayer, jwtPlayerEmail)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
                     } catch (error) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
                     };
                 } else if (reducedMovesPossibleAi.length == reducedMovesExecuteAi.length) {
                     try {
-                        await gameOver(req.body.name);
-                        await updateUserStatus(false, jwtPlayerEmail)
-                        await updateWinner(req.body.name, "AI")
-                        let score = {
-                            player: jwtPlayerEmail,
-                            score: 0,
-                        };
-                        await updateScore(req.body.name, score)
+                        setGameOverStatus(req, "AI", jwtPlayerEmail)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
                     } catch (err) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
@@ -147,3 +131,4 @@ export async function doMoveAIService(req: Request, res: Response) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
     }
 }
+
