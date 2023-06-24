@@ -103,17 +103,40 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
             let owner = await findOwner(movesPossible, targetMove);
 
-            let mod = (isPlaying0 && isPlaying1 && isPlaying2);
+            //let mod = (isPlaying0 && isPlaying1 && isPlaying2);
 
 
             let reducedMovesP0 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
             let reducedMovesP1 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
             let reducedMovesP2 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2));
 
-
             let isHittable = await findShipHittable(movesPossible, targetMove, jwtPlayer);
 
-            let currentTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, isPlaying0, isPlaying1, isPlaying2, nextMove);
+
+            let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
+            let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
+            let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+            console.log(reducedMoves0, reducedMoves1, reducedMoves2)
+
+            let pl0 = true;
+            let pl1 = true;
+            let pl2 = true;
+
+            if (reducedMovesP0.length == reducedMoves0.length) {
+                pl0 = false;
+            }
+            if (reducedMovesP1.length == reducedMoves1.length) {
+                pl1 = false;
+            }
+            if (reducedMovesP2.length == reducedMoves2.length) {
+                pl2 = false;
+            }
+
+            let mod = pl0 && pl1 && pl2;
+            console.log(mod)
+
+            let currentTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
+            console.log(currentTurn)
 
             let currentTokens = parseFloat(currentPlayer0[0].dataValues.tokens)
             if (searchGame[0].dataValues.status !== "finished") {
@@ -131,9 +154,10 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     let updatedTokens = currentTokens - 0.015;
                     await updateUserTokensDb(updatedTokens, emailplayer0);
 
-                    let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
-                    let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
-                    let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+                    reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
+                    reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
+                    reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+                    console.log(reducedMoves0, reducedMoves1, reducedMoves2)
 
                     // let firtLooser: string = "";
 
@@ -163,7 +187,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
-                    }
+                    } else { res.json({ mossa: "Mossa eseguita" }); }
 
                 } else if (currentTurn != jwtPlayer) {
                     res.json({ mossa: "Non è il tuo turno" });
@@ -171,7 +195,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     res.json({ mossa: "Non puoi attaccare la tua nave" });
                 } else if (isAvailable && isExecute) {
                     res.json({ mossa: "Mossa già eseguita" });
-                } else { res.json({ mossa: "Mossa eseguita" }); }
+                }
             } else {
                 res.json({ esito: "Partita finita" });
             }
@@ -264,11 +288,9 @@ export async function statusService(req: Request, res: Response) {
 export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
     isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
     if (move.length === 0 && mod) {
-        //move.push("loris@bitbattle.it");
         return player1;
     }
     else if (move.length === 1 && mod) {
-        //move.push("prova@bitbattle.it");
         return player3;
     } else if (mod) {
         let lastMoves = [move[move.length - 2], move[move.length - 1]]
