@@ -32,6 +32,9 @@ export enum Messages400 {
     GameIsEnded = "La partita è già terminata",
     EmailCheck = "Il formato dell'email inserita non è corretto",
     SameUser = "Non puoi inserire lo stesso utente più volte nello stesso game",
+    UserNotAvailable = "Uno o più utenti stanno già giocando in un altro game",
+    CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game"
+    
 }
 
 export enum Messages500 {

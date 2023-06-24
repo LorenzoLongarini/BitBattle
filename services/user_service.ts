@@ -1,4 +1,4 @@
-import { findUser, createUserDb, createGameDb, updateUserStatus, } from '../db/queries/user_queries';
+import { findUser, createUserDb, createGameDb, updateUserStatus, setIsPlayingDb } from '../db/queries/user_queries';
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
@@ -8,7 +8,7 @@ import { piecesOneMin, piecesTwoMin, piecesThreeMin } from "../model/game_consta
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
 import { decodeJwt } from './jwt_service';
-import { verifyIsUser, verifyDifferentUser } from '../utils/user_utils';
+import { verifyIsUser, verifyDifferentUser, verifyIsPlaying } from '../utils/user_utils';
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -91,9 +91,6 @@ export async function createGameService(req: Request, res: Response) {
             } else if (userCreator && currentTokens < 0.45) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
             } else {
-                let updatedTokens = currentTokens - 0.45;
-                await updateUserTokensDb(updatedTokens, player);
-                await updateUserStatus(true, player);
                 let possibleMoves = setShips(req.body.grid_size, req, player);
 
                 let player1 = req.body.player1;
@@ -101,29 +98,59 @@ export async function createGameService(req: Request, res: Response) {
 
 
                 let mod: string;
+                let event: number;
                 let isPresent: Boolean = true;
                 let isDifferent: Boolean = true;
+                let isCreator: Boolean = true;
+                let arePlaying: Boolean = false;
+                let isPlayingCreator = await verifyIsPlaying(player, res, isCreator)
 
-                if (player1 !== "" && player2 !== "") {
-                    isDifferent = await verifyDifferentUser(player, player1, res, isDifferent) && await verifyDifferentUser(player, player2, res, isDifferent)
-                        && await verifyDifferentUser(player1, player2, res, isDifferent);
-                    isPresent = await verifyIsUser(player1, res, isPresent) && await verifyIsUser(player2, res, isPresent);
-                    mod = "1v2";
-                } else if (player1 !== "" && player2 == "") {
-                    isDifferent = await verifyDifferentUser(player, player1, res, isDifferent);
-                    isPresent = await verifyIsUser(player1, res, isPresent);
-                    mod = "1v1";
-                } else if (player1 == "" && player2 !== "") {
-                    isDifferent = await verifyDifferentUser(player, player2, res, isDifferent)
-                    isPresent = await verifyIsUser(player2, res, isPresent)
-                    mod = "1v1";
-                } else {
-                    mod = "1vAI";
+
+                if (!isPlayingCreator) {
+                    if (player1 !== "" && player2 !== "") {
+                        isDifferent = await verifyDifferentUser(player, player1, res, isDifferent) && await verifyDifferentUser(player, player2, res, isDifferent)
+                            && await verifyDifferentUser(player1, player2, res, isDifferent);
+                        isPresent = await verifyIsUser(player1, res, isPresent) && await verifyIsUser(player2, res, isPresent);
+                        arePlaying = await verifyIsPlaying(player1, res, !isCreator) && await verifyIsPlaying(player2, res, !isCreator);
+                        mod = "1v2";
+                        event = 1;
+                    } else if (player1 !== "" && player2 == "") {
+                        isDifferent = await verifyDifferentUser(player, player1, res, isDifferent);
+                        isPresent = await verifyIsUser(player1, res, isPresent);
+                        arePlaying = await verifyIsPlaying(player1, res, !isCreator);
+                        mod = "1v1";
+                        event = 2;
+                    } else if (player1 == "" && player2 !== "") {
+                        isDifferent = await verifyDifferentUser(player, player2, res, isDifferent);
+                        isPresent = await verifyIsUser(player2, res, isPresent);
+                        arePlaying = await verifyIsPlaying(player2, res, !isCreator);
+                        mod = "1v1";
+                        event = 3;
+                    } else {
+                        mod = "1vAI";
+                        event = 4;
+                    }
+
+                    if (isPresent && isDifferent && !arePlaying) {
+                        let updatedTokens = currentTokens - 0.45;
+                        await updateUserTokensDb(updatedTokens, player);
+
+                        await setIsPlayingDb(player);
+                        if (event === 1) {
+                            await setIsPlayingDb(player1);
+                            await setIsPlayingDb(player2);
+                        } else if (event === 2) {
+                            await setIsPlayingDb(player1);
+                        } else if (event === 3) {
+                            await setIsPlayingDb(player2);
+                        }
+                        //devo settare isplaying per l'IA?
+                        const newGame: any = await createGameDb(req, possibleMoves, mod, player);
+                        res.json({ game: newGame });
+                    }
                 }
-
-                if (isPresent && isDifferent) {
-                    const newGame: any = await createGameDb(req, possibleMoves, mod, player);
-                    res.json({ game: newGame });
+                else {
+                    statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.CreatorNotAvailable)
                 }
             }
 
