@@ -164,6 +164,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     try {
                         await gameOver(req.body.name);
                         await updateWinner(req.body.name, emailplayer2);
+                        await setIsNotPlayingDb(emailplayer2)
                         res.json({ esito: "Game Over" });
 
                     } catch (err) { res.json({ errore: err }); };
@@ -171,6 +172,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     try {
                         await gameOver(req.body.name);
                         await updateWinner(req.body.name, emailplayer0);
+                        await setIsNotPlayingDb(emailplayer0)
                         res.json({ esito: "Game Over" });
 
                     } catch (err) { res.json({ errore: err }); };
@@ -178,6 +180,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     try {
                         await gameOver(req.body.name);
                         await updateWinner(req.body.name, emailplayer1);
+                        await setIsNotPlayingDb(emailplayer1)
                         res.json({ esito: "Game Over" });
 
                     } catch (err) { res.json({ errore: err }); };
