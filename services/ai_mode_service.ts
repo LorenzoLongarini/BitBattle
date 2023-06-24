@@ -2,10 +2,10 @@ import { MessageFactory } from "../status/messages_factory";
 import { Request, Response } from "express";
 import { decodeJwt } from "./jwt_service";
 import { CustomStatusCodes, Messages200, Messages400 } from "../status/status_codes";
-import { addMoveDb, findGame, gameOver } from "../db/queries/games_queries";
+import { addMoveDb, findGame, gameOver, updateScore, updateWinner } from "../db/queries/games_queries";
 import { findShip, findShipHittable } from "../utils/game_utils";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
-import { findUser, updateUserPoints } from "../db/queries/user_queries";
+import { findUser, updateUserPoints, updateUserStatus } from "../db/queries/user_queries";
 
 
 export async function doMoveAIService(req: Request, res: Response) {
@@ -13,9 +13,9 @@ export async function doMoveAIService(req: Request, res: Response) {
     let targetMove = req.body.move;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-    let player: any;
+    let jwtPlayerEmail: any;
     if (jwtDecode && jwtDecode.email) {
-        player = jwtDecode.email;
+        jwtPlayerEmail = jwtDecode.email;
 
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
@@ -34,14 +34,14 @@ export async function doMoveAIService(req: Request, res: Response) {
         let isAvailableUser = await findShip(movesPossible, targetMove, choose);
         let isExecuteUser = await findShip(movesExecute, targetMove, choose);
         let hitShipUser = await findShip(movesPossible, targetMove, !choose);
-        let isHittableUser = await findShipHittable(movesPossible, targetMove, player)
+        let isHittableUser = await findShipHittable(movesPossible, targetMove, jwtPlayerEmail)
 
         let isAvailableAi = await findShip(movesPossible, targetRand, choose);
         let isExecuteAi = await findShip(movesExecute, targetRand, choose);
         let hitShipAi = await findShip(movesPossible, targetRand, !choose);
         let isHittableAi = await findShipHittable(movesPossible, targetRand, "AI")
 
-        let currentPlayer = await findUser(player);
+        let currentPlayer = await findUser(jwtPlayerEmail);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
         let currentPoints = parseFloat(currentPlayer[0].dataValues.points)
 
@@ -54,7 +54,7 @@ export async function doMoveAIService(req: Request, res: Response) {
                 let newMoveUser = {
                     move: targetMove,
                     hit: hitShipUser,
-                    player: player
+                    player: jwtPlayerEmail
                 };
 
                 movesExecute.push(newMoveUser);
@@ -66,11 +66,11 @@ export async function doMoveAIService(req: Request, res: Response) {
                 let totalFee: number = Number(firstFee.toFixed(3));
 
                 let reducedMovesPossibleUser = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == "AI"));
-                let reducedMovesPossibleAi = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == player));
+                let reducedMovesPossibleAi = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == jwtPlayerEmail));
 
                 movesPossible = searchGame[0].dataValues.possible_moves;
                 movesExecute = searchGame[0].dataValues.moves;
-                reducedMovesExecuteUser = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == player));
+                reducedMovesExecuteUser = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == jwtPlayerEmail));
 
                 if (reducedMovesPossibleUser.length != reducedMovesExecuteUser.length) {
                     while (!isAvailableAi && isExecuteAi && !isHittableAi) {
@@ -95,7 +95,7 @@ export async function doMoveAIService(req: Request, res: Response) {
                     totalFee = Number(secondFee.toFixed(3));
 
                 }
-                await updateUserTokensDb(totalFee, player);
+                await updateUserTokensDb(totalFee, jwtPlayerEmail);
 
                 reducedMovesExecuteAi = searchGame[0].dataValues.moves.filter((move: any) => (move.hit && move.player == "AI"));
 
@@ -103,7 +103,15 @@ export async function doMoveAIService(req: Request, res: Response) {
                     try {
                         await gameOver(req.body.name);
                         let newPoints = currentPoints + 10;
-                        await updateUserPoints(newPoints, player)
+                        await updateUserPoints(newPoints, jwtPlayerEmail)
+                        await updateUserStatus(false, jwtPlayerEmail)
+                        await updateWinner(req.body.name, jwtPlayerEmail)
+                        let score = {
+                            player: jwtPlayerEmail,
+                            score: 10,
+                        };
+                        await updateScore(req.body.name, score)
+                        await updateWinner(req.body.name, jwtPlayerEmail)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
                     } catch (error) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
@@ -111,6 +119,13 @@ export async function doMoveAIService(req: Request, res: Response) {
                 } else if (reducedMovesPossibleAi.length == reducedMovesExecuteAi.length) {
                     try {
                         await gameOver(req.body.name);
+                        await updateUserStatus(false, jwtPlayerEmail)
+                        await updateWinner(req.body.name, "AI")
+                        let score = {
+                            player: jwtPlayerEmail,
+                            score: 0,
+                        };
+                        await updateScore(req.body.name, score)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
                     } catch (err) {
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
