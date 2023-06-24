@@ -27,10 +27,18 @@ export async function getAllUsersService(req: Request, res: Response) {
 export async function getClassificationService(req: Request, res: Response) {
     try {
         const users: any = await findAllUsers();
-        console.log(req.body.type)
         let type = (req.body.type == "ascendente") ? true : false;
-        console.log(type)
-        let classification = sortUsers(users, type)
+        let sortedUsers: any = sortUsers(users, type)
+        let classification: any = [];
+
+        for (let i = 0; i < sortedUsers.length; i++) {
+            let user = {
+                email: sortedUsers[i].dataValues.email,
+                points: sortedUsers[i].dataValues.points,
+            };
+            classification.push(user);
+        }
+
         res.json({ utente: classification });
 
     } catch (error) {
@@ -170,7 +178,12 @@ export async function createGameService(req: Request, res: Response) {
                                 await setIsPlayingDb(player2);
                             }
                             //devo settare isplaying per l'IA?
-                            const newGame: any = await createGameDb(req, possibleMoves, mod, player);
+
+                            if (player1 == "" && player2 != "") {
+                                player1 = player2;
+                                player2 = "";
+                            }
+                            const newGame: any = await createGameDb(req, possibleMoves, mod, player, player1, player2);
                             res.json({ game: newGame });
                         }
                     }

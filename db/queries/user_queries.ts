@@ -48,7 +48,7 @@ export async function setIsNotPlayingDb(email: string): Promise<any> {
 }
 
 
-export async function createGameDb(req: Request, possibleMoves: any[], mod: string, player: string): Promise<any> {
+export async function createGameDb(req: Request, possibleMoves: any[], mod: string, player: string, player1: string, player2: string): Promise<any> {
 
     return await game.create({
         name: req.body.name,
@@ -60,8 +60,8 @@ export async function createGameDb(req: Request, possibleMoves: any[], mod: stri
         status: "started",
         result: [],
         player0: player,
-        player1: req.body.player1,
-        player2: req.body.player2,
+        player1: player1,
+        player2: player2,
         score: []
     });
 }

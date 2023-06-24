@@ -242,18 +242,26 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
     await updateWinner(req.body.name, winnerEmail);
 
     await setIsNotPlayingDb(emailplayer0);
-    if (emailplayer1 != null) {
+    if (emailplayer0 != winnerEmail) {
+        await updateUserStatus(false, emailplayer0);
+        let scorePlayer0 = {
+            player: emailplayer0,
+            score: 0,
+        };
+        scores.push(scorePlayer0);
+    }
+    if (emailplayer1 != null && emailplayer1 != winnerEmail) {
         await updateUserStatus(false, emailplayer1);
         let scorePlayer1 = {
-            player: winnerEmail,
+            player: emailplayer1,
             score: 0,
         };
         scores.push(scorePlayer1);
     }
-    if (emailplayer2 != null) {
+    if (emailplayer2 != null && emailplayer2 != winnerEmail) {
         await updateUserStatus(false, emailplayer2);
         let scorePlayer2 = {
-            player: winnerEmail,
+            player: emailplayer2,
             score: 0,
         };
         scores.push(scorePlayer2);

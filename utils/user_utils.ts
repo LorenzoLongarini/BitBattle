@@ -34,13 +34,11 @@ export async function verifyIsPlaying(email: string, res: Response, isCreator: B
 }
 
 
-export async function sortUsers(users: any, ascendant: boolean): Promise<any> {
+export function sortUsers(users: any, ascendant: boolean): Promise<any> {
     if (!ascendant) {
-        users.sort((a: { tokens: number; }, b: { tokens: number; }) => a.tokens - b.tokens);
-        console.log(users)
+        users.sort((a: { points: number; }, b: { points: number; }) => a.points - b.points);
     } else {
-        users.sort((a: { tokens: number; }, b: { tokens: number; }) => b.tokens - a.tokens);
-        console.log(users)
+        users.sort((a: { points: number; }, b: { points: number; }) => b.points - a.points);
     }
     return users;
 }
