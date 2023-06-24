@@ -2,7 +2,7 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer, getAllUsers } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer, getAllUsers, getGamePdf } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
@@ -71,6 +71,11 @@ app.post("/move/ai", jsonParser, checkJwt, checkGameCreatorAi, (req: any, res: a
 app.post("/game/status", jsonParser, checkJwt, (req: any, res: any) => {
     getStatus(req, res);
 });
+
+app.get("/games/pdf", (req: any, res: any) => {
+    getGamePdf(req, res);
+});
+
 
 app.listen(PORT, HOST, () => {
     console.log(`server is running on PORT ${PORT}`);

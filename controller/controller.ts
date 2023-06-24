@@ -5,6 +5,7 @@ import { getGamesService, statusService, doMoveMultiplayerService } from '../ser
 import { doMoveAIService } from '../services/ai_mode_service';
 import { Request, Response } from "express";
 import { doMoveService } from '../services/single_mode_service';
+import { getGamesPdfService } from '../services/pdf_service';
 
 export const login = (req: Request, res: Response) => {
     return generateJwtService(req, res);
@@ -49,5 +50,7 @@ export const getStatus = (req: any, res: any) => {
 };
 
 
-
+export const getGamePdf = (req: any, res: any) => {
+    return getGamesPdfService(req, res);
+};
 
