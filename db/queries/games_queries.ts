@@ -6,29 +6,32 @@ export async function findAllGames(): Promise<any> {
 
 }
 
-export async function findPlayer0(player0: string): Promise<any> {
+export async function findPlayer0(name: string, player0: string): Promise<any> {
 
     return await game.findAll({
         where: {
+            name: name,
             player0: player0,
         }
     });
 
 }
 
-export async function findPlayer1(player1: string): Promise<any> {
+export async function findPlayer1(name: string, player1: string): Promise<any> {
 
     return await game.findAll({
         where: {
+            name: name,
             player1: player1,
         }
     });
 
 }
-export async function findPlayer2(player2: string): Promise<any> {
+export async function findPlayer2(name: string, player2: string): Promise<any> {
 
     return await game.findAll({
         where: {
+            name: name,
             player1: player2,
         }
     });
@@ -71,7 +74,7 @@ export async function updateWinner(name: string, email: string): Promise<any> {
     });
 }
 
-export async function updateScore(name: string, score: number): Promise<any> {
+export async function updateScore(name: string, score: any): Promise<any> {
     return await game.update({ score: score }, {
         where: {
             name: name
