@@ -37,7 +37,9 @@ export async function doMoveService(req: Request, res: Response) {
         let hitShip = await findShip(movesPossible, targetMove, !choose);
 
         let currentPlayer = await findUser(player);
-        let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
+        let creatorPlayer = await findUser(player0);
+
+        let currentTokens = parseFloat(creatorPlayer[0].dataValues.tokens)
         let currentPoints = parseFloat(currentPlayer[0].dataValues.points)
 
         let canMove = (isAvailable && !isExecute && isHittable && lastPlayer != player)

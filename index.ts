@@ -2,12 +2,14 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer, getAllUsers } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
 import { checkGameCreatorAi } from "./middleware/game_middleware";
 import { checkEmail } from "./middleware/email_middlware";
+import { checkPassword } from "./middleware/password_middleware";
+import { getClassificationService } from "./services/user_service";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -26,6 +28,14 @@ app.post("/login", jsonParser, (req: Request, res: Response) => {
     login(req, res);
 });
 
+app.get("/user/all", jsonParser, (req: Request, res: Response) => {
+    getAllUsers(req, res);
+});
+
+app.post("/user/classification", jsonParser, (req: Request, res: Response) => {
+    getClassificationService(req, res);
+});
+
 app.get("/user/tokens", jsonParser, (req: any, res: any) => {
     getUserTokens(req, res);
 });
@@ -34,7 +44,7 @@ app.put('/admin', jsonParser, checkIsAdmin, (req: any, res: any) => {
     updateTokens(req, res)
 })
 
-app.post("/register", jsonParser, checkEmail, (req: any, res: any) => {
+app.post("/register", jsonParser, checkEmail, checkPassword, (req: any, res: any) => {
     createUser(req, res);
 });
 
