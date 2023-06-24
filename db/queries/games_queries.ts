@@ -70,3 +70,12 @@ export async function updateWinner(name: string, email: string): Promise<any> {
         }
     });
 }
+
+export async function updateScore(name: string, score: number): Promise<any> {
+    return await game.update({ score: score }, {
+        where: {
+            name: name
+        }
+    });
+}
+

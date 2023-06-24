@@ -1,12 +1,14 @@
 import { findAllGames, findGame, addMoveDb, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2 } from '../db/queries/games_queries';
 import { findShip, turn, findShipHittable, findOwner } from '../utils/game_utils';
 import { Request, Response } from "express";
-import { findUser, setIsNotPlayingDb } from '../db/queries/user_queries';
+import { findUser, setIsNotPlayingDb, updateUserPoints } from '../db/queries/user_queries';
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages200, Messages400, Messages500 } from '../status/status_codes'
 import { decodeJwt } from './jwt_service';
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes';
+
+let statusMessage: MessageFactory = new MessageFactory();
 
 export async function getGamesService(req: Request, res: Response) {
     try {
@@ -44,7 +46,7 @@ export async function findPlayer1Service(player1: string, res: Response): Promis
 }
 
 export async function findPlayer2Service(player2: string, res: Response): Promise<boolean> {
-    let statusMessage: MessageFactory = new MessageFactory();
+
     let exist = false;
     try {
         let creator = await findPlayer2(player2);
@@ -60,147 +62,151 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
     let targetMove = req.body.move;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-    let player: any;
+    let jwtPlayer: any;
     if (jwtDecode && jwtDecode.email) {
-        player = jwtDecode.email;
+        jwtPlayer = jwtDecode.email;
 
+        try {
+            let searchGame = await findGame(req.body.name);
+            let movesPossible = searchGame[0].dataValues.possible_moves;
+            let movesExecute = searchGame[0].dataValues.moves;
+
+            let emailplayer0 = searchGame[0].dataValues.player0;
+            let emailplayer1 = searchGame[0].dataValues.player1;
+            let emailplayer2 = searchGame[0].dataValues.player2;
+            let currentPlayer0 = await findUser(emailplayer0);
+
+            //TODO gestione nel caso in cui una partita singola viene fatta iniziare dalla rotta multiplayer
+            let currentPlayer1 = await findUser(emailplayer1);
+            let currentPlayer2 = await findUser(emailplayer2);
+            let isPlaying0 = currentPlayer0[0].dataValues.isplaying;
+            let isPlaying1 = currentPlayer1[0].dataValues.isplaying;
+            let isPlaying2 = currentPlayer2[0].dataValues.isplaying;
+
+
+            let movesEmail = []
+            if (movesExecute.length != 0)
+                for (let i in movesExecute) {
+                    movesEmail.push(searchGame[0].dataValues.moves[i].player);
+                }
+
+            const nextMove = [[emailplayer0, emailplayer2],
+            [emailplayer2, emailplayer1],
+            [emailplayer1, emailplayer2],
+            [emailplayer2, emailplayer0],
+            [emailplayer0, emailplayer1],
+            [emailplayer1, emailplayer0]];
+
+            let choose = true;
+            let isAvailable = await findShip(movesPossible, targetMove, choose);
+            let isExecute = await findShip(movesExecute, targetMove, choose);
+
+            let hitShip = await findShip(movesPossible, targetMove, !choose);
+
+            let owner = await findOwner(movesPossible, targetMove);
+
+            let mod = (isPlaying0 && isPlaying1 && isPlaying2);
+
+
+            let reducedMovesP0 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
+            let reducedMovesP1 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
+            let reducedMovesP2 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2));
+
+
+            let isHittable = await findShipHittable(movesPossible, targetMove, jwtPlayer);
+
+            let currentTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, isPlaying0, isPlaying1, isPlaying2, nextMove);
+
+            let currentTokens = parseFloat(currentPlayer0[0].dataValues.tokens)
+            if (searchGame[0].dataValues.status !== "finished") {
+                if (isAvailable && !isExecute && currentTurn == jwtPlayer && isHittable) {
+
+                    let newMove = {
+                        move: targetMove,
+                        hit: hitShip,
+                        player: jwtPlayer,
+                        owner: owner
+                    };
+
+                    movesExecute.push(newMove);
+                    await addMoveDb(req.body.name, movesExecute);
+                    let updatedTokens = currentTokens - 0.015;
+                    await updateUserTokensDb(updatedTokens, emailplayer0);
+
+                    let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
+                    let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
+                    let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+
+                    // let firtLooser: string = "";
+
+                    // if (reducedMovesP0.length == reducedMoves0.length || reducedMovesP1.length == reducedMoves1.length || reducedMovesP2.length == reducedMoves2.length && firtLooser = "") {
+                    //     switch (true) {
+                    //         case (reducedMovesP0.length == reducedMoves0.length): firtLooser = emailplayer0;
+                    //         case (reducedMovesP1.length == reducedMoves1.length): firtLooser = emailplayer1;
+                    //         case (reducedMovesP2.length == reducedMoves2.length): firtLooser = emailplayer2;
+                    //     }
+                    // }
+
+                    if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
+                        try {
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer2);
+                            res.json({ esito: "Game Over" });
+
+                        } catch (err) { res.json({ errore: err }); };
+                    } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
+                        try {
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer0);
+                            res.json({ esito: "Game Over" });
+
+                        } catch (err) { res.json({ errore: err }); };
+                    } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
+                        try {
+                            setFinalGameStatus(emailplayer0, emailplayer1, emailplayer2, res, req, currentPlayer1);
+                            res.json({ esito: "Game Over" });
+
+                        } catch (err) { res.json({ errore: err }); };
+                    }
+                    res.json({ mossa: "Mossa eseguita" });
+                } else if (currentTurn != jwtPlayer) {
+                    res.json({ mossa: "Non è il tuo turno" });
+                } else if (!isHittable) {
+                    res.json({ mossa: "Non puoi attaccare la tua nave" });
+                } else if (isAvailable && isExecute) {
+                    res.json({ mossa: "Mossa già eseguita" });
+                }
+            } else {
+                res.json({ esito: "Partita finita" });
+            }
+        } catch (error) {
+            res.status(StatusCodes.BAD_REQUEST).json({ error: "La partita non esiste" });
+        }
     } else {
         res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
     }
-
-    try {
-        let searchGame = await findGame(req.body.name);
-        let movesPossible = searchGame[0].dataValues.possible_moves;
-        let movesExecute = searchGame[0].dataValues.moves;
-
-        let emailplayer0 = searchGame[0].dataValues.player0;
-        let emailplayer1 = searchGame[0].dataValues.player1;
-        let emailplayer2 = searchGame[0].dataValues.player2;
-        let currentPlayer0 = await findUser(emailplayer0);
-        let currentPlayer1 = await findUser(emailplayer1);
-        let currentPlayer2 = await findUser(emailplayer2);
-        let isPlaying0 = currentPlayer0[0].dataValues.isplaying;
-        let isPlaying1 = currentPlayer1[0].dataValues.isplaying;
-        let isPlaying2 = currentPlayer2[0].dataValues.isplaying;
-
-
-        let movesEmail = []
-        if (movesExecute.length != 0)
-            for (let i in movesExecute) {
-                movesEmail.push(searchGame[0].dataValues.moves[i].player);
-            }
-
-        const turnOrder = ["loris@bitbattle.it", "prova@bitbattle.it",
-            "lorenzo@bitbattle.it", "prova@bitbattle.it",
-            "loris@bitbattle.it", "lorenzo@bitbattle.it"];
-        const nextMove = [["loris@bitbattle.it", "prova@bitbattle.it"],
-        ["prova@bitbattle.it", "lorenzo@bitbattle.it"],
-        ["lorenzo@bitbattle.it", "prova@bitbattle.it"],
-        ["prova@bitbattle.it", "loris@bitbattle.it"],
-        ["loris@bitbattle.it", "lorenzo@bitbattle.it"],
-        ["lorenzo@bitbattle.it", "loris@bitbattle.it"]];
-
-        let choose = true;
-        let isAvailable = await findShip(movesPossible, targetMove, choose);
-        let isExecute = await findShip(movesExecute, targetMove, choose);
-
-        let hitShip = await findShip(movesPossible, targetMove, !choose);
-        let currentPlayer = await findUser(player);
-
-        let owner = await findOwner(movesPossible, targetMove);
-
-        let mod = (isPlaying0 && isPlaying1 && isPlaying2);
-
-
-        let reducedMovesP1 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
-        let reducedMovesP2 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
-        let reducedMovesP3 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2));
-
-        console.log(reducedMovesP1, reducedMovesP2, reducedMovesP3)
-
-
-        let is = await findShipHittable(movesPossible, targetMove, player);
-
-        let emailchigioca = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, isPlaying0, isPlaying1, isPlaying2, nextMove);
-
-        let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
-        if (searchGame[0].dataValues.status !== "finished") {
-            if (isAvailable && !isExecute && emailchigioca == player && is) {
-
-                let newMove = {
-                    move: targetMove,
-                    hit: hitShip,
-                    player: player,
-                    owner: owner
-                };
-
-                movesExecute.push(newMove);
-                await addMoveDb(req.body.name, movesExecute);
-                let updatedTokens = currentTokens - 0.015;
-                await updateUserTokensDb(updatedTokens, emailplayer0);
-
-                let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
-                let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
-                let reducedMoves3 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
-
-                console.log(reducedMoves1, reducedMoves2, reducedMoves3)
-
-                if (reducedMovesP1.length == reducedMoves1.length) {
-                    await setIsNotPlayingDb(emailplayer0)
-
-                }
-                if (reducedMovesP2.length == reducedMoves2.length) {
-                    await setIsNotPlayingDb(emailplayer1)
-
-                }
-                if (reducedMovesP3.length == reducedMoves3.length) {
-                    await setIsNotPlayingDb(emailplayer2)
-
-                }
-
-
-
-                if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
-                    try {
-                        await gameOver(req.body.name);
-                        await updateWinner(req.body.name, emailplayer2);
-                        await setIsNotPlayingDb(emailplayer2)
-                        res.json({ esito: "Game Over" });
-
-                    } catch (err) { res.json({ errore: err }); };
-                } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP3.length == reducedMoves3.length) {
-                    try {
-                        await gameOver(req.body.name);
-                        await updateWinner(req.body.name, emailplayer0);
-                        await setIsNotPlayingDb(emailplayer0)
-                        res.json({ esito: "Game Over" });
-
-                    } catch (err) { res.json({ errore: err }); };
-                } else if (reducedMovesP3.length == reducedMoves3.length && reducedMovesP1.length == reducedMoves1.length) {
-                    try {
-                        await gameOver(req.body.name);
-                        await updateWinner(req.body.name, emailplayer1);
-                        await setIsNotPlayingDb(emailplayer1)
-                        res.json({ esito: "Game Over" });
-
-                    } catch (err) { res.json({ errore: err }); };
-                }
-                res.json({ mossa: "Mossa eseguita" });
-            } else if (emailchigioca != player) {
-                res.json({ mossa: "Non è il tuo turno" });
-            } else if (!is) {
-                res.json({ mossa: "Non puoi attaccare la tua nave" });
-            } else if (isAvailable && isExecute) {
-                res.json({ mossa: "Mossa già eseguita" });
-            }
-        } else {
-            res.json({ esito: "Partita finita" });
-        }
-    } catch (error) {
-        res.status(StatusCodes.BAD_REQUEST).json({ error: "La partita non esiste" });
-    }
 }
 
+
+async function setFinalGameStatus(emailplayer0: string, emailplayer1: string, emailplayer2: string, res: Response, req: Request, winner: any) {
+    try {
+        await gameOver(req.body.name);
+        await setIsNotPlayingDb(emailplayer0);
+        await setIsNotPlayingDb(emailplayer1);
+        await setIsNotPlayingDb(emailplayer2);
+
+        let winnerEmail = winner[0].dataValues.email;
+        await updateWinner(req.body.name, winnerEmail);
+
+        let currentPoints = parseFloat(winner[0].dataValues.points)
+        let winnerPoints = currentPoints + 10;
+
+        await updateUserPoints(winnerPoints, winnerEmail);
+
+
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
+    }
+
+}
 
 
 export async function statusService(req: Request, res: Response) {
@@ -225,7 +231,7 @@ export async function statusService(req: Request, res: Response) {
 }
 
 
-
+//TODO verificare se possibile ridurre numero di parametri
 export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
     isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
     if (move.length === 0 && mod) {
