@@ -13,6 +13,12 @@ export async function findUser(email: any): Promise<any> {
 
 }
 
+export async function findAllUsers(): Promise<any> {
+
+    return await user.findAll();
+
+}
+
 export async function createUserDb(req: any): Promise<any> {
 
     return await user.create({
@@ -42,7 +48,7 @@ export async function setIsNotPlayingDb(email: string): Promise<any> {
 }
 
 
-export async function createGameDb(req: Request, possibleMoves: any[], mod: string, player:string): Promise<any> {
+export async function createGameDb(req: Request, possibleMoves: any[], mod: string, player: string): Promise<any> {
 
     return await game.create({
         name: req.body.name,

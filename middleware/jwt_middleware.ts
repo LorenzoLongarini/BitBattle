@@ -8,7 +8,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     const jwtBearerToken = req.headers.authorization;
     const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
 
-    if (jwtDecode && jwtDecode.email) {
+    if (jwtDecode && jwtDecode.email && jwtDecode.password) {
         next();
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
