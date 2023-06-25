@@ -103,8 +103,6 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
             let owner = await findOwner(movesPossible, targetMove);
 
-            //let mod = (isPlaying0 && isPlaying1 && isPlaying2);
-
 
             let reducedMovesP0 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
             let reducedMovesP1 = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
@@ -116,27 +114,29 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
             let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
             let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
             let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
-            console.log(reducedMoves0, reducedMoves1, reducedMoves2)
 
             let pl0 = true;
             let pl1 = true;
             let pl2 = true;
+            let firstLooser = "";
 
-            if (reducedMovesP0.length == reducedMoves0.length) {
+
+            if (reducedMovesP0.length == reducedMoves0.length && firstLooser === "") {
                 pl0 = false;
+                firstLooser = emailplayer0
             }
-            if (reducedMovesP1.length == reducedMoves1.length) {
+            if (reducedMovesP1.length == reducedMoves1.length && firstLooser === "") {
                 pl1 = false;
+                firstLooser = emailplayer1
             }
-            if (reducedMovesP2.length == reducedMoves2.length) {
+            if (reducedMovesP2.length == reducedMoves2.length && firstLooser === "") {
                 pl2 = false;
+                firstLooser = emailplayer2
             }
-
+            
             let mod = pl0 && pl1 && pl2;
-            console.log(mod)
 
             let currentTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
-            console.log(currentTurn)
 
             let currentTokens = parseFloat(currentPlayer0[0].dataValues.tokens)
             if (searchGame[0].dataValues.status !== "finished") {
@@ -157,33 +157,22 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
                     reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
                     reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
-                    console.log(reducedMoves0, reducedMoves1, reducedMoves2)
-
-                    // let firtLooser: string = "";
-
-                    // if (reducedMovesP0.length == reducedMoves0.length || reducedMovesP1.length == reducedMoves1.length || reducedMovesP2.length == reducedMoves2.length && firtLooser = "") {
-                    //     switch (true) {
-                    //         case (reducedMovesP0.length == reducedMoves0.length): firtLooser = emailplayer0;
-                    //         case (reducedMovesP1.length == reducedMoves1.length): firtLooser = emailplayer1;
-                    //         case (reducedMovesP2.length == reducedMoves2.length): firtLooser = emailplayer2;
-                    //     }
-                    // }
 
                     if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
                         try {
-                            setGameOverStatus(req, currentPlayer2, emailplayer0, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer2, emailplayer0, emailplayer1, emailplayer2, firstLooser);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
                         try {
-                            setGameOverStatus(req, currentPlayer0, emailplayer0, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer0, emailplayer0, emailplayer1, emailplayer2, firstLooser);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
                     } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
                         try {
-                            setGameOverStatus(req, currentPlayer1, emailplayer0, emailplayer1, emailplayer2);
+                            setGameOverStatus(req, currentPlayer1, emailplayer0, emailplayer1, emailplayer2, firstLooser);
                             res.json({ esito: "Game Over" });
 
                         } catch (err) { res.json({ errore: err }); };
@@ -208,7 +197,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 }
 
 //TODO accorpare la funzione con quella presente in AI e 1v1
-export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, emailplayer1?: string, emailplayer2?: string) {
+export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, emailplayer1?: string, emailplayer2?: string, firstLooser?: string) {
 
     await gameOver(req.body.name);
     let searchGame = await findGame(req.body.name);
@@ -241,29 +230,59 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
 
     await updateWinner(req.body.name, winnerEmail);
 
+    let score0 = 0;
+    let score1 = 0;
+    let score2 = 0;
+
+    switch (true) {
+        case (firstLooser === emailplayer0 && emailplayer1 === winnerEmail): { score0 = 0; score1 = 10; score2 = 4; break; }
+        case (firstLooser === emailplayer0 && emailplayer2 === winnerEmail): { score0 = 0; score1 = 4; score2 = 10; break; }
+        case (firstLooser === emailplayer1 && emailplayer0 === winnerEmail): { score0 = 10; score1 = 0; score2 = 4; break; }
+        case (firstLooser === emailplayer1 && emailplayer2 === winnerEmail): { score0 = 4; score1 = 0; score2 = 10; break; }
+        case (firstLooser === emailplayer2 && emailplayer0 === winnerEmail): { score0 = 10; score1 = 4; score2 = 0; break; }
+        case (firstLooser === emailplayer2 && emailplayer1 === winnerEmail): { score0 = 4; score1 = 10; score2 = 0; break; }
+        default:
+            console.log('errore');
+    }
+
     await setIsNotPlayingDb(emailplayer0);
     if (emailplayer0 != winnerEmail) {
         await updateUserStatus(false, emailplayer0);
         let scorePlayer0 = {
             player: emailplayer0,
-            score: 0,
+            score: score0,
         };
+
+        let user0 = await findUser(emailplayer0)
+        let currentPoints = parseFloat(user0[0].dataValues.points)
+        let winnerPoints = currentPoints + score0;
+        await updateUserPoints(winnerPoints, emailplayer0);
         scores.push(scorePlayer0);
     }
     if (emailplayer1 != null && emailplayer1 != winnerEmail) {
         await updateUserStatus(false, emailplayer1);
         let scorePlayer1 = {
             player: emailplayer1,
-            score: 0,
+            score: score1,
         };
+
+        let user1 = await findUser(emailplayer1)
+        let currentPoints = parseFloat(user1[0].dataValues.points)
+        let winnerPoints = currentPoints + score1;
+        await updateUserPoints(winnerPoints, emailplayer1);
         scores.push(scorePlayer1);
     }
     if (emailplayer2 != null && emailplayer2 != winnerEmail) {
         await updateUserStatus(false, emailplayer2);
         let scorePlayer2 = {
             player: emailplayer2,
-            score: 0,
+            score: score2,
         };
+
+        let user2 = await findUser(emailplayer2)
+        let currentPoints = parseFloat(user2[0].dataValues.points)
+        let winnerPoints = currentPoints + score2;
+        await updateUserPoints(winnerPoints, emailplayer2);
         scores.push(scorePlayer2);
     }
     await updateScore(req.body.name, scores)
