@@ -34,11 +34,11 @@ INSERT INTO users (email, password, tokens, isadmin, isplaying, points) VALUES
  ('prova@bitbattle.it','bitbattle2',10.00,true,false, 1);
 
 INSERT INTO game (player0,player1, player2, name, grid_size, ships, possible_moves,  moves, status, winner, score) VALUES
- ('loris@bitbattle.it','','', 'game_1',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
+ ('loris@bitbattle.it','lorenzo@bitbattle.it','', 'game_1',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
  '[{"move": [1, 1], "ship": 0, "owner":""}, {"move": [1, 2], "ship": 1, "owner":"loris@bitbattle.it"}, {"move": [2, 1], "ship": 0, "owner":""}, {"move": [2, 2], "ship": 1, "owner":"lorenzo@bitbattle.it"}]',   
  '[{"move": [1, 1], "hit": false, "player": "loris@bitbattle.it"}, {"move": [1, 2], "hit": true, "player": "lorenzo@bitbattle.it"}, {"move": [2, 1], "hit": false, "player": "loris@bitbattle.it"}]', 
  'started', 'lorenzo@bitbattle.it', '[{"player":"loris@bitbattle.it","points": 1},{"player": "lorenzo@bitbattle.it", "points": 15}]' ),
- ('loris@bitbattle.it','','','game_2',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
+ ('loris@bitbattle.it','lorenzo@bitbattle.it','','game_2',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
  '[{"move": [1, 1], "ship": 0, "owner":""}, {"move": [1, 2], "ship": 1, "owner":"loris@bitbattle.it"}, {"move": [2, 1], "ship": 0, "owner":""}, {"move": [2, 2], "ship": 1, "owner":"lorenzo@bitbattle.it"}]',   
  '[{"move": [2, 1], "hit": false, "player": "lorenzo@bitbattle.it"}, {"move": [1, 2], "hit": true, "player": "loris@bitbattle.it"}]', 
  'finished', 'loris@bitbattle.it', '[{"player":"loris@bitbattle.it", "points": 12},{"player": "lorenzo@bitbattle.it", "points": 11}]' );

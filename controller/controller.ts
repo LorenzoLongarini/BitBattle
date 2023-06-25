@@ -1,11 +1,12 @@
 // import { generateJwt } from '../services/jwt';
 import { generateJwtService } from '../services/jwt_service';
-import { createUserService, getTokensService, createGameService, getAllUsersService, getClassificationService } from '../services/user_service';
+import { createUserService, getTokensService, createGameService, getAllUsersService } from '../services/user_service';
 import { getGamesService, statusService, doMoveMultiplayerService } from '../services/games_service';
 import { doMoveAIService } from '../services/ai_mode_service';
 import { Request, Response } from "express";
 import { doMoveService } from '../services/single_mode_service';
 import { getGamesPdfService } from '../services/pdf_service';
+import { getClassificationService, getUserStatsService } from '../services/stats_service';
 
 export const login = (req: Request, res: Response) => {
     return generateJwtService(req, res);
@@ -52,5 +53,9 @@ export const getStatus = (req: any, res: any) => {
 
 export const getGamePdf = (req: any, res: any) => {
     return getGamesPdfService(req, res);
+};
+
+export const getStats = (req: any, res: any) => {
+    return getUserStatsService(req, res);
 };
 
