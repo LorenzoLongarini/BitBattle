@@ -31,7 +31,7 @@ export enum Messages400 {
     NotYourTurn = "Non puoi eseguire questa mossa, non è il tuo turno",
     GameIsEnded = "La partita è già terminata",
     EmailCheck = "Il formato dell'email inserita non è corretto",
-    PasswordCheck = "La password deve contenere un numero, un carattere speciale, un carattere maiuscolo e uno minuscolo",
+    PasswordCheck = "La password deve contenere almeno 8 caratteri ed un numero, un carattere speciale, un carattere maiuscolo e uno minuscolo",
     SameUser = "Non puoi inserire lo stesso utente più volte nello stesso game",
     UserNotAvailable = "Uno o più utenti stanno già giocando in un altro game",
     CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game"
