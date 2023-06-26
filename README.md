@@ -41,6 +41,10 @@
 *Le specifiche del progetto sono state fornite direttamente dal docente [*Adriano Mancini*](https://github.com/manciniadriano):
 Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. In particolare, il sistema deve prevedere la possibilità di far interagire due o tre utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Ci possono essere più partite attive in un dato momento. Un utente può allo stesso tempo partecipare ad una ed una sola partita. Si chiede di sviluppare anche la possibilità di giocare contro l’elaboratore (di seguito IA). Nel caso di IA la logica può essere semplice (mosse randomiche all’interno della griglia) o tenere in considerazione lo storico delle mosse (es. cercare nei vicini); l’implementazione è carico del gruppo. Nel caso di gioco a tre player la turnazione deve essere A->B, C->A, B->C , C->B, A->C, B->A (il gioco potrebbe non essere equo)*
 
+<p align="center">
+<img  width="500" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+</p>
+
 *Dare la possibilità di creare una nuova partita specificando (codifica a scelta dello studente):*
 - *Tipologia: utente contro utente o utente contro IA o utente contro 2 utenti*
 - *Dimensione della griglia *
@@ -79,19 +83,28 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 *Si chiede di commentare opportunamente il codice.*
 
 <p align="center">
-<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/tree/main/assets/imgs/home.PNG">
+<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </p>
 
 ## Progettazione
-### Diagrammi UML
-### Pattern utilizzati
-  
-p align="center">
-<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/tree/main/assets/imgs/home.PNG">
-</p>
-## Funzionamento
 
+### Diagrammi UML
+
+### Pattern utilizzati
+
+#### MVCS
   
+#### Middleware
+
+#### Middleware
+
+#### Middleware
+
+<p align="center">
+<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+</p>
+
+## Funzionamento
 
 ```mermaid
 
@@ -163,8 +176,8 @@ controller->>- Client : result: res.json()
 
 ```
 
-  p align="center">
-<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/tree/main/assets/imgs/home.PNG">
+<p align="center">
+<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </p>
 
 ## Testing
@@ -172,13 +185,14 @@ controller->>- Client : result: res.json()
   
 
   
-p align="center">
-<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/tree/main/assets/imgs/home.PNG">
+<p align="center">
+<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </p>
+
 ## Autori
 - [*Longarini Lorenzo*](https://github.com/LorenzoLongarini)
 - [*Ramovini Loris*](https://github.com/lorisramovini)
 
-p align="center">
-<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/tree/main/assets/imgs/home.PNG">
+<p align="center">
+<img  width="260" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </p>
