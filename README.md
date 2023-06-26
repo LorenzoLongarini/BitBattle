@@ -96,6 +96,25 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 
 ## Progettazione
 
+### Rotte
+<table align="center">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Rotta</th>
+            <th>Parametri</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+         <td> POST</td>
+         <td> /admin</td>
+         <td> email, tokens </td>
+        </tr>
+        <tr>
+    </tbody>
+ </table>
+
 ### Diagrammi UML
 
 ### Pattern utilizzati
