@@ -133,7 +133,9 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                 pl2 = false;
                 firstLooser = emailplayer2
             }
-            
+
+            console.log(firstLooser)
+
             let mod = pl0 && pl1 && pl2;
 
             let currentTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
@@ -354,5 +356,67 @@ export function isTurn(player1: any, player2: any, player3: any, move: any, mod:
         } else {
             return play1;
         }
+    }
+}
+
+
+export async function turnService(req: Request, res: Response) {
+    let errorMessage: MessageFactory = new MessageFactory();
+
+
+    try {
+        let nameGame = req.body.name;
+        let game = await findGame(nameGame);
+
+        if (game[0].dataValues.status !== "finished") {
+            let movesExecute = game[0].dataValues.moves;
+
+            let movesEmail = []
+            if (movesExecute.length != 0)
+                for (let i in movesExecute) {
+                    movesEmail.push(game[0].dataValues.moves[i].player);
+                }
+
+            let emailplayer0 = game[0].dataValues.player0;
+            let emailplayer1 = game[0].dataValues.player1;
+            let emailplayer2 = game[0].dataValues.player2;
+
+            let reducedMovesP0 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
+            let reducedMovesP1 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
+            let reducedMovesP2 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2));
+
+
+            let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
+            let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
+            let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+
+            const nextMove = [[emailplayer0, emailplayer2],
+            [emailplayer2, emailplayer1],
+            [emailplayer1, emailplayer2],
+            [emailplayer2, emailplayer0],
+            [emailplayer0, emailplayer1],
+            [emailplayer1, emailplayer0]];
+
+            let pl0 = true;
+            let pl1 = true;
+            let pl2 = true;
+
+            if (reducedMovesP0.length == reducedMoves0.length) {pl0 = false;}
+            if (reducedMovesP1.length == reducedMoves1.length) {pl1 = false;}
+            if (reducedMovesP2.length == reducedMoves2.length) {pl2 = false;}
+
+            let mod = pl0 && pl1 && pl2;
+
+            let nextTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
+
+            res.json({ turn: nextTurn });
+        }else {
+            res.status(StatusCodes.BAD_REQUEST).json({ error: "La partita è terminata" });
+
+        }
+
+    } catch (error) {
+        console.error('Error :', error);
+        throw error;
     }
 }
