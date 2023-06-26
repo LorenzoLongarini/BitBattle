@@ -1,7 +1,9 @@
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findUser } from '../db/queries/user_queries';
-import { StatusCodes } from "http-status-codes";
+import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes';
+import { MessageFactory } from '../status/messages_factory';
 
+var statusMessage: MessageFactory = new MessageFactory();
 
 export async function updateUserTokensService(req: any, res: any) {
     try {
@@ -10,16 +12,16 @@ export async function updateUserTokensService(req: any, res: any) {
         const tokens = req.body.tokens;
 
         if (user.length != 0) {
-            res.json({ tokens: tokens });
-
             await updateUserTokensDb(req.body.tokens, req.body.email);
+            let message = JSON.parse(JSON.stringify({ tokens: tokens }));
+            statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
 
         } else {
-            res.status(StatusCodes.BAD_REQUEST).send({ esito: "Impossibile aggiungere token, l\'utente non esiste" })
+            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.UserNotFound);
         }
 
     } catch (e) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
 
     }
 }

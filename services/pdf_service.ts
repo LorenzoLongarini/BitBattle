@@ -3,8 +3,8 @@ import fs from 'fs';
 import { Request, Response } from "express";
 import { generateStats } from './stats_service';
 import { MessageFactory } from '../status/messages_factory';
-import { CustomStatusCodes, Messages400 } from '../status/status_codes';
-import { decodeJwt } from './jwt_service';
+import { CustomStatusCodes, Messages200, Messages500 } from '../status/status_codes';
+import { getJwtEmail } from './jwt_service';
 
 let statusMessage: MessageFactory = new MessageFactory();
 
@@ -16,37 +16,26 @@ export function generatePDF(res: Response, stats: any) {
         pdf.pipe(stream);
         pdf.fontSize(12).text(JSON.stringify(stats), 5, 10);
         pdf.end();
-
         stream.on('finish', () => {
             res.download('/usr/src/app/pdf/file.pdf', 'file.pdf', (err) => {
                 if (err) {
-                    console.error('Errore durante il download del file PDF:', err);
+                    statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.PdfUnable);
                 } else {
-                    console.log('File PDF scaricato con successo.');
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.PdfSuccess);
                 }
             });
         });
-
     } catch (error) {
-        console.log(error)
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
 }
 
 export async function getGamesPdfService(req: Request, res: Response) {
     try {
-        let jwtBearerToken = req.headers.authorization;
-        let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-        let jwtPlayerEmail: any;
-        if (jwtDecode && jwtDecode.email) {
-            jwtPlayerEmail = jwtDecode.email;
-            let stats = await generateStats(req, jwtPlayerEmail)
-            generatePDF(res, stats)
-        } else {
-            statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
-        }
-
+        let jwtPlayerEmail = getJwtEmail(req);
+        let stats = await generateStats(req, jwtPlayerEmail)
+        generatePDF(res, stats)
     } catch (error) {
-        console.error('Error :', error);
-        throw error;
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
 }

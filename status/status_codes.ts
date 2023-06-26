@@ -11,7 +11,11 @@ export enum Messages200 {
     AiWin = "Game Over, AI ha vinto",
     Win = "Hai vinto!",
     Hit = "Colpito!",
-    Flop = "Acqua!"
+    Flop = "Acqua!",
+    JwtCreated = "Jwt creato correttamente!",
+    UserCreateSuccess = "Utente creato con successo",
+    PdfSuccess = "File PDF scaricato con successo."
+
 
 }
 export enum Messages300 {
@@ -26,7 +30,7 @@ export enum Messages400 {
     NoTokens = "Tokens insufficienti per creare il game, contattare l\'amministratore",
     UserNotFound = "Non è possibile trovare l\'utente specificato",
     GameNotFound = "Non è possibile trovare il game specificato",
-    MoveUnauthorized = "Non puoi eseguire questa mossa",
+    MoveUnauthorized = "Non puoi eseguire questa mossa, è presente la tua nave",
     MoveAlreadyDone = "Mossa già eseguita",
     NotYourTurn = "Non puoi eseguire questa mossa, non è il tuo turno",
     GameIsEnded = "La partita è già terminata",
@@ -40,6 +44,7 @@ export enum Messages400 {
 
 export enum Messages500 {
     ImpossibileCreation = "Non è possibile creare il game",
-    InternalServerError = "Errore interno al server"
+    InternalServerError = "Errore interno al server",
+    PdfUnable = "Impossibile generare file pdf"
 
 }
