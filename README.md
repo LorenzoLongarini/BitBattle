@@ -18,7 +18,7 @@
   
 </p>
 <p  align="center">
-## Indice
+ Indice
 </p>
 
 </p>
@@ -42,7 +42,9 @@
   
   
 **Descrizione del progetto:**
+
 *Le specifiche del progetto sono state fornite direttamente dal docente [*Adriano Mancini*](https://github.com/manciniadriano):
+
 Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. In particolare, il sistema deve prevedere la possibilità di far interagire due o tre utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Ci possono essere più partite attive in un dato momento. Un utente può allo stesso tempo partecipare ad una ed una sola partita. Si chiede di sviluppare anche la possibilità di giocare contro l’elaboratore (di seguito IA). Nel caso di IA la logica può essere semplice (mosse randomiche all’interno della griglia) o tenere in considerazione lo storico delle mosse (es. cercare nei vicini); l’implementazione è carico del gruppo. Nel caso di gioco a tre player la turnazione deve essere A->B, C->A, B->C , C->B, A->C, B->A (il gioco potrebbe non essere equo)*
 
 <p align="center">
@@ -87,7 +89,7 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 *Si chiede di commentare opportunamente il codice.*
 
 <p align="center">
-<a href="#indice">
+<a href="#obiettivi-del-progetto">
 <img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
@@ -101,36 +103,36 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 #### MVCS
 
 <p align="center">
-<img  width="100" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
+<img  width="250" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
 </p>
 
 #### Singleton
 
 <p align="center">
-<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/singleton.png">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/singleton.png">
 </p>
 
 #### Abstract
 
 <p align="center">
-<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/abstract.png">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/abstract.png">
 </p>
 
 #### Factory
 
 <p align="center">
-<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/factory.png">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/factory.png">
 </p>
 
 #### Middleware
 
 <p align="center">
-<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/middleware.png">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/middleware.png">
 </p>
 
 
 <p align="center">
-<a href="#indice">
+<a href="#progettazione">
 <img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
@@ -139,81 +141,48 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 
 ### /admin
 
+
+~~~
+{
+	"email":"loris@bitbattle.it",
+	"tokens": 30.00
+}
+~~~
+
 ```mermaid
-
-  
-
 sequenceDiagram
-
-  
-
 autonumber
 
-  
-
 Client ->> app: /admin
-
-  
-
 app ->>+ middleware: jsonParser()
-
-  
-
 middleware ->>- app : next()
-
-  
-
 app ->>+ middleware: checkIsAdmin()
-
-  
-
 middleware ->>- app : next()
-
-  
-
 app ->>+ controller: updateTokens()
-
-  
-
 controller->>+ service: updateUserTokensService()
-
-  
-
 service ->>+ model: updateUserTokensDb()
-
-  
-
 model ->>+ service : status: res.status()
-
-  
-
 model ->>- service : result: res.json()
-
-  
-
 service ->>+ controller: status: res.status()
-
-  
-
 service ->>- controller: result: res.json()
-
-  
-
 controller->>+ Client : status: res.status()
-
-  
-
 controller->>- Client : result: res.json()
-
-  
-
 ```
+~~~
+{
+	"OK": {
+		"tokens": 30
+	}
+}
+~~~
 
 <p align="center">
-<a href="#indice">
+<a href="#funzionamento">
 <img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
+
+### /login
 
 ## Testing
 
@@ -221,7 +190,7 @@ controller->>- Client : result: res.json()
 
   
 <p align="center">
-<a href="## Indice">
+<a href="#testing">
 <img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
