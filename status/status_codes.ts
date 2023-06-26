@@ -34,7 +34,8 @@ export enum Messages400 {
     PasswordCheck = "La password deve contenere almeno 8 caratteri ed un numero, un carattere speciale, un carattere maiuscolo e uno minuscolo",
     SameUser = "Non puoi inserire lo stesso utente più volte nello stesso game",
     UserNotAvailable = "Uno o più utenti stanno già giocando in un altro game",
-    CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game"
+    CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game",
+    StatsNotAvalaible = "Statische non disponibili"
 
 }
 
