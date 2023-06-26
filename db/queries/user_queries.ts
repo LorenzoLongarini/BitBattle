@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import { user } from '../../model/user';
 import { game } from '../../model/game';
 import { Request } from "express";
@@ -64,11 +63,11 @@ export async function createGameDb(req: Request, possibleMoves: any[], mod: stri
         player0: player,
         player1: player1,
         player2: player2,
-        score: []
+        score: [],
+        created_at: time
     });
 }
 
-// createdAt: time
 
 export async function updateUserStatus(status: boolean, email: string): Promise<any> {
     return await user.update({ isplaying: status }, {

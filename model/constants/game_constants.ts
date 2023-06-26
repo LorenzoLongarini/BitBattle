@@ -6,6 +6,8 @@ export enum GameMode {
 
 export const gameFinishedLabel = "finished";
 
+export const classificationTypeAsc = "ascendente";
+
 export const piecesOneMin = 9;
 export const piecesTwoMin = 16;
 export const piecesThreeMin = 25;

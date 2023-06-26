@@ -25,7 +25,7 @@
       winner VARCHAR(25),
       score JSON,
       mod VARCHAR(4),
-      created_at NUMERIC
+      created_at BIGINT
 
   ); 
 

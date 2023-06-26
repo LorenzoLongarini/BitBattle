@@ -39,7 +39,9 @@ export enum Messages400 {
     SameUser = "Non puoi inserire lo stesso utente più volte nello stesso game",
     UserNotAvailable = "Uno o più utenti stanno già giocando in un altro game",
     CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game",
-    StatsNotAvalaible = "Statische non disponibili"
+    StatsNotAvalaible = "Statische non disponibili",
+    InvalidDateSame = "La data di inizio non può coincidere con quella di fine",
+    InvalidDate = "La data di fine deve precedere quella di inizio"
 
 }
 
