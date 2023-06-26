@@ -9,7 +9,7 @@ import { checkJwt } from "./middleware/jwt_middleware";
 import { checkGameCreatorAi } from "./middleware/game_middleware";
 import { checkEmail } from "./middleware/email_middlware";
 import { checkPassword } from "./middleware/password_middleware";
-import { getClassificationService } from "./services/stats_service";
+import { getClassificationService, getMoves } from "./services/stats_service";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -82,6 +82,10 @@ app.get("/games/pdf", (req: any, res: any) => {
 
 app.post("/game/turn", jsonParser, checkJwt, (req: any, res: any) => {
     getTurn(req, res);
+});
+
+app.post("/game/moves", jsonParser, checkJwt, (req: any, res: any) => {
+    getMoves(req, res);
 });
 
 

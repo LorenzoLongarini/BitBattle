@@ -40,7 +40,6 @@ export function decodeJwt(auth: any) {
     return jwt.verify(token, process.env.PRIVATE_KEY);
 }
 
-
 export function getJwtEmail(req: Request): string {
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
