@@ -7,26 +7,13 @@ import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
 import { classificationTypeAsc } from "../model/constants/game_constants";
 import moment from 'moment';
-// const Joi = require("joi").extend(require("@joi/date"));
 
 var statusMessage: MessageFactory = new MessageFactory();
+const dateFormat = 'YYYY-MM-DD';
 
 export async function getUserStatsService(req: Request, res: Response) {
-    // const validateExpression = Joi.object()
-    //     .keys({
-    //         'startDate': Joi.date()
-    //             .format("YYYY-MM-DD hh:mm:ss")
-    //             .optional()
-    //             .allow(''),
-    //         'endDate': Joi.date()
-    //             .format("YYYY-MM-DD  hh:mm:ss")
-    //             .optional()
-    //             .allow('')
-    //             .min(Joi.ref('startDate'))
-    //     });
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
-    const dateFormat = 'YYYY-MM-DD';
 
     let startDateValid;
     let endDateValid;
@@ -48,15 +35,12 @@ export async function getUserStatsService(req: Request, res: Response) {
         } else if ((startDate !== "" && endDate === "") && startDateValid) {
             stats = await generateStats(jwtPlayerEmail, startDate, "", res)
         } else if ((startDate === "" && endDate === "")) {
-
             stats = await generateStats(jwtPlayerEmail, "", "", res)
-
         } else {
             statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
         }
         let message = JSON.parse(JSON.stringify({ utente: stats }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
-
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
     }
@@ -109,8 +93,6 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     let totalPlay: any = [];
     let totalPlayFiltered: any = [];
 
-    const dateFormat = 'YYYY-MM-DD';
-
     let startDateMilli: number = 0;
     let endDateMilli: number = 0;
     if (startDate !== "") { startDateMilli = moment(startDate, dateFormat).valueOf(); }
@@ -142,7 +124,6 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     if (filteredData.length != 0) { totalWins.push(winnerFilter); }
 
     let sigma = [];
-
     let totalLose = totalPlayFiltered[0].length - totalWins[0].length;
 
     let maxMoves: number = 0;
