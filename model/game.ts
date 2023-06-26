@@ -55,14 +55,17 @@ export const game = sequelize.define('game', {
     },
     mod: {
         type: DataTypes.STRING,
+    },
+    created_at: {
+        type: DataTypes.BIGINT,
     }
 },
     {
         modelName: 'game',
         timestamps: false,
         freezeTableName: true,
-        createdAt: true,
-        updatedAt: true,
+        createdAt: false,
+        updatedAt: false,
     }
 );
 
