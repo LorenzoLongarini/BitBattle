@@ -6,6 +6,44 @@ export async function findAllGames(): Promise<any> {
 
 }
 
+export async function findWinner(player0: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            winner: player0,
+        }
+    });
+
+}
+export async function findAllPlayed0(player0: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            player0: player0,
+        }
+    });
+
+}
+
+export async function findAllPlayed1(player1: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            player1: player1,
+        }
+    });
+
+}
+
+export async function findAllPlayed2(player2: string): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            player2: player2,
+        }
+    });
+
+}
 export async function findPlayer0(name: string, player0: string): Promise<any> {
 
     return await game.findAll({

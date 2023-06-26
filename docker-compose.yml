@@ -22,3 +22,5 @@ services:
       - .env
     depends_on:
       - bitbattle_db
+    volumes:
+      - ./pdf:/usr/src/app/pdf

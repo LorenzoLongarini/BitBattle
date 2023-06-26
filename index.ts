@@ -2,14 +2,14 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer, getAllUsers, getGamePdf, getTurn } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, insertMoveSingle, getStatus, insertMoveAi, insertMoveMultiplayer, getAllUsers, getGamePdf, getStats, getTurn } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
 import { checkGameCreatorAi } from "./middleware/game_middleware";
 import { checkEmail } from "./middleware/email_middlware";
 import { checkPassword } from "./middleware/password_middleware";
-import { getClassificationService } from "./services/user_service";
+import { getClassificationService } from "./services/stats_service";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -72,6 +72,10 @@ app.post("/game/status", jsonParser, checkJwt, (req: any, res: any) => {
     getStatus(req, res);
 });
 
+app.get("/user/stats", jsonParser, checkJwt, (req: any, res: any) => {
+    getStats(req, res);
+});
+
 app.get("/games/pdf", (req: any, res: any) => {
     getGamePdf(req, res);
 });
@@ -79,6 +83,7 @@ app.get("/games/pdf", (req: any, res: any) => {
 app.post("/game/turn", jsonParser, checkJwt, (req: any, res: any) => {
     getTurn(req, res);
 });
+
 
 
 app.listen(PORT, HOST, () => {

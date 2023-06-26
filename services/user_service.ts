@@ -24,30 +24,6 @@ export async function getAllUsersService(req: Request, res: Response) {
 }
 
 
-export async function getClassificationService(req: Request, res: Response) {
-    try {
-        const users: any = await findAllUsers();
-        let type = (req.body.type == "ascendente") ? true : false;
-        let sortedUsers: any = sortUsers(users, type)
-        let classification: any = [];
-
-        for (let i = 0; i < sortedUsers.length; i++) {
-            let user = {
-                email: sortedUsers[i].dataValues.email,
-                points: sortedUsers[i].dataValues.points,
-            };
-            classification.push(user);
-        }
-
-        res.json({ utente: classification });
-
-    } catch (error) {
-        console.error('Error :', error);
-        throw error;
-    }
-}
-
-
 
 export async function createUserService(req: Request, res: Response) {
     try {
@@ -89,7 +65,6 @@ export async function getTokensService(req: any, res: any) {
 
 
 export async function createGameService(req: Request, res: Response) {
-
 
     let player;
     let jwtBearerToken = req.headers.authorization;
