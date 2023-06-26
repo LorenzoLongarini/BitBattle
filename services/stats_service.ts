@@ -5,28 +5,28 @@ import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findWinner } from "../d
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { decodeJwt } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
-const Joi = require("joi").extend(require("@joi/date"));
+// const Joi = require("joi").extend(require("@joi/date"));
 
 
 let statusMessage: MessageFactory = new MessageFactory();
 
 export async function getUserStatsService(req: Request, res: Response) {
-    const validateExpression = Joi.object()
-        .keys({
-            'startDate': Joi.date()
-                .format("YYYY-MM-DD")
-                .optional()
-                .allow(''),
-            'endDate': Joi.date()
-                .format("YYYY-MM-DD")
-                .optional()
-                .allow('')
-                .min(Joi.ref('startDate'))
-        });
+    // const validateExpression = Joi.object()
+    //     .keys({
+    //         'startDate': Joi.date()
+    //             .format("YYYY-MM-DD hh:mm:ss")
+    //             .optional()
+    //             .allow(''),
+    //         'endDate': Joi.date()
+    //             .format("YYYY-MM-DD  hh:mm:ss")
+    //             .optional()
+    //             .allow('')
+    //             .min(Joi.ref('startDate'))
+    //     });
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
     let jwtPlayerEmail: any;
-    if (jwtDecode && jwtDecode.email && validateExpression) {
+    if (jwtDecode && jwtDecode.email) {
         jwtPlayerEmail = jwtDecode.email;
 
         try {
@@ -65,6 +65,7 @@ export async function getUserStatsService(req: Request, res: Response) {
             }
 
             let standardDev = standardDeviation(sigma);
+            let meanStat = mean(sigma)
             let stats: any = [];
 
             let user = {
@@ -75,7 +76,8 @@ export async function getUserStatsService(req: Request, res: Response) {
                 totalMoves: totalMoves,
                 maxMovesPerGame: maxMoves,
                 minMovesPerGame: minMoves,
-                standardDeviation: standardDev
+                standardDeviation: standardDev,
+                mean: meanStat
             };
             stats.push(user);
 
@@ -99,6 +101,8 @@ const standardDeviation = (arr: number[]): number => {
         (arr.length - 1)
     );
 };
+
+const mean = (arr: number[]): number => { const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length; return mean; }
 
 export async function getClassificationService(req: Request, res: Response) {
     try {
