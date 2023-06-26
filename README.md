@@ -23,11 +23,11 @@
 
 </p>
 <p  align="center">
-<a  href="#Obiettivi del progetto">Obiettivi del progetto</a>&nbsp•
-<a  href="#Progettazione">Progettazione</a>&nbsp•
-<a  href="#Funzionamento">Funzionamento</a>&nbsp•
-<a  href="#Testing">Testing</a>&nbsp•
-<a  href="#Autori">Autori</a>
+<a  href="#obiettivi del progetto">Obiettivi del progetto</a>&nbsp•
+<a  href="#progettazione">Progettazione</a>&nbsp•
+<a  href="#funzionamento">Funzionamento</a>&nbsp•
+<a  href="#testing">Testing</a>&nbsp•
+<a  href="#autori">Autori</a>
 </p>
 <br>
 <br>
@@ -46,7 +46,7 @@
 Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. In particolare, il sistema deve prevedere la possibilità di far interagire due o tre utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Ci possono essere più partite attive in un dato momento. Un utente può allo stesso tempo partecipare ad una ed una sola partita. Si chiede di sviluppare anche la possibilità di giocare contro l’elaboratore (di seguito IA). Nel caso di IA la logica può essere semplice (mosse randomiche all’interno della griglia) o tenere in considerazione lo storico delle mosse (es. cercare nei vicini); l’implementazione è carico del gruppo. Nel caso di gioco a tre player la turnazione deve essere A->B, C->A, B->C , C->B, A->C, B->A (il gioco potrebbe non essere equo)*
 
 <p align="center">
-<img  width="250" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/moves.gif">
+<img  width="230" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/moves.gif">
 </p>
 
 *Dare la possibilità di creare una nuova partita specificando (codifica a scelta dello studente):*
@@ -87,8 +87,8 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 *Si chiede di commentare opportunamente il codice.*
 
 <p align="center">
-<a href="#Indice">
-<img  width="60" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+<a href="#indice">
+<img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
 
@@ -107,8 +107,8 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 #### Middleware
 
 <p align="center">
-<a href="#Indice">
-<img  width="60" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+<a href="#indice">
+<img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
 
@@ -185,8 +185,8 @@ controller->>- Client : result: res.json()
 ```
 
 <p align="center">
-<a href="#Indice">
-<img  width="60" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+<a href="#indice">
+<img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
 
@@ -196,8 +196,8 @@ controller->>- Client : result: res.json()
 
   
 <p align="center">
-<a href="#Indice">
-<img  width="60" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+<a href="## Indice">
+<img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
 
@@ -206,7 +206,7 @@ controller->>- Client : result: res.json()
 - [*Ramovini Loris*](https://github.com/lorisramovini)
 
 <p align="center">
-<a href="#Indice">
-<img  width="60" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
+<a href="#indice">
+<img  width="30" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/home.png">
 </a>
 </p>
