@@ -1,95 +1,48 @@
 import { findAllUsers } from "../db/queries/user_queries";
 import { Request, Response } from "express";
 import { sortUsers } from "../utils/user_utils";
-import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findWinner } from "../db/queries/games_queries";
+import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGame, findWinner } from "../db/queries/games_queries";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
-import { decodeJwt } from "./jwt_service";
+import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
-// const Joi = require("joi").extend(require("@joi/date"));
+import { classificationTypeAsc } from "../model/constants/game_constants";
+import moment from 'moment';
 
-
-let statusMessage: MessageFactory = new MessageFactory();
+var statusMessage: MessageFactory = new MessageFactory();
+const dateFormat = 'YYYY-MM-DD';
 
 export async function getUserStatsService(req: Request, res: Response) {
-    // const validateExpression = Joi.object()
-    //     .keys({
-    //         'startDate': Joi.date()
-    //             .format("YYYY-MM-DD hh:mm:ss")
-    //             .optional()
-    //             .allow(''),
-    //         'endDate': Joi.date()
-    //             .format("YYYY-MM-DD  hh:mm:ss")
-    //             .optional()
-    //             .allow('')
-    //             .min(Joi.ref('startDate'))
-    //     });
-    let jwtBearerToken = req.headers.authorization;
-    let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-    let jwtPlayerEmail: any;
-    if (jwtDecode && jwtDecode.email) {
-        jwtPlayerEmail = jwtDecode.email;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
 
-        try {
-            const totWin: any = await findWinner(jwtPlayerEmail);
-            const numPlayer0 = await findAllPlayed0(jwtPlayerEmail);
-            const numPlayer1 = await findAllPlayed1(jwtPlayerEmail);
-            const numPlayer2 = await findAllPlayed2(jwtPlayerEmail);
+    let startDateValid;
+    let endDateValid;
+    if (startDate !== "") { startDateValid = moment(startDate, dateFormat, true).isValid(); }
+    if (endDate !== "") { endDateValid = moment(endDate, dateFormat, true).isValid(); }
 
-            let startDate = new Date(req.body.startDate);
-            let endDate = new Date(req.body.startDate);
-            let startDateMilli = startDate.getTime();
-            let endDateMilli = endDate.getTime();
+    let jwtPlayerEmail = getJwtEmail(req);
 
-            let totalLength = numPlayer0.length + numPlayer1.length + numPlayer2.length;
-            let totalPlay: any = [];
-            if (numPlayer0.length != 0) { totalPlay.push(numPlayer0); }
-            if (numPlayer1.length != 0) { totalPlay.push(numPlayer1); }
-            if (numPlayer2.length != 0) { totalPlay.push(numPlayer2); }
-
-            let sigma = [];
-
-            let totalLose = totalLength - totWin.length;
-
-            let maxMoves: number = 0;
-            let minMoves: number = totalPlay[0][0].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
-            let totalMoves: number = 0;
-
-            for (let i = 0; i < totalLength; i++) {
-                // if()
-                let gameMoves = totalPlay[0][i].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
-                totalMoves += gameMoves;
-                sigma.push(gameMoves);
-                maxMoves = maxMoves < gameMoves ? gameMoves : maxMoves;
-                minMoves = minMoves < gameMoves ? minMoves : gameMoves;
-
+    try {
+        let stats;
+        if ((startDate !== "" && endDate !== "") && (startDateValid && endDateValid)) {
+            if (startDate === endDate) {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.InvalidDateSame);
+            } else {
+                stats = await generateStats(jwtPlayerEmail, startDate, endDate, res)
             }
-
-            let standardDev = standardDeviation(sigma);
-            let meanStat = mean(sigma)
-            let stats: any = [];
-
-            let user = {
-                email: jwtPlayerEmail,
-                played: totalLength,
-                win: totWin.length,
-                lose: totalLose,
-                totalMoves: totalMoves,
-                maxMovesPerGame: maxMoves,
-                minMovesPerGame: minMoves,
-                standardDeviation: standardDev,
-                mean: meanStat
-            };
-            stats.push(user);
-
-            res.json({ utente: stats });
-
-
-        } catch (error) {
-            console.error('Error :', error);
-            throw error;
+        } else if ((startDate === "" && endDate !== "") && endDateValid) {
+            stats = await generateStats(jwtPlayerEmail, "", endDate, res)
+        } else if ((startDate !== "" && endDate === "") && startDateValid) {
+            stats = await generateStats(jwtPlayerEmail, startDate, "", res)
+        } else if ((startDate === "" && endDate === "")) {
+            stats = await generateStats(jwtPlayerEmail, "", "", res)
+        } else {
+            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
         }
-    } else {
-        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages400.UserNotFound);
+        let message = JSON.parse(JSON.stringify({ utente: stats }))
+        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
     }
 }
 
@@ -107,7 +60,7 @@ const mean = (arr: number[]): number => { const mean = arr.reduce((acc, val) => 
 export async function getClassificationService(req: Request, res: Response) {
     try {
         const users: any = await findAllUsers();
-        let type = (req.body.type == "ascendente") ? true : false;
+        let type = (req.body.type == classificationTypeAsc) ? true : false;
         let sortedUsers: any = sortUsers(users, type)
         let classification: any = [];
 
@@ -119,10 +72,96 @@ export async function getClassificationService(req: Request, res: Response) {
             classification.push(user);
         }
 
-        res.json({ utente: classification });
+        let message = JSON.parse(JSON.stringify({ utente: classification }))
+        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
 
     } catch (error) {
-        console.error('Error :', error);
-        throw error;
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.UserNotFound);
+    }
+}
+
+export async function generateStats(jwtPlayerEmail: string, startDate: any, endDate: any, res: Response): Promise<any> {
+
+    const totWin = await findWinner(jwtPlayerEmail);;
+    const numPlayer0 = await findAllPlayed0(jwtPlayerEmail);
+    const numPlayer1 = await findAllPlayed1(jwtPlayerEmail);
+    const numPlayer2 = await findAllPlayed2(jwtPlayerEmail);
+    let wins: any = [];
+    wins.push(totWin);
+
+    let totalWins: any = [];
+    let totalPlay: any = [];
+    let totalPlayFiltered: any = [];
+
+    let startDateMilli: number = 0;
+    let endDateMilli: number = 0;
+    if (startDate !== "") { startDateMilli = moment(startDate, dateFormat).valueOf(); }
+    if (endDate !== "") { endDateMilli = moment(endDate, dateFormat).valueOf(); }
+
+    if (numPlayer0.length != 0) { totalPlay.push(numPlayer0); }
+    if (numPlayer1.length != 0) { totalPlay.push(numPlayer1); }
+    if (numPlayer2.length != 0) { totalPlay.push(numPlayer2); }
+
+    let filteredData;
+    let winnerFilter;
+    if (startDate !== "" && endDate === "") {
+        filteredData = totalPlay[0].filter((value: any) => Number(value.dataValues.created_at) >= startDateMilli);
+        winnerFilter = wins[0].filter((value: any) => Number(value.dataValues.created_at) >= startDateMilli);
+    } else if (startDate === "" && endDate !== "") {
+        filteredData = totalPlay[0].filter((value: any) => Number(value.dataValues.created_at) <= endDateMilli);
+        winnerFilter = wins[0].filter((value: any) => Number(value.dataValues.created_at) <= endDateMilli);
+    } else if (startDate !== "" && endDate !== "") {
+        if (startDateMilli > endDateMilli) { statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.InvalidDate); }
+        else {
+            filteredData = totalPlay[0].filter((value: any) => (Number(value.dataValues.created_at) >= startDateMilli) && (Number(value.dataValues.created_at) <= endDateMilli));
+            winnerFilter = wins[0].filter((value: any) => (Number(value.dataValues.created_at) >= startDateMilli) && (Number(value.dataValues.created_at) <= endDateMilli));
+        }
+    } else if (startDate === "" && endDate === "") {
+        filteredData = totalPlay[0];
+        winnerFilter = wins[0];
+    }
+    if (filteredData.length != 0) { totalPlayFiltered.push(filteredData); }
+    if (filteredData.length != 0) { totalWins.push(winnerFilter); }
+
+    let sigma = [];
+    let totalLose = totalPlayFiltered[0].length - totalWins[0].length;
+
+    let maxMoves: number = 0;
+    let minMoves: number = totalPlayFiltered[0][0].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
+    let totalMoves: number = 0;
+
+    for (let i = 0; i < totalPlayFiltered[0].length; i++) {
+        let gameMoves = totalPlayFiltered[0][i].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
+        totalMoves += gameMoves;
+        sigma.push(gameMoves);
+        maxMoves = maxMoves < gameMoves ? gameMoves : maxMoves;
+        minMoves = minMoves < gameMoves ? minMoves : gameMoves;
+    }
+
+    let standardDev = standardDeviation(sigma);
+    let meanStat = mean(sigma)
+
+    let user = {
+        email: jwtPlayerEmail,
+        played: totalPlayFiltered[0].length,
+        win: totalWins[0].length,
+        lose: totalLose,
+        totalMoves: totalMoves,
+        maxMovesPerGame: maxMoves,
+        minMovesPerGame: minMoves,
+        standardDeviation: standardDev,
+        mean: meanStat
+    };
+    return user;
+}
+
+export async function getMoves(req: Request, res: Response) {
+    try {
+        let game = await findGame(req.body.game);
+        let moves = game[0].dataValues.moves;
+        let message = JSON.parse(JSON.stringify({ moves: moves }))
+        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
     }
 }

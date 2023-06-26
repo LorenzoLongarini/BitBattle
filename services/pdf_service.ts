@@ -1,42 +1,41 @@
-import PDFDocument from 'pdfkit';
+import pdfkit from 'pdfkit';
 import fs from 'fs';
-import { findAllGames } from '../db/queries/games_queries';
 import { Request, Response } from "express";
+import { generateStats } from './stats_service';
+import { MessageFactory } from '../status/messages_factory';
+import { CustomStatusCodes, Messages200, Messages500 } from '../status/status_codes';
+import { getJwtEmail } from './jwt_service';
 
-export function generatePDF(res: Response, data: any) {
+let statusMessage: MessageFactory = new MessageFactory();
+
+
+export function generatePDF(res: Response, stats: any) {
     try {
-        const outputPath: any = process.env.PWD;
-        console.log(outputPath)
-        const doc = new PDFDocument();
-        doc.pipe(fs.createWriteStream('../pdf/file.pdf'));
-        //  = fs.createWriteStream(outputPath);
-
-        //doc.pipe(stream);
-
-        doc.fontSize(12).text("data", 5, 10);
-
-        doc.end();
-
-        console.log(`Il file PDF è stato generato con successo: ${outputPath}`);
-        res.json({ esito: "Il file PDF è stato generato con successo" });
+        let stream = fs.createWriteStream('/usr/src/app/pdf/file.pdf');
+        let pdf = new pdfkit();
+        pdf.pipe(stream);
+        pdf.fontSize(12).text(JSON.stringify(stats), 5, 10);
+        pdf.end();
+        stream.on('finish', () => {
+            res.download('/usr/src/app/pdf/file.pdf', 'file.pdf', (err) => {
+                if (err) {
+                    statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.PdfUnable);
+                } else {
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.PdfSuccess);
+                }
+            });
+        });
     } catch (error) {
-        console.log(error)
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
-
-    // stream.on('error', (error) => {
-    //     console.error('Si è verificato un errore durante la generazione del file PDF:', error);
-    // });
 }
-
 
 export async function getGamesPdfService(req: Request, res: Response) {
     try {
-        const game: any = await findAllGames();
-        // res.json({ game: game });
-        generatePDF(res, game)
-
+        let jwtPlayerEmail = getJwtEmail(req);
+        let stats = await generateStats(jwtPlayerEmail, "", "", res)
+        generatePDF(res, stats)
     } catch (error) {
-        console.error('Error :', error);
-        throw error;
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
 }
