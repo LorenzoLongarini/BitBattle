@@ -30,57 +30,8 @@ export async function getUserStatsService(req: Request, res: Response) {
         jwtPlayerEmail = jwtDecode.email;
 
         try {
-            const totWin: any = await findWinner(jwtPlayerEmail);
-            const numPlayer0 = await findAllPlayed0(jwtPlayerEmail);
-            const numPlayer1 = await findAllPlayed1(jwtPlayerEmail);
-            const numPlayer2 = await findAllPlayed2(jwtPlayerEmail);
 
-            let startDate = new Date(req.body.startDate);
-            let endDate = new Date(req.body.startDate);
-            let startDateMilli = startDate.getTime();
-            let endDateMilli = endDate.getTime();
-
-            let totalLength = numPlayer0.length + numPlayer1.length + numPlayer2.length;
-            let totalPlay: any = [];
-            if (numPlayer0.length != 0) { totalPlay.push(numPlayer0); }
-            if (numPlayer1.length != 0) { totalPlay.push(numPlayer1); }
-            if (numPlayer2.length != 0) { totalPlay.push(numPlayer2); }
-
-            let sigma = [];
-
-            let totalLose = totalLength - totWin.length;
-
-            let maxMoves: number = 0;
-            let minMoves: number = totalPlay[0][0].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
-            let totalMoves: number = 0;
-
-            for (let i = 0; i < totalLength; i++) {
-                // if()
-                let gameMoves = totalPlay[0][i].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
-                totalMoves += gameMoves;
-                sigma.push(gameMoves);
-                maxMoves = maxMoves < gameMoves ? gameMoves : maxMoves;
-                minMoves = minMoves < gameMoves ? minMoves : gameMoves;
-
-            }
-
-            let standardDev = standardDeviation(sigma);
-            let meanStat = mean(sigma)
-            let stats: any = [];
-
-            let user = {
-                email: jwtPlayerEmail,
-                played: totalLength,
-                win: totWin.length,
-                lose: totalLose,
-                totalMoves: totalMoves,
-                maxMovesPerGame: maxMoves,
-                minMovesPerGame: minMoves,
-                standardDeviation: standardDev,
-                mean: meanStat
-            };
-            stats.push(user);
-
+            let stats = await generateStats(req, jwtPlayerEmail)
             res.json({ utente: stats });
 
 
@@ -125,4 +76,55 @@ export async function getClassificationService(req: Request, res: Response) {
         console.error('Error :', error);
         throw error;
     }
+}
+
+export async function generateStats(req: Request, jwtPlayerEmail: string): Promise<any> {
+    const totWin: any = await findWinner(jwtPlayerEmail);
+    const numPlayer0 = await findAllPlayed0(jwtPlayerEmail);
+    const numPlayer1 = await findAllPlayed1(jwtPlayerEmail);
+    const numPlayer2 = await findAllPlayed2(jwtPlayerEmail);
+
+    // let startDate = new Date(req.body.startDate);
+    // let endDate = new Date(req.body.startDate);
+    // let startDateMilli = startDate.getTime();
+    // let endDateMilli = endDate.getTime();
+
+    let totalLength = numPlayer0.length + numPlayer1.length + numPlayer2.length;
+    let totalPlay: any = [];
+    if (numPlayer0.length != 0) { totalPlay.push(numPlayer0); }
+    if (numPlayer1.length != 0) { totalPlay.push(numPlayer1); }
+    if (numPlayer2.length != 0) { totalPlay.push(numPlayer2); }
+
+    let sigma = [];
+
+    let totalLose = totalLength - totWin.length;
+
+    let maxMoves: number = 0;
+    let minMoves: number = totalPlay[0][0].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
+    let totalMoves: number = 0;
+
+    for (let i = 0; i < totalLength; i++) {
+        let gameMoves = totalPlay[0][i].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
+        totalMoves += gameMoves;
+        sigma.push(gameMoves);
+        maxMoves = maxMoves < gameMoves ? gameMoves : maxMoves;
+        minMoves = minMoves < gameMoves ? minMoves : gameMoves;
+
+    }
+
+    let standardDev = standardDeviation(sigma);
+    let meanStat = mean(sigma)
+
+    let user = {
+        email: jwtPlayerEmail,
+        played: totalLength,
+        win: totWin.length,
+        lose: totalLose,
+        totalMoves: totalMoves,
+        maxMovesPerGame: maxMoves,
+        minMovesPerGame: minMoves,
+        standardDeviation: standardDev,
+        mean: meanStat
+    };
+    return user;
 }
