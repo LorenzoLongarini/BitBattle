@@ -18,12 +18,12 @@
   
 </p>
 <p  align="center">
-<a  href="#Indice">Indice</a>
+## Indice
 </p>
 
 </p>
 <p  align="center">
-<a  href="#obiettivi del progetto">Obiettivi del progetto</a>&nbsp•
+<a  href="#obiettivi-del-progetto">Obiettivi del progetto</a>&nbsp•
 <a  href="#progettazione">Progettazione</a>&nbsp•
 <a  href="#funzionamento">Funzionamento</a>&nbsp•
 <a  href="#testing">Testing</a>&nbsp•
@@ -51,7 +51,7 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 
 *Dare la possibilità di creare una nuova partita specificando (codifica a scelta dello studente):*
 - *Tipologia: utente contro utente o utente contro IA o utente contro 2 utenti*
-- *Dimensione della griglia *
+- *Dimensione della griglia*
 - *Numero e tipologie delle imbarcazioni*
 - *L’allocazione delle imbarcazioni è randomica (fatta all’atto della creazione).*
 - *email dell’avversario o email degli avversari che sarà/saranno usata/e poi per autenticare le richieste mediante token JWT*
@@ -99,12 +99,35 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 ### Pattern utilizzati
 
 #### MVCS
-  
-#### Middleware
+
+<p align="center">
+<img  width="100" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
+</p>
+
+#### Singleton
+
+<p align="center">
+<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/singleton.png">
+</p>
+
+#### Abstract
+
+<p align="center">
+<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/abstract.png">
+</p>
+
+#### Factory
+
+<p align="center">
+<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/factory.png">
+</p>
 
 #### Middleware
 
-#### Middleware
+<p align="center">
+<img  width="80" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/middleware.png">
+</p>
+
 
 <p align="center">
 <a href="#indice">
@@ -113,6 +136,8 @@ Si realizzi un sistema che consenta di gestire il gioco della battaglia navale. 
 </p>
 
 ## Funzionamento
+
+### /admin
 
 ```mermaid
 
