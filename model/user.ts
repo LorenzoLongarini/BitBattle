@@ -44,8 +44,8 @@ export const user = sequelize.define("users", {
     modelName: 'user',
     timestamps: false,
     freezeTableName: true,
-    createdAt: true,
-    updatedAt: true,
+    createdAt: false,
+    updatedAt: false,
 });
 
 sequelize.sync().then(() => {

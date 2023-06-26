@@ -66,7 +66,6 @@ export async function getTokensService(req: any, res: any) {
 
 export async function createGameService(req: Request, res: Response) {
 
-
     let player;
     let jwtBearerToken = req.headers.authorization;
     let jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
