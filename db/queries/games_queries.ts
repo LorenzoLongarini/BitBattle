@@ -86,6 +86,16 @@ export async function findGame(name: string): Promise<any> {
 
 }
 
+export async function findGameById(game_id: any): Promise<any> {
+
+    return await game.findAll({
+        where: {
+            game_id: game_id,
+        }
+    });
+
+}
+
 export async function gameOver(name: string): Promise<any> {
     return await game.update({ status: "finished" }, {
         where: {

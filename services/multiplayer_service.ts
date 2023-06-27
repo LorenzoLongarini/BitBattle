@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
-import { findGame, addMoveDb } from "../db/queries/games_queries";
+import { findGame, addMoveDb, findGameById } from "../db/queries/games_queries";
 import { findUser } from "../db/queries/user_queries";
 import { findShip, findOwner, findShipHittable } from "../utils/game_utils";
 import { isTurn, setGameOverStatus } from "./games_service";
@@ -17,7 +17,10 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req);
 
     try {
-        let searchGame = await findGame(req.body.name);
+        //let searchGame1 = await findGame(req.body.name);
+        const searchGame: any = await findGameById(req.params.gameid);
+        let nameGame = searchGame[0].dataValues.name;
+
         let movesPossible = searchGame[0].dataValues.possible_moves;
         let movesExecute = searchGame[0].dataValues.moves;
 
@@ -99,7 +102,7 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                 };
 
                 movesExecute.push(newMove);
-                await addMoveDb(req.body.name, movesExecute);
+                await addMoveDb(nameGame, movesExecute);
 
                 let updatedTokens = currentTokens - 0.015;
                 await updateUserTokensDb(updatedTokens, emailplayer0);
@@ -110,17 +113,17 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
                 if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
 
-                    setGameOverStatus(req, currentPlayer2, emailplayer0, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer2, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
 
-                    setGameOverStatus(req, currentPlayer0, emailplayer0, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer0, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
 
-                    setGameOverStatus(req, currentPlayer1, emailplayer0, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer1, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (hitShip) {
