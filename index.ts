@@ -6,7 +6,7 @@ import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers,
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
-import { checkGamePlayer, checkGridSize, checkMove, checkSHipFormat } from "./middleware/game_middleware";
+import { checkGamePlayer, checkGridSize, checkMove, checkShipFormat } from "./middleware/game_middleware";
 import { checkEmail, checkEmailBody } from "./middleware/email_middlware";
 import { checkPassword, checkPasswordBody } from "./middleware/password_middleware";
 import { checkTokensBody } from "./middleware/tokens_middleware";
@@ -55,7 +55,7 @@ app.get("/games", (req: any, res: any) => {
 });
 
 /// creare middleware per il check
-app.post("/game/create", jsonParser, checkJwt,checkSHipFormat, checkGridSize, (req: Request, res: Response) => {
+app.post("/game/create", jsonParser, checkJwt, checkShipFormat, checkGridSize, (req: Request, res: Response) => {
     createGame(req, res);
 });
 
