@@ -6,12 +6,11 @@ var statusMessage: MessageFactory = new MessageFactory();
 
 export const checkClafficationType = async (req: any, res: any, next: any) => {
 
-    const type = req.body.tokens;
+    const type = req.body.type;
     if (isNaN(type)) {
-        if (type == classificationTypeAsc || type == classificationTypeDesc) {
+        if (type === classificationTypeAsc || type === classificationTypeDesc) {
             next();
-        }
-        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.TypeInvalid);
+        } else { statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.TypeInvalid); }
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.IsANumber);
     }

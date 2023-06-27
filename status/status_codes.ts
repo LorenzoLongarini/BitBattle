@@ -48,6 +48,10 @@ export enum Messages400 {
     OutOfBound = "L'indice della mossa non può eccedere la dimensione della griglia",
     OutInvalid = "L'indice della mossa non può essere negativo",
     TypeInvalid = "Type deve essere ascendente o discendente",
+    EmailEmpty = "L\'email non può essere vuota",
+    PasswordEmpty = "La password non può essere vuota",
+    TokensEmpty = "Il valore dei token non può essere vuoto",
+    InvalidDateFormat = "Le date sono state inserite in maniera errata",
 }
 
 export enum Messages500 {

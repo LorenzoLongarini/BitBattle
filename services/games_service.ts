@@ -4,7 +4,9 @@ import { findUser, setIsNotPlayingDb, updateUserPoints, updateUserStatus } from 
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes'
 import { aiPlayer } from '../model/constants/user_constants';
-import { gameFinishedLabel } from '../model/constants/game_constants';
+import { GameMode, gameFinishedLabel } from '../model/constants/game_constants';
+import { turn } from '../utils/game_utils';
+import { getJwtEmail } from './jwt_service';
 
 var statusMessage: MessageFactory = new MessageFactory();
 
@@ -19,10 +21,10 @@ export async function getGamesService(res: Response) {
     }
 }
 
-export async function findUserCreatorService(player0: string, res: Response, req: Request): Promise<boolean> {
+export async function findUserCreatorService(gameName: string, player0: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
-        let creator = await findPlayer0(req.body.name, player0);
+        let creator = await findPlayer0(gameName, player0);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
@@ -30,10 +32,10 @@ export async function findUserCreatorService(player0: string, res: Response, req
     return exist;
 }
 
-export async function findPlayer1Service(player1: string, res: Response, req: Request): Promise<boolean> {
+export async function findPlayer1Service(gameName: string, player1: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
-        let creator = await findPlayer1(req.body.name, player1);
+        let creator = await findPlayer1(gameName, player1);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
@@ -41,11 +43,11 @@ export async function findPlayer1Service(player1: string, res: Response, req: Re
     return exist;
 }
 
-export async function findPlayer2Service(player2: string, res: Response, req: Request): Promise<boolean> {
+export async function findPlayer2Service(gameName: string, player2: string, res: Response, req: Request): Promise<boolean> {
 
     let exist = false;
     try {
-        let creator = await findPlayer2(req.body.name, player2);
+        let creator = await findPlayer2(gameName, player2);
         if (creator.length != 0) return true;
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
@@ -53,7 +55,7 @@ export async function findPlayer2Service(player2: string, res: Response, req: Re
     return exist;
 }
 
-export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, nameGame:string, emailplayer1?: string,
+export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, nameGame: string, emailplayer1?: string,
     emailplayer2?: string, firstLooser?: string) {
 
     await gameOver(nameGame);
@@ -78,6 +80,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
         scores.push(scoreWinner);
     } else {
         winnerEmail = winner;
+        console.log(winnerEmail)
         scoreWinner = {
             player: emailplayer0,
             score: 0,
@@ -101,7 +104,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
         case (firstLooser === emailplayer2 && emailplayer1 === winnerEmail): { score0 = 4; score1 = 10; score2 = 0; break; }
     }
     await setIsNotPlayingDb(emailplayer0);
-    if (emailplayer0 != winnerEmail) {
+    if (emailplayer0 != winnerEmail && winnerEmail != aiPlayer) {
         let scorePlayer0 = await updateMultiplayerStatus(emailplayer0, score0);
         scores.push(scorePlayer0);
     }
@@ -136,28 +139,6 @@ async function updateMultiplayerStatus(emailPlayer: string, score: any) {
 
 
 
-export async function statusService(req: Request, res: Response) {
-    try {
-        const game: any = await findGameById(req.params.gameid);
-        if (game.length === 0) {
-            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
-        } else {
-            if (game[0].dataValues.status == "finished") {
-                let message = JSON.parse(JSON.stringify({ statusGame: game[0].dataValues.status, winnerGame: game[0].dataValues.winner }))
-                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
-            } else {
-                let message = JSON.parse(JSON.stringify({ statusGame: game[0].dataValues.status }))
-                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
-            }
-        }
-
-    } catch (error) {
-        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
-    }
-}
-
-
-//TODO verificare se possibile ridurre numero di parametri
 export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
     isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
     if (move.length === 0 && mod) {
@@ -175,7 +156,7 @@ export function isTurn(player1: any, player2: any, player3: any, move: any, mod:
             case (lastMoves.every((value, index) => value === nextMove[4][index])): return player1
             case (lastMoves.every((value, index) => value === nextMove[5][index])): return player3
             default:
-                console.log('errore');
+                console.log('Errore');
         }
     }
     else if (!mod) {
@@ -203,22 +184,46 @@ export function isTurn(player1: any, player2: any, player3: any, move: any, mod:
     }
 }
 
-export async function turnService(req: Request, res: Response) {
+export async function getGameInfoService(req: Request, res: Response) {
     try {
         const game: any = await findGameById(req.params.gameid);
+        let emailplayer0 = game[0].dataValues.player0;
+        let emailplayer1 = game[0].dataValues.player1;
+        let emailplayer2 = game[0].dataValues.player2;
 
-        if (game[0].dataValues.status !== gameFinishedLabel) {
-            let movesExecute = game[0].dataValues.moves;
+        let name = game[0].dataValues.name;
+        let gridSize = game[0].dataValues.grid_size;
+        let statusGame = game[0].dataValues.status;
+        let winner = game[0].dataValues.winner;
+        let score = game[0].dataValues.score;
+        let mod = game[0].dataValues.mod;
 
+        let movesExecute = game[0].dataValues.moves;
+        let modGame = game[0].dataValues.mod;
+        if (modGame === GameMode.mode1) {
+            let currTurn = game[0].dataValues.status !== gameFinishedLabel ? emailplayer0 : null
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message)
+        } else if (modGame === GameMode.mode2) {
+            let jwtPlayerEmail = getJwtEmail(req);
+            let nextTurn: string;
+            if (movesExecute != 0) {
+                let lastPlayer = turn(movesExecute);
+                if (lastPlayer !== jwtPlayerEmail) {
+                    nextTurn = jwtPlayerEmail;
+                } else {
+                    nextTurn = emailplayer1;
+                }
+            } else { nextTurn = emailplayer0; }
+            let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+        } else if (modGame === GameMode.mode3) {
             let movesEmail = []
             if (movesExecute.length != 0)
                 for (let i in movesExecute) {
                     movesEmail.push(game[0].dataValues.moves[i].player);
                 }
-
-            let emailplayer0 = game[0].dataValues.player0;
-            let emailplayer1 = game[0].dataValues.player1;
-            let emailplayer2 = game[0].dataValues.player2;
 
             let reducedMovesP0 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
             let reducedMovesP1 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
@@ -245,11 +250,9 @@ export async function turnService(req: Request, res: Response) {
 
             let mod = pl0 && pl1 && pl2;
             let nextTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
-
-            let message = JSON.parse(JSON.stringify({ turn: nextTurn }));
+            let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, player2: emailplayer2, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
-        } else {
-            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameIsEnded);
         }
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
