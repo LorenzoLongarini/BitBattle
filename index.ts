@@ -2,7 +2,7 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers, getGamePdf, getStats, getClassification, insertMove, getMoves, downloadMoves } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers, getGamePdf, getStats, getClassification, insertMove, getMoves, downloadMoves, getGameInfo } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
@@ -11,7 +11,6 @@ import { checkEmail } from "./middleware/email_middlware";
 import { checkPassword } from "./middleware/password_middleware";
 import { checkTokensBody } from "./middleware/tokens_middleware";
 import { checkClafficationType } from "./middleware/classification_middleware";
-import { getGameInfoService } from "./services/games_service";
 const app = express();
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
@@ -66,12 +65,12 @@ app.post("/game/create", jsonParser, checkJwt, checkShipFormat, checkGridSize, (
     createGame(req, res);
 });
 
-app.post("/game/:gameid/move", jsonParser, checkJwt, checkGamePlayer, checkMove, (req: Request, res: Response) => {
-    insertMove(req, res);
+app.get("/game/:gameid", jsonParser, checkJwt, checkGamePlayer, (req: Request, res: Response) => {
+    getGameInfo(req, res);
 });
 
-app.get("/game/:gameid", jsonParser, checkJwt, checkGamePlayer, (req: Request, res: Response) => {
-    getGameInfoService(req, res);
+app.post("/game/:gameid/move", jsonParser, checkJwt, checkGamePlayer, checkMove, (req: Request, res: Response) => {
+    insertMove(req, res);
 });
 
 app.get("/game/:gameid/moves", checkJwt, checkGamePlayer, (req: Request, res: Response) => {

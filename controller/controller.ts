@@ -42,7 +42,6 @@ export const getGameInfo = (req: Request, res: Response) => {
     return getGameInfoService(req, res);
 };
 
-
 export const getGamePdf = (req: Request, res: Response) => {
     return getGamesPdfService(req, res);
 };

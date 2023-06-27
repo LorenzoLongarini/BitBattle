@@ -1,7 +1,9 @@
 import { findUser } from "../db/queries/user_queries";
 import { decodeJwt } from "../services/jwt_service";
-import { StatusCodes } from "http-status-codes";
+import { MessageFactory } from "../status/messages_factory";
+import { CustomStatusCodes, Messages400, Messages500 } from "../status/status_codes";
 
+var statusMessage: MessageFactory = new MessageFactory();
 
 export const checkIsAdmin = async (req: any, res: any, next: any) => {
     try {
@@ -13,12 +15,12 @@ export const checkIsAdmin = async (req: any, res: any, next: any) => {
             if (user.length != 0 && user[0].dataValues.isadmin) {
                 next();
             } else {
-                res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+                statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
             }
         } else {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
+            statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
         }
     } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
 };
