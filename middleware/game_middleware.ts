@@ -44,3 +44,17 @@ export const checkMove = async (req: Request, res: Response, next: NextFunction)
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotANumber);
     }
 };
+
+export const checkGridSize = async (req: Request, res: Response, next: NextFunction) => {
+    let gridSize = req.body.grid_size;
+
+    if (!isNaN(gridSize) && Number.isInteger(gridSize)) {
+        if (gridSize >= 5 || gridSize <= 10) {
+            next();
+        } else {
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotANumber);
+        }
+    } else {
+        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundGrid);
+    }
+};

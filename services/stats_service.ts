@@ -1,12 +1,13 @@
 import { findAllUsers } from "../db/queries/user_queries";
 import { Request, Response } from "express";
 import { sortUsers } from "../utils/user_utils";
-import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGame, findGameById, findWinner } from "../db/queries/games_queries";
+import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGameById, findWinner } from "../db/queries/games_queries";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
 import { classificationTypeAsc } from "../model/constants/game_constants";
 import moment from 'moment';
+import fs from 'fs';
 
 var statusMessage: MessageFactory = new MessageFactory();
 const dateFormat = 'YYYY-MM-DD';
@@ -23,6 +24,8 @@ export async function getUserStatsService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req);
 
     try {
+
+
         let stats;
         if ((startDate !== "" && endDate !== "") && (startDateValid && endDateValid)) {
             if (startDate === endDate) {
@@ -39,6 +42,8 @@ export async function getUserStatsService(req: Request, res: Response) {
         } else {
             statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
         }
+
+
         let message = JSON.parse(JSON.stringify({ utente: stats }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
     } catch (error) {
@@ -157,10 +162,22 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
 
 export async function getMovesService(req: Request, res: Response) {
     try {
+        const fileName = 'moves.json';
+        const filePath = `${'/usr/src/app/json'}/${fileName}`;
         const game: any = await findGameById(req.params.gameid);
         let moves = game[0].dataValues.moves;
+        try {
+            res.setHeader('Content-Disposition', 'attachment; filename=moves.json');
+            res.setHeader('Content-Type', 'application/json');
+        } catch (e) {
+            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, "eeeeeeeeeee");
+        }
+        fs.writeFileSync(filePath, JSON.stringify({ moves: moves }));
+
+        res.download(filePath, fileName);
         let message = JSON.parse(JSON.stringify({ moves: moves }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
     }
