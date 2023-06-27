@@ -96,7 +96,20 @@
 
 ## Progettazione
 
+### Diagrammi UML
+
+Prima di poter implementare il progetto è stato necessario effettuare un'analisi progettuale riguardante ciò che doveva essere realizzato. 
+
+In figura mostriamo i casi d'uso analizzati:
+
+<p align="center">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/Schemi-Casi_uso.png">
+</p>
+
 ### Rotte
+
+Dall'analisi effettuata, abbiamo create le seguenti rotte che verranno analizzate in seguito nello specifico:
+
 <table align="center">
     <thead>
         <tr>
@@ -107,22 +120,78 @@
     </thead>
     <tbody>
         <tr>
+        <td> POST</td>
+         <td> /login</td>
+         <td> email, password </td>
+         </tr>
+         <tr>
+          <td> POST</td>
+         <td> /register</td>
+         <td> email, password </td>
+         </tr>
+         <tr>
+         <td> GET</td>
+         <td> /user/token</td>
+         <td>  </td>
+         </tr>
+          <tr>
+         <td> POST</td>
+         <td> /user/classification</td>
+         <td> type</td>
+        </tr>
+          <tr>
+         <td> POST</td>
+         <td> /user/stats</td>
+         <td> startDate, endDate</td>
+        </tr>
+        <tr>
+         <td> GET</td>
+         <td> /user/stats/download</td>
+         <td> </td>
+        </tr>
+         <tr>
          <td> POST</td>
          <td> /admin</td>
          <td> email, tokens </td>
         </tr>
         <tr>
+         <td> POST</td>
+         <td> /game/create</td>
+         <td> name, player1, player2, grid_size, ships</td>
+        </tr>
+         <tr>
+         <td> GET</td>
+         <td> /game/:gameid</td>
+         <td> gameid</td>
+        </tr>
+         <tr>
+         <td> POST</td>
+         <td> /game/:gameid/move</td>
+         <td> move</td>
+        </tr>
+        <tr>
+         <td> GET</td>
+         <td> /game/:gameid/moves</td>
+         <td> gameid</td>
+        </tr>
+        <tr>
+         <td> GET</td>
+         <td> /game/:gameid/moves/download</td>
+         <td> gameid</td>
+        </tr>
+        <tr>
     </tbody>
  </table>
 
-### Diagrammi UML
 
 ### Pattern utilizzati
+
+Come da specifiche, per implementare il progetto abbiamo fatto riferimento ad alcuni pattern analizzati a lezione, andremo ora ad analizzarli nello specifico.
 
 #### MVCS
 
 <p align="center">
-<img  width="250" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
+<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
 </p>
 
 #### Singleton
@@ -786,7 +855,26 @@ La rotta download, oltre a restituire le mosse effettuate dall'utente in formato
 
 ## Testing
 
-  
+Per testare il progetto, è necessario seguire questi passaggi:
+
+1.  Scaricare il progetto copiando l'URL del repository Git o scaricando il file ZIP.
+2.  Importare il pacchetto di chiamate fornito nel progetto in Postman.
+3.  Installare Docker dal sito ufficiale.
+4.  Avviare Docker e assicurarsi che i servizi necessari per il progetto siano in esecuzione.
+5.  Utilizzare Postman per inviare le chiamate al server e verificare le risposte.
+
+Per poter avviare il progetto, lanciare i seguenti comandi nella directory corretta:
+~~~
+docker compose build
+~~~
+poi:
+~~~
+docker compose up
+~~~
+
+Ricorda di consultare la documentazione del progetto per eventuali istruzioni dettagliate.
+
+Siete pronti per cominciare!
 
   
 <p align="center">
