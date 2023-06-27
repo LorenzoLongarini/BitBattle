@@ -44,3 +44,38 @@ export const checkMove = async (req: Request, res: Response, next: NextFunction)
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotANumber);
     }
 };
+
+export const checkSHipFormat = async (req: Request, res: Response, next: NextFunction) => {
+
+    const ships = req.body.ships;
+    if (req.body.ships && Array.isArray(req.body.ships)) {
+        if (ships.length === 3) {
+            if (ships[0].size1 !== undefined && ships[1].size2 !== undefined && ships[2].size3 !== undefined) {
+                const size1 = parseInt(ships[0].size1)
+                const size2 = parseInt(ships[1].size2)
+                const size3 = parseInt(ships[2].size3)
+                if (
+                    Number.isInteger(size1) &&
+                    Number.isInteger(size2) &&
+                    Number.isInteger(size3) &&
+                    size1 >= 0 && size1 <= 2 &&
+                    size2 >= 0 && size2 <= 2 &&
+                    size3 >= 0 && size3 <= 2
+                ) {
+                    next();
+                } else {
+                    statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedNumber);
+                }
+            } else {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedSize);
+
+            }
+        }else{
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedFields);
+        }
+    } else {
+        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedArray);
+    }
+
+
+};

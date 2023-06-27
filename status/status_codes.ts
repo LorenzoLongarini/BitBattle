@@ -52,6 +52,10 @@ export enum Messages400 {
     PasswordEmpty = "La password non può essere vuota",
     TokensEmpty = "Il valore dei token non può essere vuoto",
     InvalidDateFormat = "Le date sono state inserite in maniera errata",
+    MalformedNumber = "Il formato del numero delle navi non è corretto",
+    MalformedArray = "Formato del campo ships non corretto",
+    MalformedFields = "Il formato dell'inserimento delle navi contiene campi errati",
+    MalformedSize = "Il formato dell'inserimento delle navi non è corretto"
 }
 
 export enum Messages500 {

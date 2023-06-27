@@ -196,13 +196,12 @@ export async function getGameInfoService(req: Request, res: Response) {
         let statusGame = game[0].dataValues.status;
         let winner = game[0].dataValues.winner;
         let score = game[0].dataValues.score;
-        let mod = game[0].dataValues.mod;
 
         let movesExecute = game[0].dataValues.moves;
         let modGame = game[0].dataValues.mod;
         if (modGame === GameMode.mode1) {
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? emailplayer0 : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, mod: GameMode.mode1, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message)
         } else if (modGame === GameMode.mode2) {
             let jwtPlayerEmail = getJwtEmail(req);
@@ -216,7 +215,7 @@ export async function getGameInfoService(req: Request, res: Response) {
                 }
             } else { nextTurn = emailplayer0; }
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, mod: GameMode.mode2, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         } else if (modGame === GameMode.mode3) {
             let movesEmail = []
@@ -251,7 +250,7 @@ export async function getGameInfoService(req: Request, res: Response) {
             let mod = pl0 && pl1 && pl2;
             let nextTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, player2: emailplayer2, mod: mod, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, player2: emailplayer2, mod: GameMode.mode3, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         }
     } catch (error) {
