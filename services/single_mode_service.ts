@@ -77,7 +77,10 @@ export async function doMoveService(req: Request, res: Response) {
                     };
                 } else if (hitShip) {
 
-                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
+                    let message = JSON.parse(JSON.stringify({ esito: Messages200.Hit, hai_colpito: owner }));
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+
+                    //statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
 
                 } else {
 

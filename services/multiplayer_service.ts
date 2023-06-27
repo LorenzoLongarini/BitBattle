@@ -126,8 +126,10 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (hitShip) {
+                    let message = JSON.parse(JSON.stringify({ esito: Messages200.Hit, hai_colpito: owner }));
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
 
-                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
+                    //statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
 
                 } else {
 
