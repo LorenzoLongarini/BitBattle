@@ -2,10 +2,11 @@ import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findUser } from '../db/queries/user_queries';
 import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes';
 import { MessageFactory } from '../status/messages_factory';
+import { Request, Response } from "express";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
-export async function updateUserTokensService(req: any, res: any) {
+export async function updateUserTokensService(req: Request, res: Response) {
     try {
         const user: any = await findUser(req.body.email);
 

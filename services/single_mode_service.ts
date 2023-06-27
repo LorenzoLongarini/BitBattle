@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
-import { findGame, addMoveDb } from "../db/queries/games_queries";
+import { addMoveDb, findGame, findGameById } from "../db/queries/games_queries";
 import { findUser } from "../db/queries/user_queries";
 import { turn, findShip, findShipHittable, findOwner } from "../utils/game_utils";
 import { getJwtEmail } from "./jwt_service";
@@ -17,8 +17,9 @@ export async function doMoveService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req)
 
     try {
-
-        let searchGame = await findGame(req.body.name);
+        //let searchGame = await findGame(req.body.name);
+        const searchGame: any = await findGameById(req.params.gameid);
+        let nameGame = searchGame[0].dataValues.name;
 
         let player0 = searchGame[0].dataValues.player0;
         let player1 = searchGame[0].dataValues.player1;
@@ -56,7 +57,7 @@ export async function doMoveService(req: Request, res: Response) {
                 };
 
                 movesExecute.push(newMove);
-                await addMoveDb(req.body.name, movesExecute);
+                await addMoveDb(nameGame, movesExecute);
 
                 let updatedTokens = currentTokens - 0.015;
                 await updateUserTokensDb(updatedTokens, player0);
@@ -67,7 +68,7 @@ export async function doMoveService(req: Request, res: Response) {
                 if (reducedMovesPossible.length == reducedMovesExecute.length) {
                     try {
 
-                        setGameOverStatus(req, currentPlayer, player0, player1)
+                        setGameOverStatus(req, currentPlayer, player0,nameGame, player1)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                     } catch (err) {

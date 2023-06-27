@@ -1,9 +1,8 @@
-import { findAllGames, findGame, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2, updateScore } from '../db/queries/games_queries';
+import { findAllGames, findGame, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2, updateScore, findGameById } from '../db/queries/games_queries';
 import { Request, Response } from "express";
 import { findUser, setIsNotPlayingDb, updateUserPoints, updateUserStatus } from '../db/queries/user_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes'
-import { StatusCodes } from 'http-status-codes/build/cjs/status-codes';
 import { aiPlayer } from '../model/constants/user_constants';
 import { gameFinishedLabel } from '../model/constants/game_constants';
 
@@ -54,11 +53,11 @@ export async function findPlayer2Service(player2: string, res: Response, req: Re
     return exist;
 }
 
-export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, emailplayer1?: string,
+export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, nameGame:string, emailplayer1?: string,
     emailplayer2?: string, firstLooser?: string) {
 
-    await gameOver(req.body.name);
-    let searchGame = await findGame(req.body.name);
+    await gameOver(nameGame);
+    let searchGame = await findGame(nameGame);
     let scores = searchGame[0].dataValues.score;
     let winnerEmail;
     let scoreWinner;
@@ -87,7 +86,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
         await updateUserStatus(false, emailplayer0)
     }
 
-    await updateWinner(req.body.name, winnerEmail);
+    await updateWinner(nameGame, winnerEmail);
 
     let score0 = 0;
     let score1 = 0;
@@ -114,7 +113,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
         let scorePlayer2 = await updateMultiplayerStatus(emailplayer2, score2);
         scores.push(scorePlayer2);
     }
-    await updateScore(req.body.name, scores)
+    await updateScore(nameGame, scores)
 }
 
 
@@ -138,23 +137,22 @@ async function updateMultiplayerStatus(emailPlayer: string, score: any) {
 
 
 export async function statusService(req: Request, res: Response) {
-    let errorMessage: MessageFactory = new MessageFactory();
     try {
-        const game: any = await findGame(req.body.game_name);
+        const game: any = await findGameById(req.params.gameid);
         if (game.length === 0) {
-            errorMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
+            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
         } else {
-            if (game[0].dataValues.status == "finished")
-                res.json({ statusGame: game[0].dataValues.status, winnerGame: game[0].dataValues.winner });
-            else {
-                res.json({ statusGame: game[0].dataValues.status });
-
+            if (game[0].dataValues.status == "finished") {
+                let message = JSON.parse(JSON.stringify({ statusGame: game[0].dataValues.status, winnerGame: game[0].dataValues.winner }))
+                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+            } else {
+                let message = JSON.parse(JSON.stringify({ statusGame: game[0].dataValues.status }))
+                statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
             }
         }
 
     } catch (error) {
-        console.error('Error :', error);
-        throw error;
+        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
 }
 
@@ -207,8 +205,7 @@ export function isTurn(player1: any, player2: any, player3: any, move: any, mod:
 
 export async function turnService(req: Request, res: Response) {
     try {
-        let nameGame = req.body.name;
-        let game = await findGame(nameGame);
+        const game: any = await findGameById(req.params.gameid);
 
         if (game[0].dataValues.status !== gameFinishedLabel) {
             let movesExecute = game[0].dataValues.moves;
@@ -249,7 +246,8 @@ export async function turnService(req: Request, res: Response) {
             let mod = pl0 && pl1 && pl2;
             let nextTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
 
-            res.json({ turn: nextTurn });
+            let message = JSON.parse(JSON.stringify({ turn: nextTurn }));
+            statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         } else {
             statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.GameIsEnded);
         }

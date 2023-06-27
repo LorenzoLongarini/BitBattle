@@ -7,6 +7,7 @@ import { doMoveService } from '../services/single_mode_service';
 import { getGamesPdfService } from '../services/pdf_service';
 import { getClassificationService, getUserStatsService } from '../services/stats_service';
 import { doMoveMultiplayerService } from '../services/multiplayer_service';
+import { doMoveServiceGlobal } from '../services/move_service'; 
 
 export const login = (req: Request, res: Response) => {
     return generateJwtService(req, res);
@@ -18,7 +19,8 @@ export const getUserTokens = (req: Request, res: Response) => {
 
 export const createUser = (req: Request, res: Response) => {
     return createUserService(req, res);
-}
+};
+
 export const getAllUsers = (req: Request, res: Response) => {
     return getAllUsersService(res);
 };
@@ -35,32 +37,36 @@ export const createGame = (req: Request, res: Response) => {
     return createGameService(req, res);
 };
 
-export const insertMoveMultiplayer = (req: any, res: any) => {
+export const insertMoveMultiplayer = (req: Request, res: Response) => {
     return doMoveMultiplayerService(req, res);
 }
 
-export const insertMoveSingle = (req: any, res: any) => {
+export const insertMoveSingle = (req: Request, res: Response) => {
     return doMoveService(req, res);
 };
 
-export const insertMoveAi = (req: any, res: any) => {
+export const insertMoveAi = (req: Request, res: Response) => {
     return doMoveAIService(req, res);
 };
 
-export const getStatus = (req: any, res: any) => {
+export const insertMove = (req: Request, res: Response) => {
+    return doMoveServiceGlobal(req, res);
+};
+
+export const getStatus = (req: Request, res: Response) => {
     return statusService(req, res);
 };
 
 
-export const getGamePdf = (req: any, res: any) => {
+export const getGamePdf = (req: Request, res: Response) => {
     return getGamesPdfService(req, res);
 };
 
-export const getStats = (req: any, res: any) => {
+export const getStats = (req: Request, res: Response) => {
     return getUserStatsService(req, res);
 }
 
-export const getTurn = (req: any, res: any) => {
+export const getTurn = (req: Request, res: Response) => {
     return turnService(req, res);
 };
 

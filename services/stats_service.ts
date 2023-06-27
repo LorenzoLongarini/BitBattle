@@ -1,7 +1,7 @@
 import { findAllUsers } from "../db/queries/user_queries";
 import { Request, Response } from "express";
 import { sortUsers } from "../utils/user_utils";
-import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGame, findWinner } from "../db/queries/games_queries";
+import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGame, findGameById, findWinner } from "../db/queries/games_queries";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
@@ -82,7 +82,7 @@ export async function getClassificationService(req: Request, res: Response) {
 
 export async function generateStats(jwtPlayerEmail: string, startDate: any, endDate: any, res: Response): Promise<any> {
 
-    const totWin = await findWinner(jwtPlayerEmail);;
+    const totWin = await findWinner(jwtPlayerEmail);
     const numPlayer0 = await findAllPlayed0(jwtPlayerEmail);
     const numPlayer1 = await findAllPlayed1(jwtPlayerEmail);
     const numPlayer2 = await findAllPlayed2(jwtPlayerEmail);
@@ -139,7 +139,7 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     }
 
     let standardDev = standardDeviation(sigma);
-    let meanStat = mean(sigma)
+    let meanStat = mean(sigma);
 
     let user = {
         email: jwtPlayerEmail,
@@ -157,7 +157,7 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
 
 export async function getMoves(req: Request, res: Response) {
     try {
-        let game = await findGame(req.body.game);
+        const game: any = await findGameById(req.params.gameid);
         let moves = game[0].dataValues.moves;
         let message = JSON.parse(JSON.stringify({ moves: moves }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);

@@ -7,7 +7,7 @@ import { setShips } from '../utils/game_utils';
 import { piecesOneMin, piecesTwoMin, piecesThreeMin, GameMode } from "../model/constants/game_constants";
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
-import { decodeJwt } from './jwt_service';
+import { decodeJwt, getJwtEmail } from './jwt_service';
 import { verifyIsUser, verifyDifferentUser, verifyIsPlaying } from '../utils/user_utils';
 
 let statusMessage: MessageFactory = new MessageFactory();
@@ -39,12 +39,14 @@ export async function createUserService(req: Request, res: Response) {
     }
 }
 
-export async function getTokensService(req: any, res: any) {
+export async function getTokensService(req: Request, res: Response) {
     try {
-        const user: any = await findUser(req.body.email);
+        let jwtPlayerEmail = getJwtEmail(req);
+        const user: any = await findUser(jwtPlayerEmail);
         if (user.length != 0) {
             const tokens = parseFloat(user[0].dataValues.tokens);
-            res.status(StatusCodes.OK).json({ tokens: tokens });
+            let message = JSON.parse(JSON.stringify({ tokens: tokens }))
+            statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         } else {
             statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.UserNotFound);
         }

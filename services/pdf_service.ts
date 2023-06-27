@@ -33,8 +33,8 @@ export function generatePDF(res: Response, stats: any) {
 export async function getGamesPdfService(req: Request, res: Response) {
     try {
         let jwtPlayerEmail = getJwtEmail(req);
-        let stats = await generateStats(jwtPlayerEmail, "", "", res)
-        generatePDF(res, stats)
+        let stats = await generateStats(jwtPlayerEmail, "", "", res);
+        generatePDF(res, stats);
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
     }
