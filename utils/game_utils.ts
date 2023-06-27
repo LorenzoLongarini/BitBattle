@@ -10,46 +10,34 @@ export function getAllMoves(gridSize: number): any {
     return possibleMoves;
 }
 
-export function setShips(gridSize: number, req: Request, player0:string): any {
+export function setShips(gridSize: number, req: Request, player0: string): any {
 
     let grid = getAllMoves(gridSize);
 
     let player1 = req.body.player1;
     let player2 = req.body.player2;
 
-    let totalLength;
-
     let allPlayers = [player0];
 
     if (player1 !== "" && player2 !== "") {
-        totalLength = 3;
         allPlayers.push(player1, player2);
     } else if (player1 !== "" && player2 === "") {
-        totalLength = 2;
         allPlayers.push(player1);
     } else if (player1 === "" && player2 !== "") {
-        totalLength = 2;
         allPlayers.push(player2);
     } else {
-        totalLength = 2;
         allPlayers.push("AI");
     }
 
-
     let size1Ships = req.body.ships[0].size1;
-
     let size2Ships = req.body.ships[1].size2;
-
     let size3Ships = req.body.ships[2].size3;
 
     for (let i in allPlayers) {
-        grid = populateGrid(grid, size1Ships, gridSize, 1, allPlayers[i]);
-        grid = populateGrid(grid, size2Ships, gridSize, 2, allPlayers[i]);
         grid = populateGrid(grid, size3Ships, gridSize, 3, allPlayers[i]);
+        grid = populateGrid(grid, size2Ships, gridSize, 2, allPlayers[i]);
+        grid = populateGrid(grid, size1Ships, gridSize, 1, allPlayers[i]);
     }
-
-
-
     return grid;
 }
 
@@ -58,8 +46,7 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
     let gridDimension = gridSize * gridSize;
 
     for (let i = 0; i < size; i++) {
-        let startIndex: number = Math.floor(Math.random() * gridDimension);
-
+        let startIndex: number = Math.floor(Math.random() * gridDimension + 1);
 
         let currentPosEmpty = grid[startIndex].ship == 0;
 
@@ -75,29 +62,27 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
         let yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : 0;
         let yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : 0;
 
-
         while (!currentPosEmpty) {
             if (xPosEmptySucc1) {
-                startIndex += 1;
+                startIndex += gridSize;
             } else if (yPosEmptySucc1) {
                 startIndex += 1;
             } else if (xPosEmptyPrev1) {
-                startIndex -= 1;
+                startIndex -= gridSize;
             } else if (yPosEmptyPrev2) {
                 startIndex -= 1;
             } else {
                 break;
             }
             currentPosEmpty = !grid[startIndex].ship;
-            xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : 0;
-            xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : 0;
-            xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? grid[startIndex - gridSize].ship == 0 : 0;
-            xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? grid[startIndex - gridSize - gridSize].ship == 0 : 0;
-            yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? grid[startIndex + 1].ship == 0 : 0;
-            yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? grid[startIndex + 2].ship == 0 : 0;
-            yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : 0;
-            yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : 0;
-
+            xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : false;
+            xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : false;
+            xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? grid[startIndex - gridSize].ship == 0 : false;
+            xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? grid[startIndex - gridSize - gridSize].ship == 0 : false;
+            yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? grid[startIndex + 1].ship == 0 : false;
+            yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? grid[startIndex + 2].ship == 0 : false;
+            yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : false;
+            yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : false;
         }
 
         if (shipType == 1) {
@@ -177,7 +162,6 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
     }
     return grid;
 }
-
 
 
 export function findShip(move: any, move_now: any, choose: any): any {

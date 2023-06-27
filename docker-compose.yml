@@ -24,3 +24,4 @@ services:
       - bitbattle_db
     volumes:
       - ./pdf:/usr/src/app/pdf
+      - ./json:/usr/src/app/json

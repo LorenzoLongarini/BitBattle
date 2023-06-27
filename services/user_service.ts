@@ -66,11 +66,17 @@ export async function createGameService(req: Request, res: Response) {
     let size2ShipsReq = req.body.ships[1].size2
     let size3ShipsReq = req.body.ships[2].size3
 
-    let maxShipPiecesOne: number = Math.floor(gridDimension / piecesOneMin);
-    let maxShipPiecesTwo: number = gridDimension >= piecesTwoMin ? Math.floor(gridDimension / piecesTwoMin) : 0;
-    let maxShipPiecesThree: number = gridDimension >= piecesThreeMin ? Math.floor(gridDimension / piecesThreeMin) : 0;
-
-
+    let maxShipPiecesOne: number = 0;
+    let maxShipPiecesTwo: number = 0;
+    let maxShipPiecesThree: number = 0;
+    switch (true) {
+        case (gridSize == 5): { maxShipPiecesOne = 0; maxShipPiecesTwo = 1; maxShipPiecesThree = 0; break; }
+        case (gridSize == 6): { maxShipPiecesOne = 1; maxShipPiecesTwo = 1; maxShipPiecesThree = 0; break; }
+        case (gridSize == 7): { maxShipPiecesOne = 1; maxShipPiecesTwo = 1; maxShipPiecesThree = 1; break; }
+        case (gridSize == 8): { maxShipPiecesOne = 2; maxShipPiecesTwo = 1; maxShipPiecesThree = 1; break; }
+        case (gridSize == 9): { maxShipPiecesOne = 2; maxShipPiecesTwo = 2; maxShipPiecesThree = 1; break; }
+        case (gridSize == 10): { maxShipPiecesOne = 2; maxShipPiecesTwo = 2; maxShipPiecesThree = 2; break; }
+    }
     try {
         let game = await findGame(req.body.name);
         if (game.length !== 0) {
@@ -79,10 +85,7 @@ export async function createGameService(req: Request, res: Response) {
             let userCreator = await findUser(jwtPlayerEmail);
 
             let currentTokens = parseFloat(userCreator[0].dataValues.tokens)
-
-            if (req.body.grid_size < 3 || req.body.grid_size > 10) {
-                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundGrid);
-            } else if (size1ShipsReq > maxShipPiecesOne || size2ShipsReq > maxShipPiecesTwo || size3ShipsReq > maxShipPiecesThree) {
+            if (size1ShipsReq > maxShipPiecesOne || size2ShipsReq > maxShipPiecesTwo || size3ShipsReq > maxShipPiecesThree) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBoundShips);
             } else if (userCreator && currentTokens < 0.45) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NoTokens);
