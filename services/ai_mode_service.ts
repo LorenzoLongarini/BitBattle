@@ -111,7 +111,10 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 } else if (hitShipUser) {
 
-                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
+                    let message = JSON.parse(JSON.stringify({ esito: Messages200.Hit, hai_colpito: aiPlayer }));
+                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+
+                    //statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Hit);
 
                 } else {
 
