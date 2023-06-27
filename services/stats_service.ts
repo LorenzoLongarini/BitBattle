@@ -162,16 +162,28 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
 
 export async function getMovesService(req: Request, res: Response) {
     try {
-        const fileName = 'moves.json';
-        const filePath = `${'/usr/src/app/json'}/${fileName}`;
         const game: any = await findGameById(req.params.gameid);
         let moves = game[0].dataValues.moves;
-        try {
-            res.setHeader('Content-Disposition', 'attachment; filename=moves.json');
-            res.setHeader('Content-Type', 'application/json');
-        } catch (e) {
-            statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, "eeeeeeeeeee");
-        }
+
+        let message = JSON.parse(JSON.stringify({ moves: moves }))
+        statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+
+    } catch (error) {
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
+    }
+}
+
+export async function downloadMovesService(req: Request, res: Response) {
+    try {
+        const fileName = 'moves.json';
+        const filePath = `${'/usr/src/app/json'}/${fileName}`;
+
+        const game: any = await findGameById(req.params.gameid);
+        let moves = game[0].dataValues.moves;
+
+        res.setHeader('Content-Disposition', 'attachment; filename=moves.json');
+        res.setHeader('Content-Type', 'application/json');
+
         fs.writeFileSync(filePath, JSON.stringify({ moves: moves }));
 
         res.download(filePath, fileName);

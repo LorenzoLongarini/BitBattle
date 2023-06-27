@@ -75,7 +75,7 @@ export async function createGameService(req: Request, res: Response) {
         case (gridSize == 7): { maxShipPiecesOne = 1; maxShipPiecesTwo = 1; maxShipPiecesThree = 1; break; }
         case (gridSize == 8): { maxShipPiecesOne = 2; maxShipPiecesTwo = 1; maxShipPiecesThree = 1; break; }
         case (gridSize == 9): { maxShipPiecesOne = 2; maxShipPiecesTwo = 2; maxShipPiecesThree = 1; break; }
-        case (gridSize == 10): { maxShipPiecesOne = 2; maxShipPiecesTwo = 2; maxShipPiecesThree = 2; break; }
+        case (gridSize == 10): { maxShipPiecesOne = 3; maxShipPiecesTwo = 2; maxShipPiecesThree = 1; break; }
     }
     try {
         let game = await findGame(req.body.name);
