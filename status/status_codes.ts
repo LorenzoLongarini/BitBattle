@@ -41,8 +41,13 @@ export enum Messages400 {
     CreatorNotAvailable = "Non puoi creare un game, sei già impegnato in un altro game",
     StatsNotAvalaible = "Statische non disponibili",
     InvalidDateSame = "La data di inizio non può coincidere con quella di fine",
-    InvalidDate = "La data di fine deve precedere quella di inizio"
-
+    InvalidDate = "La data di fine deve precedere quella di inizio",
+    NegativeTokens = "Non puoi inserire un numero di token negativo",
+    NotANumber = "Il valore inserito deve essere numerico",
+    IsANumber = "Il valore inserito non deve essere numerico",
+    OutOfBound = "L'indice della mossa non può eccedere la dimensione della griglia",
+    OutInvalid = "L'indice della mossa non può essere negativo",
+    TypeInvalid = "Type deve essere ascendente o discendente",
 }
 
 export enum Messages500 {
