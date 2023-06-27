@@ -2,7 +2,7 @@ import { MessageFactory } from "../status/messages_factory";
 import { Request, Response } from "express";
 import { getJwtEmail } from "./jwt_service";
 import { CustomStatusCodes, Messages200, Messages400, Messages500 } from "../status/status_codes";
-import { addMoveDb, findGame } from "../db/queries/games_queries";
+import { addMoveDb, findGame, findGameById } from "../db/queries/games_queries";
 import { findShip, findShipHittable } from "../utils/game_utils";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
 import { findUser } from "../db/queries/user_queries";
@@ -18,7 +18,9 @@ export async function doMoveAIService(req: Request, res: Response) {
 
     try {
 
-        let searchGame = await findGame(req.body.name);
+        //let searchGame = await findGame(req.body.name);
+        const searchGame: any = await findGameById(req.params.gameid);
+        let nameGame = searchGame[0].dataValues.name;
         let movesPossible = searchGame[0].dataValues.possible_moves;
         let movesExecute = searchGame[0].dataValues.moves;
 
@@ -54,7 +56,7 @@ export async function doMoveAIService(req: Request, res: Response) {
                 };
 
                 movesExecute.push(newMoveUser);
-                await addMoveDb(req.body.name, movesExecute);
+                await addMoveDb(nameGame, movesExecute);
 
                 currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
 
@@ -89,7 +91,7 @@ export async function doMoveAIService(req: Request, res: Response) {
                     };
 
                     movesExecute.push(newMoveAi);
-                    await addMoveDb(req.body.name, movesExecute);
+                    await addMoveDb(nameGame, movesExecute);
                     let secondFee: number = firstFee - 0.015;
                     totalFee = Number(secondFee.toFixed(3));
 
@@ -101,12 +103,12 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 if (reducedMovesPossibleUser.length == reducedMovesExecuteUser.length) {
 
-                    setGameOverStatus(req, currentPlayer, jwtPlayerEmail)
+                    setGameOverStatus(req, currentPlayer, jwtPlayerEmail,nameGame)
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.UserWin);
 
                 } else if (reducedMovesPossibleAi.length == reducedMovesExecuteAi.length) {
 
-                    setGameOverStatus(req, aiPlayer, jwtPlayerEmail)
+                    setGameOverStatus(req, aiPlayer, jwtPlayerEmail,nameGame)
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.AiWin);
 
                 } else if (hitShipUser) {
