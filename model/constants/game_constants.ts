@@ -9,6 +9,6 @@ export const gameFinishedLabel = "finished";
 export const classificationTypeAsc = "ascendente";
 export const classificationTypeDesc = "discendente";
 
-export const piecesOneMin = 9;
-export const piecesTwoMin = 16;
-export const piecesThreeMin = 25;
+export const piecesOneMin = 25;
+export const piecesTwoMin = 36;
+export const piecesThreeMin = 49;

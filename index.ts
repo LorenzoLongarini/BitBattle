@@ -6,7 +6,7 @@ import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers,
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
-import { checkGamePlayer, checkMove, checkSHipFormat } from "./middleware/game_middleware";
+import { checkGamePlayer, checkGridSize, checkMove, checkSHipFormat } from "./middleware/game_middleware";
 import { checkEmail, checkEmailBody } from "./middleware/email_middlware";
 import { checkPassword, checkPasswordBody } from "./middleware/password_middleware";
 import { checkTokensBody } from "./middleware/tokens_middleware";
@@ -55,7 +55,7 @@ app.get("/games", (req: any, res: any) => {
 });
 
 /// creare middleware per il check
-app.post("/game/create", jsonParser, checkJwt,checkSHipFormat, (req: Request, res: Response) => {
+app.post("/game/create", jsonParser, checkJwt,checkSHipFormat, checkGridSize, (req: Request, res: Response) => {
     createGame(req, res);
 });
 
@@ -78,8 +78,6 @@ app.get("/game/:gameid", jsonParser, checkJwt, checkGamePlayer, (req: Request, r
 app.get("/game/:gameid/moves", checkJwt, checkGamePlayer, (req: Request, res: Response) => {
     getMoves(req, res);
 });
-
-
 
 app.listen(PORT, HOST, () => {
     console.log(`server is running on PORT ${PORT}`);
