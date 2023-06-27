@@ -33,3 +33,20 @@ export const checkGamePlayer = async (req: Request, res: Response, next: NextFun
         statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
     }
 };
+
+export const checkMove = async (req: Request, res: Response, next: NextFunction) => {
+    const firstIndex = req.body.move[0];
+    const secondIndex = req.body.move[1];
+    const gridSize = req.body.gridSize;
+    if (!isNaN(gridSize) && !isNaN(firstIndex) && !isNaN(secondIndex)) {
+        if (firstIndex < 0 || secondIndex < 0) {
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutInvalid);
+        } else if (firstIndex > gridSize || secondIndex > gridSize) {
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutOfBound);
+        } else {
+            next();
+        }
+    } else {
+        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.NotANumber);
+    }
+};
