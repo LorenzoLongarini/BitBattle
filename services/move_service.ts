@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { findGameById } from "../db/queries/games_queries";
 import { GameMode } from "../model/constants/game_constants";
 import { doMoveAIService } from "./ai_mode_service";
-import { doMoveService } from "./single_mode_service";
+import { doMoveSingleService } from "./single_mode_service";
 import { doMoveMultiplayerService } from "./multiplayer_service";
 import { CustomStatusCodes, Messages500 } from "../status/status_codes";
 import { MessageFactory } from "../status/messages_factory";
@@ -18,7 +18,7 @@ export async function doMoveServiceGlobal(req: Request, res: Response) {
             doMoveAIService(req, res);
 
         } else if (modGame === GameMode.mode2) {
-            doMoveService(req, res);
+            doMoveSingleService(req, res);
 
         } else if (modGame === GameMode.mode3) {
             doMoveMultiplayerService(req, res);
