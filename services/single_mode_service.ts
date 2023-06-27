@@ -7,7 +7,7 @@ import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
 import { CustomStatusCodes, Messages200, Messages400, Messages500 } from "../status/status_codes";
 import { setGameOverStatus } from "./games_service";
-import { gameFinishedLabel } from "../model/constants/game_constants";
+import { gameFinishedLabel } from "../constants/game_constants";
 
 var statusMessage: MessageFactory = new MessageFactory();
 

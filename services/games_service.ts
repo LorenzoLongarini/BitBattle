@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { findUser, setIsNotPlayingDb, updateUserPoints, updateUserStatus } from '../db/queries/user_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes'
-import { aiPlayer } from '../model/constants/user_constants';
-import { GameMode, gameFinishedLabel } from '../model/constants/game_constants';
+import { aiPlayer } from '../constants/user_constants';
+import { GameMode, gameFinishedLabel } from '../constants/game_constants';
 import { turn } from '../utils/game_utils';
 import { getJwtEmail } from './jwt_service';
 

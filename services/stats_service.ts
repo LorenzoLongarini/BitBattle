@@ -5,7 +5,7 @@ import { findAllPlayed0, findAllPlayed1, findAllPlayed2, findGameById, findWinne
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { getJwtEmail } from "./jwt_service";
 import { MessageFactory } from "../status/messages_factory";
-import { classificationTypeAsc } from "../model/constants/game_constants";
+import { classificationTypeAsc } from "../constants/game_constants";
 import moment from 'moment';
 import fs from 'fs';
 

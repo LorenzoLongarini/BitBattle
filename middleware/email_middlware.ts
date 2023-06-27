@@ -9,24 +9,18 @@ export const checkEmail = (req: Request, res: Response, next: NextFunction) => {
     const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
     if (email.length != 0) {
-        let checker: boolean = expression.test(email);
-        if (checker) {
-            next();
+        if (isNaN(email)) {
+            let checker: boolean = expression.test(email);
+            if (checker) {
+                next();
+            } else {
+                statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.EmailCheck);
+            }
         } else {
-            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.EmailCheck);
+            statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.IsANumber);
         }
 
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.EmailEmpty);
-    }
-};
-
-export const checkEmailBody = async (req: any, res: any, next: any) => {
-
-    const email = req.body.email;
-    if (isNaN(email)) {
-        next();
-    } else {
-        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.IsANumber);
     }
 };

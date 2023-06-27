@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages200, Messages400, Messages500 } from '../status/status_codes'
 import { setShips } from '../utils/game_utils';
-import { piecesOneMin, piecesTwoMin, piecesThreeMin, GameMode } from "../model/constants/game_constants";
+import { piecesOneMin, piecesTwoMin, piecesThreeMin, GameMode } from "../constants/game_constants";
 import { updateUserTokensDb } from '../db/queries/admin_queries';
 import { findGame } from '../db/queries/games_queries';
 import { decodeJwt, getJwtEmail } from './jwt_service';
