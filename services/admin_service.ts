@@ -22,7 +22,7 @@ export async function updateUserTokensService(req: Request, res: Response) {
         }
 
     } catch (e) {
-        statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);
+        statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.TokensEmpty);
 
     }
 }
