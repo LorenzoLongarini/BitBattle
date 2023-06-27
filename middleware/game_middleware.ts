@@ -45,7 +45,7 @@ export const checkMove = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-export const checkSHipFormat = async (req: Request, res: Response, next: NextFunction) => {
+export const checkShipFormat = async (req: Request, res: Response, next: NextFunction) => {
 
     const ships = req.body.ships;
     if (req.body.ships && Array.isArray(req.body.ships)) {
@@ -70,7 +70,7 @@ export const checkSHipFormat = async (req: Request, res: Response, next: NextFun
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedSize);
 
             }
-        }else{
+        } else {
             statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedFields);
         }
     } else {

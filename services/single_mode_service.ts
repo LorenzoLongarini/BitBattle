@@ -11,7 +11,7 @@ import { gameFinishedLabel } from "../model/constants/game_constants";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
-export async function doMoveService(req: Request, res: Response) {
+export async function doMoveSingleService(req: Request, res: Response) {
 
     let targetMove = req.body.move;
     let jwtPlayerEmail = getJwtEmail(req)

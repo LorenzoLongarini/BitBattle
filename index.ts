@@ -2,11 +2,11 @@ var express = require('express');
 import { Request, Response } from "express";
 var bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
-import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers, getGamePdf, getStats, getClassification, insertMove, getMoves } from './controller/controller';
+import { getUserTokens, login, createUser, getAllGames, createGame, getAllUsers, getGamePdf, getStats, getClassification, insertMove, getMoves, downloadMoves } from './controller/controller';
 import { updateTokens } from './controller/admin_controller';
 import { checkIsAdmin } from './middleware/admin_middleware'
 import { checkJwt } from "./middleware/jwt_middleware";
-import { checkGamePlayer, checkGridSize, checkMove, checkSHipFormat } from "./middleware/game_middleware";
+import { checkGamePlayer, checkGridSize, checkMove, checkShipFormat } from "./middleware/game_middleware";
 import { checkEmail, checkEmailBody } from "./middleware/email_middlware";
 import { checkPassword, checkPasswordBody } from "./middleware/password_middleware";
 import { checkTokensBody } from "./middleware/tokens_middleware";
@@ -55,7 +55,7 @@ app.get("/games", (req: any, res: any) => {
 });
 
 /// creare middleware per il check
-app.post("/game/create", jsonParser, checkJwt,checkSHipFormat, checkGridSize, (req: Request, res: Response) => {
+app.post("/game/create", jsonParser, checkJwt, checkShipFormat, checkGridSize, (req: Request, res: Response) => {
     createGame(req, res);
 });
 
@@ -67,7 +67,7 @@ app.get("/user/stats", checkJwt, (req: Request, res: Response) => {
     getStats(req, res);
 });
 
-app.get("/user/stats/pdf", checkJwt, (req: Request, res: Response) => {
+app.get("/user/stats/download", checkJwt, (req: Request, res: Response) => {
     getGamePdf(req, res);
 });
 
@@ -77,6 +77,10 @@ app.get("/game/:gameid", jsonParser, checkJwt, checkGamePlayer, (req: Request, r
 
 app.get("/game/:gameid/moves", checkJwt, checkGamePlayer, (req: Request, res: Response) => {
     getMoves(req, res);
+});
+
+app.get("/game/:gameid/moves/download", checkJwt, checkGamePlayer, (req: Request, res: Response) => {
+    downloadMoves(req, res);
 });
 
 app.listen(PORT, HOST, () => {
