@@ -1,13 +1,13 @@
 import { generateJwtService } from '../services/jwt_service';
 import { createUserService, getTokensService, createGameService, getAllUsersService } from '../services/user_service';
-import { getGamesService, statusService, turnService } from '../services/games_service';
+import { getGameInfoService, getGamesService } from '../services/games_service';
 import { doMoveAIService } from '../services/ai_mode_service';
 import { Request, Response } from "express";
 import { doMoveService } from '../services/single_mode_service';
 import { getGamesPdfService } from '../services/pdf_service';
-import { getClassificationService, getUserStatsService } from '../services/stats_service';
+import { getClassificationService, getMovesService, getUserStatsService } from '../services/stats_service';
 import { doMoveMultiplayerService } from '../services/multiplayer_service';
-import { doMoveServiceGlobal } from '../services/move_service'; 
+import { doMoveServiceGlobal } from '../services/move_service';
 
 export const login = (req: Request, res: Response) => {
     return generateJwtService(req, res);
@@ -53,8 +53,8 @@ export const insertMove = (req: Request, res: Response) => {
     return doMoveServiceGlobal(req, res);
 };
 
-export const getStatus = (req: Request, res: Response) => {
-    return statusService(req, res);
+export const getGameInfo = (req: Request, res: Response) => {
+    return getGameInfoService(req, res);
 };
 
 
@@ -66,7 +66,7 @@ export const getStats = (req: Request, res: Response) => {
     return getUserStatsService(req, res);
 }
 
-export const getTurn = (req: Request, res: Response) => {
-    return turnService(req, res);
+export const getMoves = (req: Request, res: Response) => {
+    return getMovesService(req, res);
 };
 

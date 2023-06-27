@@ -17,7 +17,6 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req);
 
     try {
-        //let searchGame1 = await findGame(req.body.name);
         const searchGame: any = await findGameById(req.params.gameid);
         let nameGame = searchGame[0].dataValues.name;
 
@@ -113,17 +112,17 @@ export async function doMoveMultiplayerService(req: Request, res: Response) {
 
                 if (reducedMovesP0.length == reducedMoves0.length && reducedMovesP1.length == reducedMoves1.length) {
 
-                    setGameOverStatus(req, currentPlayer2, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer2, emailplayer0, nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (reducedMovesP1.length == reducedMoves1.length && reducedMovesP2.length == reducedMoves2.length) {
 
-                    setGameOverStatus(req, currentPlayer0, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer0, emailplayer0, nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (reducedMovesP2.length == reducedMoves2.length && reducedMovesP0.length == reducedMoves0.length) {
 
-                    setGameOverStatus(req, currentPlayer1, emailplayer0,nameGame, emailplayer1, emailplayer2, firstLooser);
+                    setGameOverStatus(req, currentPlayer1, emailplayer0, nameGame, emailplayer1, emailplayer2, firstLooser);
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                 } else if (hitShip) {

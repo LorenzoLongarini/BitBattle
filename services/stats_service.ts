@@ -42,12 +42,12 @@ export async function getUserStatsService(req: Request, res: Response) {
         let message = JSON.parse(JSON.stringify({ utente: stats }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
     } catch (error) {
-        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
+        statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.InvalidDateFormat);
     }
 }
 
 const standardDeviation = (arr: number[]): number => {
-    const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+    let mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
     return Math.sqrt(
         arr
             .reduce((acc, val) => acc + (val - mean) ** 2, 0) /
@@ -155,7 +155,7 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     return user;
 }
 
-export async function getMoves(req: Request, res: Response) {
+export async function getMovesService(req: Request, res: Response) {
     try {
         const game: any = await findGameById(req.params.gameid);
         let moves = game[0].dataValues.moves;

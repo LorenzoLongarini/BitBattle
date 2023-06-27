@@ -70,7 +70,7 @@ export async function findPlayer2(name: string, player2: string): Promise<any> {
     return await game.findAll({
         where: {
             name: name,
-            player1: player2,
+            player2: player2,
         }
     });
 

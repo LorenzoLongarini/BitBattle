@@ -17,7 +17,6 @@ export async function doMoveService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req)
 
     try {
-        //let searchGame = await findGame(req.body.name);
         const searchGame: any = await findGameById(req.params.gameid);
         let nameGame = searchGame[0].dataValues.name;
 
@@ -28,7 +27,7 @@ export async function doMoveService(req: Request, res: Response) {
         let movesExecute = searchGame[0].dataValues.moves;
 
         let lastPlayer: any;
-        if (movesExecute != 0) lastPlayer = turn(movesExecute);
+        if (movesExecute != 0) { lastPlayer = turn(movesExecute); } else { lastPlayer = player1; }
 
         let choose = true;
         let isAvailable = await findShip(movesPossible, targetMove, choose);
@@ -68,7 +67,7 @@ export async function doMoveService(req: Request, res: Response) {
                 if (reducedMovesPossible.length == reducedMovesExecute.length) {
                     try {
 
-                        setGameOverStatus(req, currentPlayer, player0,nameGame, player1)
+                        setGameOverStatus(req, currentPlayer, player0, nameGame, player1)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                     } catch (err) {
