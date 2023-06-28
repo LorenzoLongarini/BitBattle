@@ -167,7 +167,7 @@ Dall'analisi effettuata, abbiamo create le seguenti rotte che verranno analizzat
          <tr>
          <td> POST</td>
          <td> /game/:gameid/move</td>
-         <td> move</td>
+         <td> gameid, move</td>
         </tr>
         <tr>
          <td> GET</td>
@@ -213,7 +213,7 @@ Abbiamo aggiunto alcune rotte che non sono propriamente parte del progetto ma ch
     </tbody>
  </table>
  
-Queste rotte ci hanno permesso di verificare che l'applicazione Node venga avviata correttamente, di ottenere tutte le informazioni legate ad un utente e di tutti i game presenti nel Database.
+Queste rotte ci hanno permesso di verificare che l'applicazione Node venga avviata correttamente, di ottenere tutte le informazioni legate ad un utente e di tutte le informazioni relative ai game presenti nel Database.
 
 ### Pattern utilizzati
 
@@ -221,7 +221,7 @@ Come da specifiche, per implementare il progetto abbiamo fatto riferimento ad al
 
 #### M(V)CS
 
-Il progetto è stato strutturato seguendo il pattern Model (View) Controller modificato con l'aggiunta di un layer ulteriore quale il Service. Nel progetto attuale la View risulta mancante ma la abbiamo considerata come potenziale sviluppo futuro. Il service funge da interlocutore tra il controller ed il database, in questo modo le responsabilità sono divise ed il controller si occupa principalmente di richiamare le funzioni principali sviluppate con il Service.
+Il progetto è stato strutturato seguendo il pattern Model (View) Controller modificato con l'aggiunta di un layer ulteriore quale il Service. Nel progetto attuale la View risulta mancante ma è stata considerata come potenziale sviluppo futuro. Il service funge da interlocutore tra il controller ed il database, in questo modo le responsabilità sono divise ed il controller si occupa principalmente di richiamare le funzioni sviluppate con il Service.
 
 <p align="center">
 <img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
@@ -257,9 +257,9 @@ public  static getConnection(): any {
 </p>
 
 #### Abstract
-Il pattern creazionale Abstract è stato utilizzato per la generazione delle res.json da inviare all'utente a seconda dell'esito di una chiamata. La classe astratta possiede un unico metodo, ed ogni classe che implementa la classe deve definirlo correttamente.
+Il pattern creazionale Abstract è stato utilizzato per la generazione delle res.json e delle res.status da inviare all'utente a seconda dell'esito di una chiamata. La classe astratta possiede un unico metodo, ed ogni classe che implementa la classe deve definirlo correttamente.
 
-La classe astratta è stata chiamata Message() ed ogni classe che la implementa è stata nominata a seconda della tipologia di messaggio che andrebbe a generare (ad esempio per i messaggi di OK avremo la classe OkMessage()).
+La classe astratta è stata chiamata MessageInterface() ed ogni classe che la implementa è stata nominata a seconda della tipologia di messaggio che andrebbe a generare (ad esempio per i messaggi di OK avremo la classe OkMessage()).
 
 ```typescript
 export  interface MessageInterface {
@@ -282,7 +282,7 @@ export  class OkMessage implements MessageInterface {
 
 #### Factory
 
-Anche il factory method è un pattern creazionale ed è stato utilizzato sempre per generare il messaggio di errore. In questo modo ogni qualvolta vorremmo generare un messaggio di errore, sarà sufficiente instanziare un oggetto di tipo Message() che richiamerà il metodo getMessage() al quale passeremo il codice di errore associato e il messaggio che vogliamo far stampare: la factory genererà un oggetto specifico a seconda della casistica.
+Anche il factory method è un pattern creazionale ed è stato utilizzato sempre per generare i messaggi di risposta. In questo modo ogni qualvolta vorremmo generare un messaggio, sarà sufficiente instanziare un oggetto di tipo MessageFactory() che richiamerà il metodo getStatusMessage() al quale passeremo il codice di errore associato e il messaggio che vogliamo far stampare: la factory genererà un oggetto specifico a seconda della casistica.
 
 ```typescript
 export  class MessageFactory {
@@ -309,7 +309,7 @@ export  class MessageFactory {
 
 #### Chain of Responsability
 
-Infine abbiamo utilizzato il pattern comportamentale Chain of Responsability: per ogni rotta abbiamo definito alcuni middleware che contengono determinate condizioni le quali, se non rispettate, generano un messaggio di errore ed impediscono il lancio della funzione associata a quella determinata rotta.
+Infine abbiamo utilizzato il pattern comportamentale Chain of Responsability: per ogni rotta abbiamo definito alcuni middleware che contengono determinate condizioni. Queste, se non rispettate, generano un messaggio di errore ed impediscono il lancio della funzione associata a quella determinata rotta.
 
 ```typescript
 export  const checkJwt = (req: Request, res: Response, next: NextFunction) => {
@@ -381,7 +381,7 @@ Se la richiesta viene effettuata correttamente viene restituito il token jwt gen
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"email":"lorisbitbattle.it",
@@ -435,7 +435,7 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	"OK": "Utente creato con successo"
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"email": "emanuele@bitbattle.it",
@@ -479,7 +479,7 @@ Se la richiesta viene effettuata correttamente viene restituito il numero di tok
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
@@ -540,7 +540,7 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"type": "pippo"
@@ -610,7 +610,7 @@ Se la richiesta viene effettuata correttamente verranno restituite le statistich
 
 In entrambi i casi verranno generate le statistiche associate all'utente, ma nel secondo caso non è possibile applicare alcun filtro e verrà generato un pdf contenente i dati generati nel path di progetto, nella cartella pdf.
 
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"startDate":"2023-06-29",
@@ -667,7 +667,7 @@ controller->>- Client : result: res.json()
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
@@ -737,24 +737,24 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 			"possible_moves": [
 				{
 				"move": [
-				1,
-				1
+					1,
+					1
 				],
 				"ship": 0,
 				"owner": ""
 				},
 				{
 				"move": [
-				1,
-				2
+					1,
+					2
 				],
 				"ship": 0,
 				"owner": ""
 				}
 				{
 				"move": [
-				1,
-				3
+					1,
+					3
 				],
 				"ship": 3,
 				"owner": "adriano@bitbattle.it"
@@ -773,7 +773,7 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"BAD_REQUEST": "Esiste già un game con questo nome"
@@ -783,6 +783,7 @@ In caso di errore invece verrà restituito un messaggio con chiave il nome del c
 ### GET: /game/:gameid
 
 Per poter ottenere una risposta, non è necessario inserire un body.
+
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
 ```mermaid
@@ -822,7 +823,7 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
@@ -873,7 +874,7 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 }
 ```
 
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"type": "pippo"
@@ -889,6 +890,7 @@ genererà:
 ### GET: /game/:gameid/moves e GET: /game/:gameid/moves/download
 
 Per poter ottenere una risposta, non è necessario inserire un body.
+
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
 ```mermaid
@@ -947,14 +949,14 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	}
 }
 ```
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
 ```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
 }
 ```
 
-La rotta download, oltre a restituire le mosse effettuate dall'utente in formato pdf nella cartella pdf nella cartella di progetto.
+La rotta download, oltre a restituire le mosse effettuate dall'utente, le restituirà in formato json nella cartella json nella cartella di progetto.
 
 
 <p align="center">
@@ -968,10 +970,11 @@ La rotta download, oltre a restituire le mosse effettuate dall'utente in formato
 Per testare il progetto, è necessario seguire questi passaggi:
 
 1.  Scaricare il progetto copiando l'URL del repository Git o scaricando il file ZIP.
-2.  Importare il pacchetto di chiamate fornito nel progetto in Postman.
-3.  Installare Docker dal sito ufficiale.
-4.  Avviare Docker e assicurarsi che i servizi necessari per il progetto siano in esecuzione.
-5.  Utilizzare Postman per inviare le chiamate al server e verificare le risposte.
+2.  Importare il pacchetto di chiamate fornito nella cartella postman in Postman.
+3. Compilare il file .env con i dati di interesse seguendo il file .env.example
+4.  Installare Docker dal sito ufficiale.
+5.  Avviare Docker e assicurarsi che i servizi necessari per il progetto siano in esecuzione.
+6.  Utilizzare Postman per inviare le chiamate al server e verificare le risposte.
 
 Per poter avviare il progetto, lanciare i seguenti comandi nella directory corretta:
 ~~~
