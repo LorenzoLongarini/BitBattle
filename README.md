@@ -687,6 +687,57 @@ Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il segu
 	"ships": [{"size1": 1}, {"size2": 1}, {"size3": 1}]
 }
 ```
+Durante l'inserimento delle navi è necessario rispettare il loro numero massimo in relazione alla dimensione della griglia come descritto in tabella:
+
+<table align="center">
+    <thead>
+        <tr>
+            <th>Grid Size</th>
+            <th>Navi 1</th>
+            <th>Navi 2</th>
+            <th>Navi 3</th>
+        </tr>
+    </thead>
+    <tbody>
+	 <tr>
+         <td> 5</td>
+         <td> 0</td>
+         <td> 1</td>
+         <td> 0</td>
+        </tr>
+       <tr>
+         <td> 6</td>
+         <td> 1</td>
+         <td> 1</td>
+         <td> 0</td>
+        </tr>
+        <tr>
+         <td> 7</td>
+         <td> 1</td>
+         <td> 1</td>
+         <td> 1</td>
+        </tr>
+        <tr>
+         <td> 8</td>
+         <td> 2</td>
+         <td> 1</td>
+         <td> 1</td>
+        </tr>
+        <tr>
+         <td> 9</td>
+         <td> 2</td>
+         <td> 2</td>
+         <td> 1</td>
+        </tr>
+        <tr>
+         <td> 10</td>
+         <td> 3</td>
+         <td> 2</td>
+         <td> 1</td>
+        </tr>
+    </tbody>
+ </table>
+
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 

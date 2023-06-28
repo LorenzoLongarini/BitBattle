@@ -25,13 +25,13 @@
 			"response": []
 		},
 		{
-			"name": "Login",
+			"name": "Login Lorenzo",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"loris@bitbattle.it\",\r\n    \"password\":\"bitbattlePA23!\"\r\n}",
+					"raw": "{\r\n    \"email\":\"lorenzo@bitbattle.it\",\r\n    \"password\":\"bitbattle1PA23!\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -53,13 +53,41 @@
 			"response": []
 		},
 		{
-			"name": "Login",
+			"name": "Login User1",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"lorenzo@bitbattle.it\",\r\n    \"password\":\"bitbattle\"\r\n}",
+					"raw": "{\r\n    \"email\":\"user1@bitbattle.it\",\r\n    \"password\":\"bitbattle3PA23!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/login/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Adriano",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"adriano@bitbattle.it\",\r\n    \"password\":\"bitbattle2PA23!\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -118,7 +146,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3NzgzNjQ2fQ.IsK0fmqXvSTFqhDtrh50LWiGx3XNHxPFRoay7U-svGI",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVuem9AYml0YmF0dGxlLml0IiwicGFzc3dvcmQiOiJiaXRiYXR0bGUxUEEyMyEiLCJpYXQiOjE2ODc5NjMxOTZ9.4QOgz9OOmWUlQ6v_OPi7nqqX2-I8QzvwMUGHbk2Y9jU",
 							"type": "string"
 						}
 					]
@@ -156,7 +184,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"type\": \"pippo\"\r\n}",
+					"raw": "{\r\n    \"type\": \"ascendente\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -344,7 +372,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"cc\",\r\n    \"player1\": \"loris@bitbattle.it\",\r\n    \"player2\": \"prova@bitbattle.it\",\r\n    \"grid_size\": 10,\r\n    \"ships\": [{\"size1\": 2}, {\"size2\":  2}, {\"size3\": 2}]\r\n}",
+					"raw": "{\r\n    \"name\": \"MyNewGame1\",\r\n    \"player1\": \"user1@bitbattle.it\",\r\n    \"player2\": \"adriano@bitbattle.it\",\r\n    \"grid_size\": 5,\r\n    \"ships\": [{\"size1\": 0}, {\"size2\":  1}, {\"size3\": 0}]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -366,6 +394,35 @@
 			"response": []
 		},
 		{
+			"name": "Game Info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVuem9AYml0YmF0dGxlLml0IiwicGFzc3dvcmQiOiJiaXRiYXR0bGUxUEEyMyEiLCJpYXQiOjE2ODc5NTU2MTB9._mAhsxiLl7bgrTZV1mPtbb0Z4qq8GX0GpU23HtpRQFQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/3",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Move",
 			"request": {
 				"auth": {
@@ -373,7 +430,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3ODU4OTA4fQ.bXm3jwmZMwPgu3gxH43qjYhdPwNsMIf9CyzSZi8prco",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVuem9AYml0YmF0dGxlLml0IiwicGFzc3dvcmQiOiJiaXRiYXR0bGUxUEEyMyEiLCJpYXQiOjE2ODc5NjMxOTZ9.4QOgz9OOmWUlQ6v_OPi7nqqX2-I8QzvwMUGHbk2Y9jU",
 							"type": "string"
 						}
 					]
@@ -382,7 +439,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"move\":[2, 3]\r\n}",
+					"raw": "{\r\n    \"move\":[4,5]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -412,29 +469,39 @@
 			"response": []
 		},
 		{
-			"name": "Game Info",
+			"name": "Move (Caso di Errore)",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3NDIxMDA2fQ.dSNtQ7-rICNQchrLYxoWNdKb8LhQXkg__wTuo-AV4g8",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVuem9AYml0YmF0dGxlLml0IiwicGFzc3dvcmQiOiJiaXRiYXR0bGUxUEEyMyEiLCJpYXQiOjE2ODc5NjMxOTZ9.4QOgz9OOmWUlQ6v_OPi7nqqX2-I8QzvwMUGHbk2Y9jU",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"move\":[4,5]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "localhost:8080/game/1",
+					"raw": "localhost:8080/game/1/move",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"game",
-						"1"
+						"1",
+						"move"
 					]
 				}
 			},
@@ -451,7 +518,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3ODU4OTA4fQ.bXm3jwmZMwPgu3gxH43qjYhdPwNsMIf9CyzSZi8prco",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmVuem9AYml0YmF0dGxlLml0IiwicGFzc3dvcmQiOiJiaXRiYXR0bGUxUEEyMyEiLCJpYXQiOjE2ODc5NTU2MTB9._mAhsxiLl7bgrTZV1mPtbb0Z4qq8GX0GpU23HtpRQFQ",
 							"type": "string"
 						}
 					]
@@ -468,14 +535,15 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/game/3",
+					"raw": "localhost:8080/game/3/moves",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"game",
-						"3"
+						"3",
+						"moves"
 					]
 				}
 			},
