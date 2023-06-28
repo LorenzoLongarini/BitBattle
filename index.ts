@@ -105,7 +105,7 @@ app.get("/games", (req: any, res: any) => {
  * Crea un nuovo game
  */
 
-app.post("/game/create", jsonParser, checkJwt, checkShipFormat, checkGridSize, (req: Request, res: Response) => {
+app.post("/game/create", jsonParser, checkJwt, checkGridSize, checkShipFormat, (req: Request, res: Response) => {
     createGame(req, res);
 });
 

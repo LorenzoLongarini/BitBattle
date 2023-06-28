@@ -103,7 +103,7 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
 
             //aggiorna le posizioni 
 
-            currentPosEmpty = !grid[startIndex].ship;
+            currentPosEmpty = grid[startIndex].ship == 0;
             xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : false;
             xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : false;
             xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? grid[startIndex - gridSize].ship == 0 : false;
@@ -121,7 +121,7 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
             }
         }
         else if (shipType == 2) {
-            if (currentPosEmpty && xPosEmptySucc1 && xPosEmptyPrev1 && xPosEmptySucc2) {
+            if (currentPosEmpty && xPosEmptySucc1) {
                 grid[startIndex].ship = 2;
                 grid[startIndex + gridSize].ship = 2;
                 grid[startIndex].owner = owner;
@@ -133,9 +133,9 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
                 grid[startIndex + 1].owner = owner;
             } else if (currentPosEmpty && xPosEmptyPrev1) {
                 grid[startIndex].ship = 2;
-                grid[startIndex - 1].ship = 2;
+                grid[startIndex - gridSize].ship = 2;
                 grid[startIndex].owner = owner;
-                grid[startIndex - 1].owner = owner;
+                grid[startIndex - gridSize].owner = owner;
             } else if (currentPosEmpty && yPosEmptyPrev1) {
                 grid[startIndex].ship = 2;
                 grid[startIndex - 1].ship = 2;
@@ -160,18 +160,18 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
                 grid[startIndex - 1].owner = owner;
             } else if (currentPosEmpty && xPosEmptySucc1 && xPosEmptySucc2) {
                 grid[startIndex].ship = 3;
-                grid[startIndex + 1].ship = 3;
-                grid[startIndex + 2].ship = 3;
+                grid[startIndex + gridSize].ship = 3;
+                grid[startIndex + gridSize + gridSize].ship = 3;
                 grid[startIndex].owner = owner;
-                grid[startIndex + 1].owner = owner;
-                grid[startIndex + 2].owner = owner;
+                grid[startIndex + gridSize].owner = owner;
+                grid[startIndex + gridSize + gridSize].owner = owner;
             } else if (currentPosEmpty && xPosEmptyPrev1 && xPosEmptyPrev2) {
                 grid[startIndex].ship = 3;
-                grid[startIndex - 1].ship = 3;
-                grid[startIndex - 2].ship = 3;
+                grid[startIndex - gridSize].ship = 3;
+                grid[startIndex - gridSize - gridSize].ship = 3;
                 grid[startIndex].owner = owner;
-                grid[startIndex - 1].owner = owner;
-                grid[startIndex - 2].owner = owner;
+                grid[startIndex - gridSize].owner = owner;
+                grid[startIndex - gridSize - gridSize].owner = owner;
             } else if (currentPosEmpty && yPosEmptySucc1 && yPosEmptySucc2) {
                 grid[startIndex].ship = 3;
                 grid[startIndex + 1].ship = 3;
