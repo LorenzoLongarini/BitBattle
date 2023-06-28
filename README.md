@@ -103,7 +103,7 @@ Prima di poter implementare il progetto è stato necessario effettuare un'analis
 In figura mostriamo i casi d'uso analizzati:
 
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/Schemi-Casi_uso.png">
+<img  width="600" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/Schemi-Casi_uso.png">
 </p>
 
 ### Rotte
@@ -183,39 +183,149 @@ Dall'analisi effettuata, abbiamo create le seguenti rotte che verranno analizzat
     </tbody>
  </table>
 
+Abbiamo aggiunto alcune rotte che non sono propriamente parte del progetto ma che possono facilitare il testing:
+
+<table align="center">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Rotta</th>
+            <th>Parametri</th>
+        </tr>
+    </thead>
+    <tbody>
+	 <tr>
+         <td> GET</td>
+         <td> /</td>
+         <td> </td>
+        </tr>
+        <tr>
+         <td> GET</td>
+         <td> /user/all</td>
+         <td> </td>
+        </tr>
+        <tr>
+         <td> GET</td>
+         <td> /games</td>
+         <td> </td>
+        </tr>
+        <tr>
+    </tbody>
+ </table>
+ 
+Queste rotte ci hanno permesso di verificare che l'applicazione Node venga avviata correttamente, di ottenere tutte le informazioni legate ad un utente e di tutti i game presenti nel Database.
 
 ### Pattern utilizzati
 
 Come da specifiche, per implementare il progetto abbiamo fatto riferimento ad alcuni pattern analizzati a lezione, andremo ora ad analizzarli nello specifico.
 
-#### MVCS
+#### M(V)CS
+
+Il progetto è stato strutturato seguendo il pattern Model (View) Controller modificato con l'aggiunta di un layer ulteriore quale il Service. Nel progetto attuale la View risulta mancante ma la abbiamo considerata come potenziale sviluppo futuro. Il service funge da interlocutore tra il controller ed il database, in questo modo le responsabilità sono divise ed il controller si occupa principalmente di richiamare le funzioni principali sviluppate con il Service.
 
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
+<img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/MVCS.png">
 </p>
 
 #### Singleton
 
+Il pattern creazionale Singleton è stato utilizzato per creare una singola istanza quando effettuiamo la connessione al database. La classe, oltre al costruttore, ha un unico metodo che ci consente di ottenere la connessione al database PostgreSQL, la quale verrà richiamata dai model User e Game.
+
+```typescript
+export class DbConnector {
+	private  static instance: DbConnector;
+	private sequelizer: any;
+	private  constructor() {
+		this.sequelizer = new Sequelize('bitbattledb', 'postgres', 'postgres', {
+		host: 'db',
+		dialect: 'postgres',
+	});
+}
+
+public  static getConnection(): any {
+	if (!DbConnector.instance) {
+		this.instance = new DbConnector();
+		}
+		return DbConnector.instance.sequelizer;
+	}
+}
+ ```
+
+
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/singleton.png">
+<img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/singleton.png">
 </p>
 
 #### Abstract
+Il pattern creazionale Abstract è stato utilizzato per la generazione delle res.json da inviare all'utente a seconda dell'esito di una chiamata. La classe astratta possiede un unico metodo, ed ogni classe che implementa la classe deve definirlo correttamente.
+
+La classe astratta è stata chiamata Message() ed ogni classe che la implementa è stata nominata a seconda della tipologia di messaggio che andrebbe a generare (ad esempio per i messaggi di OK avremo la classe OkMessage()).
+
+```typescript
+export  interface MessageInterface {
+	setStatus(res: Response, msg: string): any;
+	}
+
+
+export  class OkMessage implements MessageInterface {
+	public setStatus(res: Response, messageType: string): any {
+		res.status(CustomStatusCodes.OK).json({
+			OK: messageType
+		});
+	};
+}
+```
 
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/abstract.png">
+<img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/abstract.png">
 </p>
 
 #### Factory
 
+Anche il factory method è un pattern creazionale ed è stato utilizzato sempre per generare il messaggio di errore. In questo modo ogni qualvolta vorremmo generare un messaggio di errore, sarà sufficiente instanziare un oggetto di tipo Message() che richiamerà il metodo getMessage() al quale passeremo il codice di errore associato e il messaggio che vogliamo far stampare: la factory genererà un oggetto specifico a seconda della casistica.
+
+```typescript
+export  class MessageFactory {
+	constructor() { };
+	getStatusMessage(cases: CustomStatusCodes, res: Response, message: string): any {
+		let oneCase = cases;
+		let messageClass;
+		switch (oneCase) {
+			case (400):
+			messageClass = new BadRequestMessage();
+			return messageClass.setStatus(res, message);
+			
+			...
+			
+			default:
+			return res.status(CustomStatusCodes.INTERNAL_SERVER_ERROR).json({ error: Messages500.InternalServerError });
+		} 
+	}
+}
+```
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/factory.png">
+<img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/factory.png">
 </p>
 
-#### Middleware
+#### Chain of Responsability
+
+Infine abbiamo utilizzato il pattern comportamentale Chain of Responsability: per ogni rotta abbiamo definito alcuni middleware che contengono determinate condizioni le quali, se non rispettate, generano un messaggio di errore ed impediscono il lancio della funzione associata a quella determinata rotta.
+
+```typescript
+export  const checkJwt = (req: Request, res: Response, next: NextFunction) => {
+	let statusMessage: MessageFactory = new MessageFactory();
+	const jwtBearerToken = req.headers.authorization;
+	const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
+	if (jwtDecode && jwtDecode.email && jwtDecode.password) {
+		next();
+		} else {
+			statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
+	}
+};
+```
 
 <p align="center">
-<img  width="450" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/middleware.png">
+<img  width="350" src="https://github.com/LorenzoLongarini/BitBattle/blob/dev_lorenzo/assets/imgs/middleware.png">
 </p>
 
 
@@ -233,12 +343,12 @@ In questa sezione, forniremo una descrizione dettagliata di ogni rotta che è st
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"email":"loris@bitbattle.it",
 	"password":"bitbattlePA23!"
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
@@ -264,37 +374,37 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il token jwt generato con email e password dell'utente:
-~~~
+```json
 {
 	"OK": {
 		jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3ODYxMTI1fQ._dUKfo-8Yeszpxure7l0zvXSMfwf_wtz-AxRcXxPVwQ"
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"email":"lorisbitbattle.it",
 	"password":"bitbattlePA23!"
 }
-~~~
+```
 genererà:
-~~~
+```json
 {
 	"BAD_REQUEST": "Il formato dell'email inserita non è corretto"
 }
-~~~
+```
 
 ### POST: /register
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"email": "emanuele@bitbattle.it",
 	"password": "vraiisbetteR!5"
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
@@ -320,24 +430,24 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 	"OK": "Utente creato con successo"
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"email": "emanuele@bitbattle.it",
 	"password": "vraiisbette"
 }
-~~~
+```
 genererà:
-~~~
+```json
 {
 	"BAD_REQUEST": "La password deve contenere almeno 8 caratteri ed un numero, un carattere speciale, un carattere maiuscolo e uno minuscolo"
 }
-~~~
+```
 
 ### GET: /user/tokens
 
@@ -362,29 +472,29 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il numero di token associati all'utente:
-~~~
+```json
 {
 	"OK": {
 		"tokens": 10
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
 }
-~~~
+```
 
 ### POST: /user/classification
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"type": "ascendente"
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
@@ -409,7 +519,7 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 
 "OK": {
@@ -429,31 +539,31 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 	]
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"type": "pippo"
 }
-~~~
+```
 genererà:
-~~~
+```json
 {
 	"BAD_REQUEST": "Type deve essere ascendente o discendente"
 }
-~~~
+```
 
 
 ### POST: /user/stats e GET: /user/stats/download
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"startDate":"2023-06-13",
 	"endDate":"2023-06-28"
 }
-~~~
+```
 In questo modo sarà possibile filtrare per data le statistiche.
 
 Il meccanismo che si innesca all'atto delle due chiamate è descritto dal seguente diagramma:
@@ -480,7 +590,7 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente verranno restituite le statistiche associate all'utente:
-~~~
+```json
 {
 	"OK": {
 		"utente": {
@@ -496,34 +606,34 @@ Se la richiesta viene effettuata correttamente verranno restituite le statistich
 		}
 	}
 }
-~~~
+```
 
 In entrambi i casi verranno generate le statistiche associate all'utente, ma nel secondo caso non è possibile applicare alcun filtro e verrà generato un pdf contenente i dati generati nel path di progetto, nella cartella pdf.
 
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"startDate":"2023-06-29",
 	"endDate":"2023-06-28"
 }
-~~~
+```
 genererà:
-~~~
+```json
 {
 	"BAD_REQUEST": "La data di fine deve precedere quella di inizio"
 }
-~~~
+```
 
 ### PUT: /admin
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"email": "loris@bitbattle.it",
 	"tokens":33
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto delle due chiamate è descritto dal seguente diagramma:
 
@@ -550,25 +660,25 @@ service ->>- controller: result: res.json()
 controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
-~~~
+```json
 {
 	"OK": {
 		"tokens": 30
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
 }
-~~~
+```
 
 ### POST: /game/create"
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"name": "MyNewGame",
 	"player1": "loris@bitbattle.it",
@@ -576,7 +686,7 @@ Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il segu
 	"grid_size": 7,
 	"ships": [{"size1": 1}, {"size2": 1}, {"size3": 1}]
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
@@ -604,7 +714,7 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 	{
 		"OK": {
@@ -662,13 +772,13 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 		}
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"BAD_REQUEST": "Esiste già un game con questo nome"
 }
-~~~
+```
 
 ### GET: /game/:gameid
 
@@ -697,7 +807,7 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 	"OK": {
 		"name": "game_1",
@@ -711,23 +821,23 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 		"score": []
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
 }
-~~~
+```
 
 ### POST: /game/:gameid/move
 
 Per poter ottenere una risposta, il corpo delle richieste dovrà seguire il seguente modello:
 
-~~~
+```json
 {
 	"move":[2, 3]
 }
-~~~
+```
 
 Il meccanismo che si innesca all'atto della chiamata è descritto dal seguente diagramma:
 
@@ -757,24 +867,24 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 	"OK": "Colpito!"
 }
-~~~
+```
 
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"type": "pippo"
 }
-~~~
+```
 genererà:
-~~~
+```json
 {
 	"BAD_REQUEST": "Non puoi eseguire questa mossa, non è il tuo turno"
 }
-~~~
+```
 
 ### GET: /game/:gameid/moves e GET: /game/:gameid/moves/download
 
@@ -805,7 +915,7 @@ controller->>+ Client : status: res.status()
 controller->>- Client : result: res.json()
 ```
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
-~~~
+```json
 {
 	"OK": {
 		"moves": [
@@ -836,13 +946,13 @@ Se la richiesta viene effettuata correttamente viene restituito il seguente mess
 		]
 	}
 }
-~~~
+```
 In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica, inoltre verrà settato lo stato a seconda dello status code:
-~~~
+```json
 {
 	"UNAUTHORIZED": "Questo utente non ha le autorizzazioni necessarie a svolgere l'operazione"
 }
-~~~
+```
 
 La rotta download, oltre a restituire le mosse effettuate dall'utente in formato pdf nella cartella pdf nella cartella di progetto.
 
