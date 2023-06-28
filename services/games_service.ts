@@ -10,6 +10,10 @@ import { getJwtEmail } from './jwt_service';
 
 var statusMessage: MessageFactory = new MessageFactory();
 
+/**
+ * Ottiene la lista di tutti i games.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function getGamesService(res: Response) {
     try {
         const game: any = await findAllGames();
@@ -21,6 +25,14 @@ export async function getGamesService(res: Response) {
     }
 }
 
+/**
+ * Verifica se l'utente è il creatore del game specificato.
+ * @param gameName Il nome del game.
+ * @param player0 L'ID dell'utente.
+ * @param res La risposta HTTP da inviare.
+ * @param req La richiesta HTTP.
+ * @returns Restituisce true se l'utente è il creatore del game, altrimenti false.
+ */
 export async function findUserCreatorService(gameName: string, player0: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
@@ -32,6 +44,14 @@ export async function findUserCreatorService(gameName: string, player0: string, 
     return exist;
 }
 
+/**
+ * Verifica se l'utente è il player1 nel game specificato.
+ * @param gameName Il nome del game.
+ * @param player1 L'ID dell'utente.
+ * @param res La risposta HTTP da inviare.
+ * @param req La richiesta HTTP.
+ * @returns Restituisce true se l'utente è il player1 del game, altrimenti false.
+ */
 export async function findPlayer1Service(gameName: string, player1: string, res: Response, req: Request): Promise<boolean> {
     let exist = false;
     try {
@@ -43,6 +63,14 @@ export async function findPlayer1Service(gameName: string, player1: string, res:
     return exist;
 }
 
+/**
+ * Verifica se l'utente è il player2 nel game specificato.
+ * @param gameName Il nome del game.
+ * @param player2 L'ID dell'utente.
+ * @param res La risposta HTTP da inviare.
+ * @param req La richiesta HTTP.
+ * @returns Restituisce true se l'utente è il player2 del game, altrimenti false.
+ */
 export async function findPlayer2Service(gameName: string, player2: string, res: Response, req: Request): Promise<boolean> {
 
     let exist = false;
@@ -55,6 +83,16 @@ export async function findPlayer2Service(gameName: string, player2: string, res:
     return exist;
 }
 
+/**
+ * Imposta lo stato di fine game e aggiorna i punteggi dei giocatori.
+ * @param req La richiesta HTTP.
+ * @param winner L'utente vincitore.
+ * @param emailplayer0 L'email del player0.
+ * @param nameGame Il nome del game.
+ * @param emailplayer1 (Opzionale) L'ID del player1.
+ * @param emailplayer2 (Opzionale) L'ID del player2.
+ * @param firstLooser (Opzionale) L'ID del primo giocatore che ha perso.
+ */
 export async function setGameOverStatus(req: Request, winner: any, emailplayer0: string, nameGame: string, emailplayer1?: string,
     emailplayer2?: string, firstLooser?: string) {
 
@@ -120,7 +158,12 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
 }
 
 
-
+/**
+ * Aggiorna lo stato isPlaying del giocatore e il suo punteggio.
+ * @param emailPlayer L'ID del giocatore.
+ * @param score Il punteggio del giocatore.
+ * @returns Restituisce un oggetto contenente l'email del giocatore e il suo punteggio aggiornato.
+ */
 async function updateMultiplayerStatus(emailPlayer: string, score: any) {
     await updateUserStatus(false, emailPlayer);
 
@@ -138,7 +181,19 @@ async function updateMultiplayerStatus(emailPlayer: string, score: any) {
 }
 
 
-
+/**
+ * Determina il prossimo giocatore in base allo stato di gioco.
+ * @param player1 Il player1.
+ * @param player2 Il player2.
+ * @param player3 Il player3.
+ * @param move Le mosse eseguite.
+ * @param mod Il tipo di gioco.
+ * @param isplay1 Lo stato del player1.
+ * @param isplay2 Lo stato del player2.
+ * @param isplay3 Lo stato del player3.
+ * @param nextMove La prossima mosse.
+ * @returns Restituisce il prossimo giocatore.
+ */
 export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
     isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
     if (move.length === 0 && mod) {
@@ -184,6 +239,11 @@ export function isTurn(player1: any, player2: any, player3: any, move: any, mod:
     }
 }
 
+/**
+ * Ottiene le informazioni di un gioco specificato.
+ * @param req La richiesta HTTP.
+ * @param res La risposta HTTP.
+ */
 export async function getGameInfoService(req: Request, res: Response) {
     try {
         const game: any = await findGameById(req.params.gameid);

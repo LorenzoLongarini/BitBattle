@@ -8,7 +8,12 @@ import { getJwtEmail } from './jwt_service';
 
 let statusMessage: MessageFactory = new MessageFactory();
 
-
+/**
+ * Genera un file PDF contenente le statistiche fornite e lo rende disponibile per il download.
+ * 
+ * @param res - L'oggetto di risposta HTTP utilizzato per inviare la risposta al client.
+ * @param stats - Le statistiche da inserire nel file PDF.
+ */
 export function generatePDF(res: Response, stats: any) {
     try {
         let stream = fs.createWriteStream('/usr/src/app/pdf/file.pdf');
@@ -44,6 +49,12 @@ export function generatePDF(res: Response, stats: any) {
     }
 }
 
+/**
+ * Gestisce la richiesta di generazione di un file PDF contenente le statistiche del giocatore.
+ * 
+ * @param req - L'oggetto di richiesta HTTP.
+ * @param res - L'oggetto di risposta HTTP utilizzato per inviare la risposta al client.
+ */
 export async function getGamesPdfService(req: Request, res: Response) {
     try {
         let jwtPlayerEmail = getJwtEmail(req);

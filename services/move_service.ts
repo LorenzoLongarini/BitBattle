@@ -9,6 +9,13 @@ import { MessageFactory } from "../status/messages_factory";
 
 let statusMessage: MessageFactory = new MessageFactory();
 
+/**
+ * Esegue una mossa di gioco in base alla modalità di gioco corrente.
+ * Viene cercata la partita corrispondente all'ID fornito nella richiesta tramite la funzione `findGameById`.
+ * 
+ * @param req - L'oggetto di richiesta HTTP contenente l'ID della partita.
+ * @param res - L'oggetto di risposta HTTP utilizzato per inviare la risposta al client.
+ */
 export async function doMoveServiceGlobal(req: Request, res: Response) {
     try {
         const searchGame: any = await findGameById(req.params.gameid);

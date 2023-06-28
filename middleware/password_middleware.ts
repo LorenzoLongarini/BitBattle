@@ -4,6 +4,15 @@ import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
+/**
+ * Controlla la validità della password specificata nella richiesta.
+ * Verifica se la password è non vuota e rispetta i requisiti minimi di complessità.
+ * Restituisce un errore 400 se la password non è valida.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkPassword = (req: Request, res: Response, next: NextFunction) => {
     const password = req.body.password;
     const expression: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/i;

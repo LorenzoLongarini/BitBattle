@@ -7,6 +7,16 @@ import { findGameById } from "../db/queries/games_queries";
 
 let statusMessage: MessageFactory = new MessageFactory();
 
+/**
+ * Middleware che controlla se un giocatore è autorizzato ad accedere a una partita.
+ * Verifica se l'utente è il creatore della partita o uno dei giocatori assegnati.
+ * Se l'autenticazione tramite token JWT fallisce, restituisce un errore 500.
+ * Se l'autenticazione ha successo ma l'utente non è autorizzato, restituisce un errore 401.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkGamePlayer = async (req: Request, res: Response, next: NextFunction) => {
     let game = await findGameById(req.params.gameid);
     let gameName = game[0].dataValues.name;
@@ -24,6 +34,15 @@ export const checkGamePlayer = async (req: Request, res: Response, next: NextFun
     }
 };
 
+/**
+ * Controlla la validità di una mossa di gioco.
+ * Verifica se la mossa è composta da indici numerici validi all'interno delle dimensioni della griglia di gioco.
+ * Restituisce un errore 400 se la mossa non è valida o non è un numero.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkMove = async (req: Request, res: Response, next: NextFunction) => {
     const move = req.body.move
     const firstIndex = move[0];
@@ -45,8 +64,16 @@ export const checkMove = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
+/**
+ * Controlla il formato delle navi specificate nella richiesta.
+ * Verifica che la richiesta contenga un array di navi e che sia nel formato corretto.
+ * Restituisce un errore 400 se il formato delle navi non è corretto.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkShipFormat = async (req: Request, res: Response, next: NextFunction) => {
-
     const ships = req.body.ships;
     if (req.body.ships && Array.isArray(req.body.ships)) {
         if (ships.length === 3) {
@@ -76,8 +103,17 @@ export const checkShipFormat = async (req: Request, res: Response, next: NextFun
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.MalformedArray);
     }
+};
 
-}
+/**
+ * Controlla la dimensione della griglia di gioco specificata nella richiesta.
+ * Verifica se la dimensione è un numero intero compreso tra 5 e 10.
+ * Restituisce un errore 400 se la dimensione non è valida.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkGridSize = async (req: Request, res: Response, next: NextFunction) => {
     let gridSize = req.body.grid_size;
 
