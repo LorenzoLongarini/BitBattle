@@ -7,8 +7,8 @@ import { findShip, findShipHittable } from "../utils/game_utils";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
 import { findUser } from "../db/queries/user_queries";
 import { setGameOverStatus } from "./games_service";
-import { gameFinishedLabel } from "../model/constants/game_constants";
-import { aiPlayer } from "../model/constants/user_constants";
+import { gameFinishedLabel } from "../constants/game_constants";
+import { aiPlayer } from "../constants/user_constants";
 
 var statusMessage: MessageFactory = new MessageFactory();
 

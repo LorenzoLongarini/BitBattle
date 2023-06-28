@@ -1,4 +1,4 @@
-import { classificationTypeAsc, classificationTypeDesc } from "../model/constants/game_constants";
+import { classificationTypeAsc, classificationTypeDesc } from "../constants/game_constants";
 import { MessageFactory } from "../status/messages_factory";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 

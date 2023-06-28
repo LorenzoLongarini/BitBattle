@@ -1,1 +1,28 @@
-{"moves":[{"move":[1,1],"hit":false,"player":"loris@bitbattle.it"},{"move":[1,2],"hit":true,"player":"lorenzo@bitbattle.it"},{"move":[2,1],"hit":false,"player":"loris@bitbattle.it"}]}
+{
+    "moves": [
+        {
+            "move": [
+                1,
+                1
+            ],
+            "hit": false,
+            "player": "loris@bitbattle.it"
+        },
+        {
+            "move": [
+                1,
+                2
+            ],
+            "hit": true,
+            "player": "lorenzo@bitbattle.it"
+        },
+        {
+            "move": [
+                2,
+                1
+            ],
+            "hit": false,
+            "player": "loris@bitbattle.it"
+        }
+    ]
+}

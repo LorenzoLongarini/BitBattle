@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { findGameById } from "../db/queries/games_queries";
-import { GameMode } from "../model/constants/game_constants";
+import { GameMode } from "../constants/game_constants";
 import { doMoveAIService } from "./ai_mode_service";
 import { doMoveSingleService } from "./single_mode_service";
 import { doMoveMultiplayerService } from "./multiplayer_service";
