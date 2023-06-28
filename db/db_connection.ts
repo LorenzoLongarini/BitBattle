@@ -2,6 +2,10 @@ import { Sequelize } from 'sequelize';
 
 
 //TODO: add env file
+/**
+ * Classe per la connessione al database.
+ * Utilizza il pattern Singleton per garantire una sola istanza di connessione.
+ */
 export class DbConnector {
     private static instance: DbConnector;
     private sequelizer: any;
@@ -13,6 +17,12 @@ export class DbConnector {
 
     }
 
+    /**
+     * Ottiene l'istanza della connessione al database.
+     * Restituisce l'oggetto Sequelize per la connessione.
+     *
+     * @returns L'istanza della connessione al database.
+     */
     public static getConnection(): any {
         if (!DbConnector.instance) {
             this.instance = new DbConnector();

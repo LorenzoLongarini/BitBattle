@@ -6,6 +6,13 @@ import { Request, Response } from "express";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
+/**
+ * Aggiorna i tokens di un utente nel database.
+ * Viene eseguita una ricerca dell'utente con l'email specificata.
+ * 
+ * @param req - L'oggetto di richiesta HTTP contenente i dati dell'utente da aggiornare.
+ * @param res - L'oggetto di risposta HTTP utilizzato per inviare la risposta al client.
+ */
 export async function updateUserTokensService(req: Request, res: Response) {
     try {
         const user: any = await findUser(req.body.email);
