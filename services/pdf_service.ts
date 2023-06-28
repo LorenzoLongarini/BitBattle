@@ -18,17 +18,31 @@ export function generatePDF(res: Response, stats: any) {
     try {
         let stream = fs.createWriteStream('/usr/src/app/pdf/file.pdf');
         let pdf = new pdfkit();
+        const logoPath = '/usr/src/app/assets/logo/bitbattle.png';
         pdf.pipe(stream);
-        pdf.fontSize(12).text(JSON.stringify(stats), 5, 10);
+        pdf.image(logoPath, 150, 10, { fit: [300, 300], align: 'center' })
+            .rect(430, 15, 100, 100);
+        pdf.fontSize(15).text("email: ", 50, 340);
+        pdf.fontSize(15).text(JSON.stringify(stats.email), 220, 340);
+        pdf.fontSize(15).text("played: ", 50, 360);
+        pdf.fontSize(15).text(JSON.stringify(stats.played), 220, 360);
+        pdf.fontSize(15).text("win: ", 50, 380);
+        pdf.fontSize(15).text(JSON.stringify(stats.win), 220, 380);
+        pdf.fontSize(15).text("lose: ", 50, 400);
+        pdf.fontSize(15).text(JSON.stringify(stats.lose), 220, 400);
+        pdf.fontSize(15).text("totalMoves: ", 50, 420);
+        pdf.fontSize(15).text(JSON.stringify(stats.totalMoves), 220, 420);
+        pdf.fontSize(15).text("maxMovesPerGame: ", 50, 440);
+        pdf.fontSize(15).text(JSON.stringify(stats.maxMovesPerGame), 220, 440);
+        pdf.fontSize(15).text("minMovesPerGames: ", 50, 460);
+        pdf.fontSize(15).text(JSON.stringify(stats.minMovesPerGame), 220, 460);
+        pdf.fontSize(15).text("standardDeviation: ", 50, 480);
+        pdf.fontSize(15).text(JSON.stringify(stats.standardDeviation), 220, 480);
+        pdf.fontSize(15).text("mean: ", 50, 500);
+        pdf.fontSize(15).text(JSON.stringify(stats.mean), 220, 500);
         pdf.end();
         stream.on('finish', () => {
-            res.download('/usr/src/app/pdf/file.pdf', 'file.pdf', (err) => {
-                if (err) {
-                    statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.PdfUnable);
-                } else {
-                    statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.PdfSuccess);
-                }
-            });
+            res.download('/usr/src/app/pdf/file.pdf', 'file.pdf', (err) => { });
         });
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.INTERNAL_SERVER_ERROR, res, Messages500.InternalServerError);

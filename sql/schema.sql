@@ -30,11 +30,11 @@
   ); 
 
 INSERT INTO users (email, password, tokens, isadmin, isplaying, points) VALUES
- ('loris@bitbattle.it', 'bitbattle', 10.00, false, false, 13),
- ('lorenzo@bitbattle.it', 'bitbattle1', 10.00, false, false, 26),
- ('adriano@bitbattle.it', 'bitbattle2', 10.00, true, false, 0),
- ('user1@bitbattle.it', 'bitbattle3', 10.00, false, false, 0),
- ('user2@bitbattle.it', 'bitbattle4', 10.00, false, false, 0);
+ ('loris@bitbattle.it', 'bitbattlePA23!', 10.00, false, false, 13),
+ ('lorenzo@bitbattle.it', 'bitbattle1PA23!', 10.00, false, false, 26),
+ ('adriano@bitbattle.it', 'bitbattle2PA23!', 10.00, true, false, 0),
+ ('user1@bitbattle.it', 'bitbattle3PA23!', 10.00, false, false, 0),
+ ('user2@bitbattle.it', 'bitbattle4PA23!', 10.00, false, false, 0);
 
 INSERT INTO game (player0,player1, player2, name, grid_size, ships, possible_moves,  moves, status, winner, score, mod, created_at) VALUES
  ('loris@bitbattle.it','lorenzo@bitbattle.it','', 'game_1',  2, '[{"size1": 3}, {"size2": 2 }, {"size3": 3}]',
