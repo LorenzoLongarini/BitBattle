@@ -2,6 +2,11 @@ import { CustomStatusCodes } from './status_codes';
 import { MessageInterface } from './messages_interface';
 import { Response } from "express";
 
+/**
+ * Implementazione delle interfacce per la gestione dei messaggi di stato
+ * Imposta il messaggio di stato sulla risposta HTTP con il codice di stato corrispondente.
+ */
+
 export class BadRequestMessage implements MessageInterface {
     public setStatus(res: Response, messageType: string): any {
         res.status(CustomStatusCodes.BAD_REQUEST).json({

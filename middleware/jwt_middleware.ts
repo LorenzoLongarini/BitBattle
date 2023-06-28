@@ -3,6 +3,15 @@ import { Request, Response, NextFunction } from "express";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { MessageFactory } from "../status/messages_factory";
 
+/**
+ * Controlla la validità del token JWT nell'intestazione della richiesta.
+ * Verifica se il token JWT è presente e decodificabile correttamente.
+ * Restituisce un errore 401 se il token JWT è mancante o non valido.
+ *
+ * @param req - Oggetto della richiesta HTTP.
+ * @param res - Oggetto della risposta HTTP.
+ * @param next - Funzione di callback per passare alla prossima operazione.
+ */
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     let statusMessage: MessageFactory = new MessageFactory();
     const jwtBearerToken = req.headers.authorization;

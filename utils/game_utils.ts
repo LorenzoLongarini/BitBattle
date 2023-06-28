@@ -1,5 +1,10 @@
 import { Request } from "express";
 
+/**
+ * Ottiene tutte le mosse possibili sulla griglia a partire dalla sua dimensione.
+ * @param gridSize - La dimensione della griglia.
+ * @returns Un array contenente tutte le mosse possibili sulla griglia.
+ */
 export function getAllMoves(gridSize: number): any {
     let possibleMoves: any = [];
     for (let i = 1; i <= gridSize; i++) {
@@ -10,6 +15,13 @@ export function getAllMoves(gridSize: number): any {
     return possibleMoves;
 }
 
+/**
+ * Imposta le navi sulla griglia per tutti i giocatori.
+ * @param gridSize - La dimensione della griglia.
+ * @param req - L'oggetto di richiesta HTTP contenente i dati dei giocatori e delle navi.
+ * @param player0 - Il nome del giocatore che ha creato il game.
+ * @returns La griglia con le navi impostate per tutti i giocatori.
+ */
 export function setShips(gridSize: number, req: Request, player0: string): any {
 
     let grid = getAllMoves(gridSize);
@@ -41,7 +53,15 @@ export function setShips(gridSize: number, req: Request, player0: string): any {
     return grid;
 }
 
-
+/**
+ * Popola la griglia con le navi in base alle dimensioni delle navi e al giocatore.
+ * @param grid - La griglia di gioco.
+ * @param size - La dimensione della nave.
+ * @param gridSize - La dimensione della griglia.
+ * @param shipType - Il tipo di nave.
+ * @param owner - Il proprietario della nave.
+ * @returns La griglia di gioco con le navi posizionate.
+ */
 function populateGrid(grid: any, size: number, gridSize: number, shipType: number, owner: string) {
     let gridDimension = gridSize * gridSize;
 
@@ -163,7 +183,13 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
     return grid;
 }
 
-
+/**
+ * Trova una nave nella lista di mosse in base alla mossa effettuata e verifica se è stata colpita.
+ * @param move - La lista di mosse.
+ * @param move_now - La mossa effettuata.
+ * @param choose - Indica se è necessario ritornare isMovePresent o shipHit
+ * @returns Ritorna se la mossa è presente o meno, oppure se nella mossa è presente una nave.
+ */
 export function findShip(move: any, move_now: any, choose: any): any {
     let shipHit = false;
     let isMovePresent = false;
@@ -182,6 +208,13 @@ export function findShip(move: any, move_now: any, choose: any): any {
     else return shipHit;
 }
 
+/**
+ * Verifica se una nave può essere colpita nella lista di mosse in base alla mossa effettuata e al giocatore che la effettua.
+ * @param move - La lista di mosse.
+ * @param move_now - La mossa effettuata.
+ * @param player - Il giocatore che sta effettuando la mossa.
+ * @returns Ritorna se la mossa è effettuabile, colui che fa la mossa non può attaccare una propria nave.
+ */
 export function findShipHittable(move: any, move_now: any, player: string): any {
     let isHittable = true;
     for (let i = 0; i < move.length; i++) {
@@ -196,6 +229,12 @@ export function findShipHittable(move: any, move_now: any, player: string): any 
     return isHittable;
 }
 
+/**
+ * Trova il proprietario di una mossa nella lista di mosse in base alla mossa effettuata.
+ * @param move - La lista di mosse.
+ * @param move_now - La mossa effettuata.
+ * @returns Il proprietario della mossa.
+ */
 export function findOwner(move: any, move_now: any): any {
     let owner;
     for (let i = 0; i < move.length; i++) {
@@ -206,6 +245,11 @@ export function findOwner(move: any, move_now: any): any {
     return owner;
 }
 
+/**
+ * Restituisce il giocatore corrente che ha effettuato l'ultima mossa.
+ * @param move - La lista di mosse.
+ * @returns Il giocatore corrente.
+ */
 export function turn(move: any): any {
     let last = move[move.length - 1].player;
     return last;
