@@ -8,10 +8,10 @@ import { user } from '../../model/user';
  * @param email - L'indirizzo email dell'utente da aggiornare.
  * @returns Restituisce i dettagli dell'utente aggiornato nel database.
  */
-export async function updateUserTokensDb(tokens: number, email: any): Promise<any> {
+export async function updateUserTokensDb(tokens: number, email: string): Promise<any> {
     return await user.update({ tokens: tokens }, {
         where: {
             email: email
         }
     });
-}
+};

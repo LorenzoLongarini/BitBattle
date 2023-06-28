@@ -28,7 +28,6 @@ export const checkPassword = (req: Request, res: Response, next: NextFunction) =
         } else {
             statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.IsANumber);
         }
-
     } else {
         statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.PasswordEmpty);
     }

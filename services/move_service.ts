@@ -7,7 +7,7 @@ import { doMoveMultiplayerService } from "./multiplayer_service";
 import { CustomStatusCodes, Messages500 } from "../status/status_codes";
 import { MessageFactory } from "../status/messages_factory";
 
-let statusMessage: MessageFactory = new MessageFactory();
+var statusMessage: MessageFactory = new MessageFactory();
 
 /**
  * Esegue una mossa di gioco in base alla modalità di gioco corrente.

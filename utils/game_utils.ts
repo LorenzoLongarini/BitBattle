@@ -68,20 +68,26 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
     for (let i = 0; i < size; i++) {
         let startIndex: number = Math.floor(Math.random() * gridDimension + 1);
 
+        // calcola la posizione iniziale
+
         let currentPosEmpty = grid[startIndex].ship == 0;
 
-        let xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : 0;
-        let xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : 0;
+        // calcola le due posizioni successive e precedenti a quella iniziale lungo x e y
 
-        let xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? grid[startIndex - gridSize].ship == 0 : 0;
-        let xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? grid[startIndex - gridSize - gridSize].ship == 0 : 0;
+        let xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : false;
+        let xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : false;
 
-        let yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? grid[startIndex + 1].ship == 0 : 0;
-        let yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? grid[startIndex + 2].ship == 0 : 0;
+        let xPosEmptyPrev1 = (startIndex - gridSize >= 0) ? grid[startIndex - gridSize].ship == 0 : false;
+        let xPosEmptyPrev2 = (startIndex - gridSize - gridSize >= 0) ? grid[startIndex - gridSize - gridSize].ship == 0 : false;
 
-        let yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : 0;
-        let yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : 0;
+        let yPosEmptySucc1 = (startIndex + 1 < gridDimension) ? grid[startIndex + 1].ship == 0 : false;
+        let yPosEmptySucc2 = (startIndex + 2 < gridDimension) ? grid[startIndex + 2].ship == 0 : false;
 
+        let yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : false;
+        let yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : false;
+
+
+        // setta la nuova posizione corrente dove non ci sono navi
         while (!currentPosEmpty) {
             if (xPosEmptySucc1) {
                 startIndex += gridSize;
@@ -94,6 +100,9 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
             } else {
                 break;
             }
+
+            //aggiorna le posizioni 
+
             currentPosEmpty = !grid[startIndex].ship;
             xPosEmptySucc1 = (startIndex + gridSize < gridDimension) ? grid[startIndex + gridSize].ship == 0 : false;
             xPosEmptySucc2 = (startIndex + gridSize + gridSize < gridDimension) ? grid[startIndex + gridSize + gridSize].ship == 0 : false;
@@ -104,7 +113,7 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
             yPosEmptyPrev1 = (startIndex - 1 >= 0) ? grid[startIndex - 1].ship == 0 : false;
             yPosEmptyPrev2 = (startIndex - 2 >= 0) ? grid[startIndex - 2].ship == 0 : false;
         }
-
+        // settiamo le navi in base al tipo
         if (shipType == 1) {
             if (currentPosEmpty) {
                 grid[startIndex].ship = 1;

@@ -1,4 +1,4 @@
-import { CustomStatusCodes, Messages400, Messages500 } from './status_codes';
+import { CustomStatusCodes, Messages500 } from './status_codes';
 import { Response } from "express";
 import { BadRequestMessage, InternalServerErrorMessage, NotFoundErrorMessage, OkMessage, UnauthorizedMessage } from './messages_class';
 

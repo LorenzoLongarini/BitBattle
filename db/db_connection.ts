@@ -1,7 +1,5 @@
 import { Sequelize } from 'sequelize';
 
-
-//TODO: add env file
 /**
  * Classe per la connessione al database.
  * Utilizza il pattern Singleton per garantire una sola istanza di connessione.
@@ -14,7 +12,6 @@ export class DbConnector {
             host: 'db',
             dialect: 'postgres',
         });
-
     }
 
     /**

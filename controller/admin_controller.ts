@@ -1,4 +1,5 @@
 import { updateUserTokensService } from '../services/admin_service';
+import { Request, Response } from "express";
 
 /**
  * Aggiorna i token dell'utente.
@@ -8,6 +9,6 @@ import { updateUserTokensService } from '../services/admin_service';
  * @param res - Oggetto della risposta.
  * @returns
  */
-export const updateTokens = (req: any, res: any) => {
+export const updateTokens = (req: Request, res: Response) => {
     return updateUserTokensService(req, res);
 };

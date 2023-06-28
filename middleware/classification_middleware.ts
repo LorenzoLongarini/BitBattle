@@ -1,6 +1,7 @@
 import { classificationTypeAsc, classificationTypeDesc } from "../constants/game_constants";
 import { MessageFactory } from "../status/messages_factory";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
+import { Request, Response, NextFunction } from "express";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
@@ -13,7 +14,7 @@ var statusMessage: MessageFactory = new MessageFactory();
  * @param res - Oggetto della risposta HTTP.
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
-export const checkClafficationType = async (req: any, res: any, next: any) => {
+export const checkClafficationType = async (req: Request, res: Response, next: NextFunction) => {
 
     const type = req.body.type;
     if (isNaN(type)) {

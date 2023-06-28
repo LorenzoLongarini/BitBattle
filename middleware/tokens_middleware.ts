@@ -1,5 +1,6 @@
 import { MessageFactory } from "../status/messages_factory";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
+import { Request, Response, NextFunction } from "express";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
@@ -12,7 +13,7 @@ var statusMessage: MessageFactory = new MessageFactory();
  * @param res - Oggetto della risposta HTTP.
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
-export const checkTokensBody = async (req: any, res: any, next: any) => {
+export const checkTokensBody = async (req: Request, res: Response, next: NextFunction) => {
     const tokens = req.body.tokens;
     if (!isNaN(tokens)) {
         if (tokens < 0) {

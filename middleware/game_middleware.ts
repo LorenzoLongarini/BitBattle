@@ -5,7 +5,7 @@ import { MessageFactory } from "../status/messages_factory";
 import { findPlayer1Service, findPlayer2Service, findUserCreatorService } from "../services/games_service";
 import { findGameById } from "../db/queries/games_queries";
 
-let statusMessage: MessageFactory = new MessageFactory();
+var statusMessage: MessageFactory = new MessageFactory();
 
 /**
  * Middleware che controlla se un giocatore è autorizzato ad accedere a una partita.
@@ -18,14 +18,14 @@ let statusMessage: MessageFactory = new MessageFactory();
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
 export const checkGamePlayer = async (req: Request, res: Response, next: NextFunction) => {
-    let game = await findGameById(req.params.gameid);
-    let gameName = game[0].dataValues.name;
+    const game = await findGameById(req.params.gameid);
+    const gameName = game[0].dataValues.name;
     const jwtBearerToken = req.headers.authorization;
     const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
-    if (jwtDecode && jwtDecode.email) {
-        let creator = await findUserCreatorService(gameName, jwtDecode.email, res, req)
-        let player1 = await findPlayer1Service(gameName, jwtDecode.email, res, req)
-        let player2 = await findPlayer2Service(gameName, jwtDecode.email, res, req)
+    if (jwtDecode && jwtDecode.email && jwtDecode.password) {
+        let creator = await findUserCreatorService(gameName, jwtDecode.email, res)
+        let player1 = await findPlayer1Service(gameName, jwtDecode.email, res)
+        let player2 = await findPlayer2Service(gameName, jwtDecode.email, res)
         if (creator || player1 || player2) { next(); } else {
             statusMessage.getStatusMessage(CustomStatusCodes.UNAUTHORIZED, res, Messages400.Unauthorized);
         }
@@ -47,10 +47,9 @@ export const checkMove = async (req: Request, res: Response, next: NextFunction)
     const move = req.body.move
     const firstIndex = move[0];
     const secondIndex = move[1];
-    let game = await findGameById(req.params.gameid);
-    let gridSize = game[0].dataValues.grid_size;
-    console.log(game)
-    console.log(firstIndex, secondIndex, gridSize)
+    const game = await findGameById(req.params.gameid);
+    const gridSize = game[0].dataValues.grid_size;
+
     if (!isNaN(gridSize) && !isNaN(firstIndex) && !isNaN(secondIndex)) {
         if (firstIndex < 0 || secondIndex < 0) {
             statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.OutInvalid);
@@ -115,7 +114,7 @@ export const checkShipFormat = async (req: Request, res: Response, next: NextFun
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
 export const checkGridSize = async (req: Request, res: Response, next: NextFunction) => {
-    let gridSize = req.body.grid_size;
+    const gridSize = req.body.grid_size;
 
     if (!isNaN(gridSize) && Number.isInteger(gridSize)) {
         if (gridSize >= 5 || gridSize <= 10) {

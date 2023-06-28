@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { CustomStatusCodes, Messages400 } from "../status/status_codes";
 import { MessageFactory } from "../status/messages_factory";
 
+var statusMessage: MessageFactory = new MessageFactory();
 /**
  * Controlla la validità del token JWT nell'intestazione della richiesta.
  * Verifica se il token JWT è presente e decodificabile correttamente.
@@ -13,7 +14,6 @@ import { MessageFactory } from "../status/messages_factory";
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-    let statusMessage: MessageFactory = new MessageFactory();
     const jwtBearerToken = req.headers.authorization;
     const jwtDecode = jwtBearerToken ? decodeJwt(jwtBearerToken) : null;
 

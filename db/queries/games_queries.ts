@@ -3,19 +3,19 @@ import { game } from '../../model/game';
 /**
  * Recupera tutti i games dal database.
  *
- * @returns Restituisce una promessa che contiene tutti i games presenti nel database.
+ * @returns Restituisce tutti i games presenti nel database.
  */
 export async function findAllGames(): Promise<any> {
 
     return await game.findAll();
 
-}
+};
 
 /**
  * Trova tutti i games in cui il giocatore specificato è il vincitore.
  *
  * @param player0 - Il nome del giocatore vincitore da cercare.
- * @returns Una promessa che restituisce tutti i games in cui il giocatore specificato è il vincitore.
+ * @returns Restituisce tutti i games in cui il giocatore specificato è il vincitore.
  */
 export async function findWinner(player0: string): Promise<any> {
 
@@ -31,7 +31,7 @@ export async function findWinner(player0: string): Promise<any> {
  * Trova tutti i games in cui il giocatore specificato è il player0.
  *
  * @param player0 - Il nome del giocatore player0 da cercare.
- * @returns Una promessa che restituisce tutti i games in cui il giocatore specificato è il player0.
+ * @returns Restituisce tutti i games in cui il giocatore specificato è il player0.
  */
 export async function findAllPlayed0(player0: string): Promise<any> {
 
@@ -47,7 +47,7 @@ export async function findAllPlayed0(player0: string): Promise<any> {
  * Trova tutti i games in cui il giocatore specificato è il player1.
  *
  * @param player1 - Il nome del giocatore player0 da cercare.
- * @returns Una promessa che restituisce tutti i games in cui il giocatore specificato è il player1.
+ * @returns Restituisce tutti i games in cui il giocatore specificato è il player1.
  */
 export async function findAllPlayed1(player1: string): Promise<any> {
 
@@ -57,13 +57,13 @@ export async function findAllPlayed1(player1: string): Promise<any> {
         }
     });
 
-}
+};
 
 /**
  * Trova tutti i games in cui il giocatore specificato è il player2.
  *
  * @param player2 - Il nome del giocatore player0 da cercare.
- * @returns Una promessa che restituisce tutti i games in cui il giocatore specificato è il player2.
+ * @returns Restituisce tutti i games in cui il giocatore specificato è il player2.
  */
 export async function findAllPlayed2(player2: string): Promise<any> {
 
@@ -80,7 +80,7 @@ export async function findAllPlayed2(player2: string): Promise<any> {
  *
  * @param name - Il nome del game da cercare.
  * @param player0 - Il nome del giocatore player0 da cercare.
- * @returns Una promessa che restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player0.
+ * @returns Restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player0.
  */
 export async function findPlayer0(name: string, player0: string): Promise<any> {
 
@@ -98,7 +98,7 @@ export async function findPlayer0(name: string, player0: string): Promise<any> {
  *
  * @param name - Il nome del game da cercare.
  * @param player0 - Il nome del giocatore player1 da cercare.
- * @returns Una promessa che restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player1.
+ * @returns Restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player1.
  */
 export async function findPlayer1(name: string, player1: string): Promise<any> {
 
@@ -109,14 +109,14 @@ export async function findPlayer1(name: string, player1: string): Promise<any> {
         }
     });
 
-}
+};
 
 /**
  * Trova tutti i games con il nome specificato in cui il giocatore specificato è il player2.
  *
  * @param name - Il nome del game da cercare.
  * @param player2 - Il nome del giocatore player0 da cercare.
- * @returns Una promessa che restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player2.
+ * @returns Restituisce tutti i games con il nome specificato in cui il giocatore specificato è il player2.
  */
 export async function findPlayer2(name: string, player2: string): Promise<any> {
 
@@ -127,13 +127,13 @@ export async function findPlayer2(name: string, player2: string): Promise<any> {
         }
     });
 
-}
+};
 
 /**
  * Trova tutti i games con il nome specificato.
  *
  * @param name - Il nome del game da cercare.
- * @returns Una promessa che restituisce tutti i games con il nome specificato.
+ * @returns Restituisce tutti i games con il nome specificato.
  */
 export async function findGame(name: string): Promise<any> {
 
@@ -143,13 +143,13 @@ export async function findGame(name: string): Promise<any> {
         }
     });
 
-}
+};
 
 /**
  * Trova un game nel database utilizzando l'ID del gioco.
  *
  * @param game_id - L'ID del game da cercare.
- * @returns Una promessa che restituisce il game corrispondente all'ID specificato.
+ * @returns Restituisce il game corrispondente all'ID specificato.
  */
 export async function findGameById(game_id: any): Promise<any> {
 
@@ -159,7 +159,7 @@ export async function findGameById(game_id: any): Promise<any> {
         }
     });
 
-}
+};
 
 /**
  * Imposta lo stato di un game specificato con "finished" per indicare che il gioco è terminato.

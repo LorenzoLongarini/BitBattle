@@ -136,7 +136,7 @@ export const getGamePdf = (req: Request, res: Response) => {
  */
 export const getStats = (req: Request, res: Response) => {
     return getUserStatsService(req, res);
-}
+};
 
 /**
  * Ottiene lo storico delle mosse di un gioco.

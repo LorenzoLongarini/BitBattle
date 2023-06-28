@@ -2,6 +2,7 @@ import { findUser } from "../db/queries/user_queries";
 import { decodeJwt } from "../services/jwt_service";
 import { MessageFactory } from "../status/messages_factory";
 import { CustomStatusCodes, Messages400, Messages500 } from "../status/status_codes";
+import { Request, Response, NextFunction } from "express";
 
 var statusMessage: MessageFactory = new MessageFactory();
 
@@ -14,7 +15,7 @@ var statusMessage: MessageFactory = new MessageFactory();
  * @param res - Oggetto della risposta HTTP.
  * @param next - Funzione di callback per passare alla prossima operazione.
  */
-export const checkIsAdmin = async (req: any, res: any, next: any) => {
+export const checkIsAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const jwtBearerToken = req.headers.authorization;
         const jwtDecode = jwtBearerToken != null ? decodeJwt(jwtBearerToken) : null;

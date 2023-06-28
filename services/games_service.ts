@@ -1,6 +1,6 @@
 import { findAllGames, findGame, gameOver, updateWinner, findPlayer0, findPlayer1, findPlayer2, updateScore, findGameById } from '../db/queries/games_queries';
 import { Request, Response } from "express";
-import { findUser, setIsNotPlayingDb, updateUserPoints, updateUserStatus } from '../db/queries/user_queries';
+import { findUser, setIsNotPlayingDb, updateUserPoints } from '../db/queries/user_queries';
 import { MessageFactory } from '../status/messages_factory'
 import { CustomStatusCodes, Messages400, Messages500 } from '../status/status_codes'
 import { aiPlayer } from '../constants/user_constants';
@@ -23,7 +23,7 @@ export async function getGamesService(res: Response) {
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
     }
-}
+};
 
 /**
  * Verifica se l'utente è il creatore del game specificato.
@@ -33,7 +33,7 @@ export async function getGamesService(res: Response) {
  * @param req La richiesta HTTP.
  * @returns Restituisce true se l'utente è il creatore del game, altrimenti false.
  */
-export async function findUserCreatorService(gameName: string, player0: string, res: Response, req: Request): Promise<boolean> {
+export async function findUserCreatorService(gameName: string, player0: string, res: Response): Promise<boolean> {
     let exist = false;
     try {
         let creator = await findPlayer0(gameName, player0);
@@ -42,7 +42,7 @@ export async function findUserCreatorService(gameName: string, player0: string, 
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
     }
     return exist;
-}
+};
 
 /**
  * Verifica se l'utente è il player1 nel game specificato.
@@ -52,7 +52,7 @@ export async function findUserCreatorService(gameName: string, player0: string, 
  * @param req La richiesta HTTP.
  * @returns Restituisce true se l'utente è il player1 del game, altrimenti false.
  */
-export async function findPlayer1Service(gameName: string, player1: string, res: Response, req: Request): Promise<boolean> {
+export async function findPlayer1Service(gameName: string, player1: string, res: Response): Promise<boolean> {
     let exist = false;
     try {
         let creator = await findPlayer1(gameName, player1);
@@ -61,7 +61,7 @@ export async function findPlayer1Service(gameName: string, player1: string, res:
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
     }
     return exist;
-}
+};
 
 /**
  * Verifica se l'utente è il player2 nel game specificato.
@@ -71,7 +71,7 @@ export async function findPlayer1Service(gameName: string, player1: string, res:
  * @param req La richiesta HTTP.
  * @returns Restituisce true se l'utente è il player2 del game, altrimenti false.
  */
-export async function findPlayer2Service(gameName: string, player2: string, res: Response, req: Request): Promise<boolean> {
+export async function findPlayer2Service(gameName: string, player2: string, res: Response): Promise<boolean> {
 
     let exist = false;
     try {
@@ -81,7 +81,7 @@ export async function findPlayer2Service(gameName: string, player2: string, res:
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages500.InternalServerError);
     }
     return exist;
-}
+};
 
 /**
  * Imposta lo stato di fine game e aggiorna i punteggi dei giocatori.
@@ -102,13 +102,15 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
     let winnerEmail;
     let scoreWinner;
 
+    // setta le informazioni se il vincitore non è l'AI
+
     if (winner != aiPlayer) {
         winnerEmail = winner[0].dataValues.email;
         scoreWinner = {
             player: winnerEmail,
             score: 10,
         };
-        await updateUserStatus(false, winnerEmail)
+        await setIsNotPlayingDb(winnerEmail)
 
         let currentPoints = parseFloat(winner[0].dataValues.points)
         let winnerPoints = currentPoints + 10;
@@ -117,6 +119,9 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
 
         scores.push(scoreWinner);
     } else {
+
+        // setta le informazioni con AI vincente
+
         winnerEmail = winner;
         console.log(winnerEmail)
         scoreWinner = {
@@ -124,7 +129,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
             score: 0,
         };
         scores.push(scoreWinner);
-        await updateUserStatus(false, emailplayer0)
+        await setIsNotPlayingDb(emailplayer0)
     }
 
     await updateWinner(nameGame, winnerEmail);
@@ -132,6 +137,8 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
     let score0 = 0;
     let score1 = 0;
     let score2 = 0;
+
+    //esamina le casistiche a seconda di chi è arrivato primo, secondo e terzo e assegna i rispettivi punteggi
 
     switch (true) {
         case (firstLooser === emailplayer0 && emailplayer1 === winnerEmail): { score0 = 0; score1 = 10; score2 = 4; break; }
@@ -141,7 +148,11 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
         case (firstLooser === emailplayer2 && emailplayer0 === winnerEmail): { score0 = 10; score1 = 4; score2 = 0; break; }
         case (firstLooser === emailplayer2 && emailplayer1 === winnerEmail): { score0 = 4; score1 = 10; score2 = 0; break; }
     }
+
     await setIsNotPlayingDb(emailplayer0);
+
+    // inserisce le score nel db
+
     if (emailplayer0 != winnerEmail && winnerEmail != aiPlayer) {
         let scorePlayer0 = await updateMultiplayerStatus(emailplayer0, score0);
         scores.push(scorePlayer0);
@@ -165,7 +176,7 @@ export async function setGameOverStatus(req: Request, winner: any, emailplayer0:
  * @returns Restituisce un oggetto contenente l'email del giocatore e il suo punteggio aggiornato.
  */
 async function updateMultiplayerStatus(emailPlayer: string, score: any) {
-    await updateUserStatus(false, emailPlayer);
+    await setIsNotPlayingDb(emailPlayer);
 
     let scorePlayer = {
         player: emailPlayer,
@@ -178,63 +189,69 @@ async function updateMultiplayerStatus(emailPlayer: string, score: any) {
     await updateUserPoints(winnerPoints, emailPlayer);
     return scorePlayer;
 
-}
+};
 
 
 /**
  * Determina il prossimo giocatore in base allo stato di gioco.
+ * @param player0 Il player0.
  * @param player1 Il player1.
  * @param player2 Il player2.
- * @param player3 Il player3.
  * @param move Le mosse eseguite.
  * @param mod Il tipo di gioco.
+ * @param isplay0 Lo stato del player0.
  * @param isplay1 Lo stato del player1.
  * @param isplay2 Lo stato del player2.
- * @param isplay3 Lo stato del player3.
  * @param nextMove La prossima mosse.
  * @returns Restituisce il prossimo giocatore.
  */
-export function isTurn(player1: any, player2: any, player3: any, move: any, mod: any,
-    isplay1: any, isplay2: any, isplay3: any, nextMove: any) {
+export function isTurn(player0: string, player1: string, player2: string, move: any, mod: boolean,
+    isplay0: boolean, isplay1: boolean, isplay2: boolean, nextMove: any) {
     if (move.length === 0 && mod) {
-        return player1;
+        return player0;
     }
     else if (move.length === 1 && mod) {
-        return player3;
+        return player2;
     } else if (mod) {
         let lastMoves = [move[move.length - 2], move[move.length - 1]]
+
+        // verifica chi ha eseguito le ultime due mosse e restituisce di chi è il turno
+
         switch (true) {
-            case (lastMoves.every((value, index) => value === nextMove[0][index])): return player2
-            case (lastMoves.every((value, index) => value === nextMove[1][index])): return player3
-            case (lastMoves.every((value, index) => value === nextMove[2][index])): return player1
-            case (lastMoves.every((value, index) => value === nextMove[3][index])): return player2
-            case (lastMoves.every((value, index) => value === nextMove[4][index])): return player1
-            case (lastMoves.every((value, index) => value === nextMove[5][index])): return player3
+            case (lastMoves.every((value, index) => value === nextMove[0][index])): { return player1; }
+            case (lastMoves.every((value, index) => value === nextMove[1][index])): { return player2; }
+            case (lastMoves.every((value, index) => value === nextMove[2][index])): { return player0; }
+            case (lastMoves.every((value, index) => value === nextMove[3][index])): { return player1; }
+            case (lastMoves.every((value, index) => value === nextMove[4][index])): { return player0; }
+            case (lastMoves.every((value, index) => value === nextMove[5][index])): { return player2; }
             default:
                 console.log('Errore');
         }
     }
+
+    // verifica che non siano tutti e tre in gioco e stabilisce il turno a due giocatori
+
     else if (!mod) {
-        let x1 = isplay1;
-        let x2 = isplay2;
-        let x3 = isplay3;
-        let play1, play2;
+        let isPlaying0 = isplay0;
+        let isPlaying1 = isplay1;
+        let isPlaying2 = isplay2;
+        let newPlay1, newPlay2;
         let lastMoves1 = move[move.length - 1]
-        if (x1 && x2) {
-            play1 = player1
-            play2 = player2
-        } else if (x2 && x3) {
-            play1 = player2
-            play2 = player3
+        if (isPlaying0 && isPlaying1) {
+            newPlay1 = player0
+            newPlay2 = player1
+        } else if (isPlaying1 && isPlaying2) {
+            newPlay1 = player1
+            newPlay2 = player2
         } else {
-            play1 = player1
-            play2 = player3
+            newPlay1 = player0
+            newPlay2 = player2
         }
 
-        if (lastMoves1 == play1) {
-            return play2;
+        if (lastMoves1 == newPlay1) {
+            return newPlay2;
         } else {
-            return play1;
+            return newPlay1;
         }
     }
 }
@@ -259,9 +276,15 @@ export async function getGameInfoService(req: Request, res: Response) {
 
         let movesExecute = game[0].dataValues.moves;
         let modGame = game[0].dataValues.mod;
+
+        //restituisce a seconda del mode game le informazioni di un game
+
         if (modGame === GameMode.mode1) {
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? emailplayer0 : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, mod: GameMode.mode1, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            let message = JSON.parse(JSON.stringify({
+                name: name, grid_size: gridSize, player0: emailplayer0,
+                mod: GameMode.mode1, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score
+            }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message)
         } else if (modGame === GameMode.mode2) {
             let jwtPlayerEmail = getJwtEmail(req);
@@ -275,7 +298,10 @@ export async function getGameInfoService(req: Request, res: Response) {
                 }
             } else { nextTurn = emailplayer0; }
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, mod: GameMode.mode2, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+            let message = JSON.parse(JSON.stringify({
+                name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1,
+                mod: GameMode.mode2, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score
+            }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         } else if (modGame === GameMode.mode3) {
             let movesEmail = []
@@ -284,13 +310,21 @@ export async function getGameInfoService(req: Request, res: Response) {
                     movesEmail.push(game[0].dataValues.moves[i].player);
                 }
 
-            let reducedMovesP0 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0));
-            let reducedMovesP1 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1));
-            let reducedMovesP2 = game[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2));
+            let reducedMovesP0 = game[0].dataValues.possible_moves.filter(
+                (move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer0)
+            );
+            let reducedMovesP1 = game[0].dataValues.possible_moves.filter(
+                (move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer1)
+            );
+            let reducedMovesP2 = game[0].dataValues.possible_moves.filter(
+                (move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner == emailplayer2)
+            );
 
             let reducedMoves0 = movesExecute.filter((move: any) => (move.owner == emailplayer0));
             let reducedMoves1 = movesExecute.filter((move: any) => (move.owner == emailplayer1));
             let reducedMoves2 = movesExecute.filter((move: any) => (move.owner == emailplayer2));
+
+            // settiamo le variabili da passare a isTurn
 
             const nextMove = [[emailplayer0, emailplayer2],
             [emailplayer2, emailplayer1],
@@ -299,18 +333,24 @@ export async function getGameInfoService(req: Request, res: Response) {
             [emailplayer0, emailplayer1],
             [emailplayer1, emailplayer0]];
 
-            let pl0 = true;
-            let pl1 = true;
-            let pl2 = true;
+            let isPlayingNow0 = true;
+            let isPlayingNow1 = true;
+            let isPlayingNow2 = true;
 
-            if (reducedMovesP0.length == reducedMoves0.length) { pl0 = false; }
-            if (reducedMovesP1.length == reducedMoves1.length) { pl1 = false; }
-            if (reducedMovesP2.length == reducedMoves2.length) { pl2 = false; }
+            if (reducedMovesP0.length == reducedMoves0.length) { isPlayingNow0 = false; }
+            if (reducedMovesP1.length == reducedMoves1.length) { isPlayingNow1 = false; }
+            if (reducedMovesP2.length == reducedMoves2.length) { isPlayingNow2 = false; }
 
-            let mod = pl0 && pl1 && pl2;
-            let nextTurn = await isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail, mod, pl0, pl1, pl2, nextMove);
+            let mod = isPlayingNow0 && isPlayingNow1 && isPlayingNow2;
+
+            let nextTurn = isTurn(emailplayer0, emailplayer1, emailplayer2, movesEmail,
+                mod, isPlayingNow0, isPlayingNow1, isPlayingNow2, nextMove);
             let currTurn = game[0].dataValues.status !== gameFinishedLabel ? nextTurn : null
-            let message = JSON.parse(JSON.stringify({ name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1, player2: emailplayer2, mod: GameMode.mode3, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score }));
+
+            let message = JSON.parse(JSON.stringify({
+                name: name, grid_size: gridSize, player0: emailplayer0, player1: emailplayer1,
+                player2: emailplayer2, mod: GameMode.mode3, statusGame: statusGame, turn: currTurn, winnerGame: winner, score: score
+            }));
             statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
         }
     } catch (error) {

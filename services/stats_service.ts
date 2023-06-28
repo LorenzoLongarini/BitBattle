@@ -10,8 +10,14 @@ import moment from 'moment';
 import fs from 'fs';
 
 var statusMessage: MessageFactory = new MessageFactory();
+
 const dateFormat = 'YYYY-MM-DD';
 
+/**
+ * Restituisce le statistiche di un utente filtrate per data.
+ * @param req La richiesta HTTP contenente le date.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function getUserStatsService(req: Request, res: Response) {
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
@@ -24,9 +30,11 @@ export async function getUserStatsService(req: Request, res: Response) {
     let jwtPlayerEmail = getJwtEmail(req);
 
     try {
-
-
         let stats;
+
+        // verifica il formato e la presenza delle date inserite erestituisce messaggi
+        // di errore o genera le statistiche
+
         if ((startDate !== "" && endDate !== "") && (startDateValid && endDateValid)) {
             if (startDate === endDate) {
                 statusMessage.getStatusMessage(CustomStatusCodes.BAD_REQUEST, res, Messages400.InvalidDateSame);
@@ -43,13 +51,15 @@ export async function getUserStatsService(req: Request, res: Response) {
             statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.StatsNotAvalaible);
         }
 
-
         let message = JSON.parse(JSON.stringify({ utente: stats }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
+
     } catch (error) {
         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.InvalidDateFormat);
     }
 }
+
+// funzione per calcolare la deviazione standard
 
 const standardDeviation = (arr: number[]): number => {
     let mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
@@ -60,8 +70,15 @@ const standardDeviation = (arr: number[]): number => {
     );
 };
 
+// funzione per calcolare la media
+
 const mean = (arr: number[]): number => { const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length; return mean; }
 
+/**
+ * Restituisce la classifica dei giocatori a seconda del punteggio.
+ * @param req La richiesta HTTP contenente il type ascendente o discendente.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function getClassificationService(req: Request, res: Response) {
     try {
         const users: any = await findAllUsers();
@@ -85,6 +102,13 @@ export async function getClassificationService(req: Request, res: Response) {
     }
 }
 
+/**
+ * Genera le statistiche di un utente.
+ * @param jwtPlayerEmail Email dell'utente autenticato.
+ * @param startDate Filtro data inizio.
+ * @param endDate Filtro data fine.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function generateStats(jwtPlayerEmail: string, startDate: any, endDate: any, res: Response): Promise<any> {
 
     const totWin = await findWinner(jwtPlayerEmail);
@@ -109,6 +133,9 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
 
     let filteredData;
     let winnerFilter;
+
+    // genera le statistiche filtrandole a seconda delle date inserite
+
     if (startDate !== "" && endDate === "") {
         filteredData = totalPlay[0].filter((value: any) => Number(value.dataValues.created_at) >= startDateMilli);
         winnerFilter = wins[0].filter((value: any) => Number(value.dataValues.created_at) >= startDateMilli);
@@ -128,7 +155,7 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     if (filteredData.length != 0) { totalPlayFiltered.push(filteredData); }
     if (filteredData.length != 0) { totalWins.push(winnerFilter); }
 
-    let sigma = [];
+    let devStandard = [];
     let totalLose = totalPlayFiltered[0].length - totalWins[0].length;
 
     let maxMoves: number = 0;
@@ -138,13 +165,15 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     for (let i = 0; i < totalPlayFiltered[0].length; i++) {
         let gameMoves = totalPlayFiltered[0][i].dataValues.moves.filter((move: any) => move.player === jwtPlayerEmail).length;
         totalMoves += gameMoves;
-        sigma.push(gameMoves);
+        devStandard.push(gameMoves);
         maxMoves = maxMoves < gameMoves ? gameMoves : maxMoves;
         minMoves = minMoves < gameMoves ? minMoves : gameMoves;
     }
 
-    let standardDev = standardDeviation(sigma);
-    let meanStat = mean(sigma);
+    let standardDev = standardDeviation(devStandard);
+    let meanStat = mean(devStandard);
+
+    //genera il json che verrà restituito
 
     let user = {
         email: jwtPlayerEmail,
@@ -160,6 +189,12 @@ export async function generateStats(jwtPlayerEmail: string, startDate: any, endD
     return user;
 }
 
+
+/**
+ * Restituisce lo storico delle mosse di una partita.
+ * @param req La richiesta HTTP contenente il type ascendente o discendente.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function getMovesService(req: Request, res: Response) {
     try {
         const game: any = await findGameById(req.params.gameid);
@@ -173,6 +208,12 @@ export async function getMovesService(req: Request, res: Response) {
     }
 }
 
+
+/**
+ * Restituisce lo storico delle mosse di una partita ed effettua il download in formato json.
+ * @param req La richiesta HTTP contenente il type ascendente o discendente.
+ * @param res La risposta HTTP da inviare.
+ */
 export async function downloadMovesService(req: Request, res: Response) {
     try {
         const fileName = 'moves.json';
@@ -181,12 +222,15 @@ export async function downloadMovesService(req: Request, res: Response) {
         const game: any = await findGameById(req.params.gameid);
         let moves = game[0].dataValues.moves;
 
+        //setta nell'header che dovrà essere effettuato il download in formato json
+
         res.setHeader('Content-Disposition', 'attachment; filename=moves.json');
         res.setHeader('Content-Type', 'application/json');
 
         fs.writeFileSync(filePath, JSON.stringify({ moves: moves }));
 
         res.download(filePath, fileName);
+
         let message = JSON.parse(JSON.stringify({ moves: moves }))
         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
 

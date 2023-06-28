@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { updateUserTokensDb } from "../db/queries/admin_queries";
-import { addMoveDb, findGame, findGameById } from "../db/queries/games_queries";
+import { addMoveDb, findGameById } from "../db/queries/games_queries";
 import { findUser } from "../db/queries/user_queries";
 import { turn, findShip, findShipHittable, findOwner } from "../utils/game_utils";
 import { getJwtEmail } from "./jwt_service";
@@ -34,9 +34,11 @@ export async function doMoveSingleService(req: Request, res: Response) {
         let lastPlayer: any;
         if (movesExecute != 0) { lastPlayer = turn(movesExecute); } else { lastPlayer = player1; }
 
-        
+
         let choose = true;
-        // Verifica se la mossa target è disponibile, eseguita e colpibile
+
+        // Verifica se la mossa target è disponibile, eseguita, colpita e colpibile
+
         let isAvailable = await findShip(movesPossible, targetMove, choose);
         let isExecute = await findShip(movesExecute, targetMove, choose);
         let isHittable = await findShipHittable(movesPossible, targetMove, jwtPlayerEmail);
@@ -56,6 +58,7 @@ export async function doMoveSingleService(req: Request, res: Response) {
             if (canMove) {
 
                 // Crea la nuova mossa da inserire nel database
+
                 let newMove = {
                     move: targetMove,
                     hit: hitShip,
@@ -64,31 +67,37 @@ export async function doMoveSingleService(req: Request, res: Response) {
                 };
 
                 //Viene aggiunta la mossa nella lista delle mosse eseguite e viene aggiornato il database.
+
                 movesExecute.push(newMove);
                 await addMoveDb(nameGame, movesExecute);
 
                 //Vengono scalati i tokens per effettuare la mossa e viene aggiornato il numero di tokens nel databse
+
                 let updatedTokens = currentTokens - 0.015;
                 await updateUserTokensDb(updatedTokens, player0);
 
-                let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter((move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner != jwtPlayerEmail));
-                let reducedMovesExecute = searchGame[0].dataValues.moves.filter((move: any) => move.hit && move.owner != jwtPlayerEmail);
+                let reducedMovesPossible = searchGame[0].dataValues.possible_moves.filter(
+                    (move: any) => (move.ship >= 1 && move.ship <= 3 && move.owner != jwtPlayerEmail)
+                );
+                let reducedMovesExecute = searchGame[0].dataValues.moves.filter(
+                    (move: any) => (move.hit && move.owner != jwtPlayerEmail)
+                );
+
+                // Se l'utente ha tutte le navi colpite imposta lo stato di fine game e aggiorna i punteggi dei giocatori.
 
                 if (reducedMovesPossible.length == reducedMovesExecute.length) {
-                    // Se l'utente ha tutte le navi colpite
                     try {
-                        // Imposta lo stato di fine game e aggiorna i punteggi dei giocatori.
                         setGameOverStatus(req, currentPlayer, player0, nameGame, player1)
                         statusMessage.getStatusMessage(CustomStatusCodes.OK, res, Messages200.Win);
 
                     } catch (err) {
-
                         statusMessage.getStatusMessage(CustomStatusCodes.NOT_FOUND, res, Messages400.GameNotFound);
 
                     };
                 } else if (hitShip) {
 
                     // Se la mossa inserita contiene una nave, restituisce l'esito e il giocatore che è stato colpito
+
                     let message = JSON.parse(JSON.stringify({ esito: Messages200.Hit, hai_colpito: owner }));
                     statusMessage.getStatusMessage(CustomStatusCodes.OK, res, message);
 
