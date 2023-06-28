@@ -46,14 +46,6 @@ export async function doMoveAIService(req: Request, res: Response) {
         let hitShipUser = await findShip(movesPossible, targetMove, !choose);
         let isHittableUser = await findShipHittable(movesPossible, targetMove, jwtPlayerEmail)
 
-        // Vengono effettuati controlli per verificare se la mossa del AI è disponibile,
-        // se è già stata eseguita e se è stata colpita una nave avversaria.
-
-        let isAvailableAi = await findShip(movesPossible, targetRand, choose);
-        let isExecuteAi = await findShip(movesExecute, targetRand, choose);
-        let hitShipAi = await findShip(movesPossible, targetRand, !choose);
-        let isHittableAi = await findShipHittable(movesPossible, targetRand, aiPlayer)
-
         let currentPlayer = await findUser(jwtPlayerEmail);
         let currentTokens = parseFloat(currentPlayer[0].dataValues.tokens)
 
@@ -101,15 +93,26 @@ export async function doMoveAIService(req: Request, res: Response) {
 
                 if (reducedMovesPossibleUser.length != reducedMovesExecuteUser.length) {
 
+
+                    // Vengono effettuati controlli per verificare se la mossa del AI è disponibile,
+                    // se è già stata eseguita e se è stata colpita una nave avversaria
+                    movesPossible = searchGame[0].dataValues.possible_moves;
+                    let isHittableAi = await findShipHittable(movesPossible, targetRand, aiPlayer)
+                    let isAvailableAi = await findShip(movesPossible, targetRand, choose);
+                    let isExecuteAi = await findShip(movesExecute, targetRand, choose);
+                    let hitShipAi = await findShip(movesPossible, targetRand, !choose);
+
                     // Genera casualmente una nuova mossa finché non viene trovata una mossa valida per l'AI
 
-                    while (!isAvailableAi && isExecuteAi && !isHittableAi) {
-
+                    while (!(isAvailableAi && !isExecuteAi && isHittableAi)) {
                         xRand = Math.floor(Math.random() * gridSizeCurr + 1);
                         yRand = Math.floor(Math.random() * gridSizeCurr + 1);
                         targetRand = [xRand, yRand];
                         isAvailableAi = await findShip(movesPossible, targetRand, choose);
+                        movesPossible = searchGame[0].dataValues.possible_moves;
+                        movesExecute = searchGame[0].dataValues.moves;
                         isExecuteAi = await findShip(movesExecute, targetRand, choose);
+                        isHittableAi = await findShipHittable(movesPossible, targetRand, aiPlayer)
                     }
 
                     hitShipAi = await findShip(movesPossible, targetRand, !choose);

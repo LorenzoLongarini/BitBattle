@@ -84,7 +84,7 @@ export const checkShipFormat = async (req: Request, res: Response, next: NextFun
                     Number.isInteger(size1) &&
                     Number.isInteger(size2) &&
                     Number.isInteger(size3) &&
-                    size1 >= 0 && size1 <= 2 &&
+                    size1 >= 0 && size1 <= 3 &&
                     size2 >= 0 && size2 <= 2 &&
                     size3 >= 0 && size3 <= 2
                 ) {
