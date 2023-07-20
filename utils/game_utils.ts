@@ -95,7 +95,7 @@ function populateGrid(grid: any, size: number, gridSize: number, shipType: numbe
                 startIndex += 1;
             } else if (xPosEmptyPrev1) {
                 startIndex -= gridSize;
-            } else if (yPosEmptyPrev2) {
+            } else if (yPosEmptyPrev1) {
                 startIndex -= 1;
             } else {
                 break;

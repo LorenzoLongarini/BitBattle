@@ -259,7 +259,7 @@ public  static getConnection(): any {
 #### Abstract
 Il pattern creazionale Abstract è stato utilizzato per la generazione delle res.json e delle res.status da inviare all'utente a seconda dell'esito di una chiamata. La classe astratta possiede un unico metodo, ed ogni classe che implementa la classe deve definirlo correttamente.
 
-La classe astratta è stata chiamata MessageInterface() ed ogni classe che la implementa è stata nominata a seconda della tipologia di messaggio che andrebbe a generare (ad esempio per i messaggi di OK avremo la classe OkMessage()).
+L'interfaccia è stata chiamata MessageInterface() ed ogni classe che la implementa è stata nominata a seconda della tipologia di messaggio che andrebbe a generare (ad esempio per i messaggi di OK avremo la classe OkMessage()).
 
 ```typescript
 export  interface MessageInterface {
