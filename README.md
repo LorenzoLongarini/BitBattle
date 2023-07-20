@@ -377,7 +377,7 @@ Se la richiesta viene effettuata correttamente viene restituito il token jwt gen
 ```json
 {
 	"OK": {
-		jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImxvcmlzQGJpdGJhdHRsZS5pdCIsInBhc3N3b3JkIjoiYml0YmF0dGxlIiwiaWF0IjoxNjg3ODYxMTI1fQ._dUKfo-8Yeszpxure7l0zvXSMfwf_wtz-AxRcXxPVwQ"
+		jwt":"MY_JWT"
 	}
 }
 ```
