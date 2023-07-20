@@ -921,14 +921,17 @@ controller->>- Client : result: res.json()
 Se la richiesta viene effettuata correttamente viene restituito il seguente messaggio:
 ```json
 {
-	"OK": "Colpito!"
+	"OK": {
+		"esito": "Colpito!",
+		"hai_colpito": "HITTED_PLAYER"
+		}
 }
 ```
 
-In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Inoltre, verrà settato lo stato a seconda dello status code:
+In caso di errore invece verrà restituito un messaggio con chiave il nome del codice violato e un messaggio di errore a seconda della casistica. Se ad esempio, un utente effettua la mossa ma non è il suo turno:
 ```json
 {
-	"type": "pippo"
+	"move": [1,2]
 }
 ```
 genererà:
